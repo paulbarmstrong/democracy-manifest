@@ -1,0 +1,13 @@
+{
+	"name": "common",
+	"version": "1.0.0",
+	"license": "Unlicense",
+	"main": "dist/index",
+	"typings": "dist/index",
+	"scripts": {
+		"build": "tsc"
+	},
+	"dependencies": {
+		"shape-tape": "^1.0.22"
+	}
+}

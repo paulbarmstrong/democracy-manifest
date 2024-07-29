@@ -1,15 +1,16 @@
 import { MouseEvent, useState } from "react"
 import { BACKGROUND_SHADE_T1, GRID_ITEM_SIZE_PX } from "../utilities/Constants"
-import { DynamicWebappConfig } from "../utilities/Types"
+import { DynamicWebappConfig } from "common"
 
 interface Props {
-	config: DynamicWebappConfig
+	config: DynamicWebappConfig,
+	initialGridItems: Set<string>
 }
 
 export function App(props: Props) {
 	const numRows = Math.floor(window.innerHeight / GRID_ITEM_SIZE_PX)
-	const numColumns = Math.floor(window.outerWidth / GRID_ITEM_SIZE_PX)
-	const [gridItems, setGridItems] = useState<Set<string>>(new Set())
+	const numColumns = Math.floor(window.innerWidth / GRID_ITEM_SIZE_PX)
+	const [gridItems, setGridItems] = useState<Set<string>>(props.initialGridItems)
 
 	function onGridMouseDown(event: MouseEvent<HTMLDivElement>) {
 		const x = Math.ceil(event.clientX / GRID_ITEM_SIZE_PX)

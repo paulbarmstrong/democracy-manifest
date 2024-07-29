@@ -3,6 +3,9 @@
 	"version": "1.0.0",
 	"license": "Unlicense",
 	"workspaces": [
+		"packages/cdk",
+		"packages/common",
+		"packages/http-api",
 		"packages/webapp"
 	]
 }
