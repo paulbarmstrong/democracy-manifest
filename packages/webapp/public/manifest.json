@@ -1,0 +1,7 @@
+{
+	"name": "GRID",
+	"start_url": ".",
+	"display": "standalone",
+	"theme_color": "#ffffff",
+	"background_color": "#374247"
+}
