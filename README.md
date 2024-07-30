@@ -22,10 +22,11 @@ it is released into the public domain.
 
 #### Installation
 
-1. `npm install -g cdk`
-2. `cdk bootstrap aws://<account-id>/<region>` (replace `<account-id>` and `<region>` with your AWS account ID and desired
+1. Clone the repo and open a terminal in the root directory
+2. `npm install -g cdk`
+3. `cdk bootstrap aws://<account-id>/<region>` (replace `<account-id>` and `<region>` with your AWS account ID and desired
 region)
-3. `npm install --workspaces`
+4. `npm install --workspaces`
 
 #### Build & Deployment
 
