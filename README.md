@@ -43,3 +43,9 @@ app's infrastructure)
 { "httpApiEndpoint": "<Grid.HttpApiEndpoint>" }
 ```
 2. `npm run start -w webapp`
+
+#### Uninstallation
+
+1. Delete your local clone of the repo
+2. `npm uninstall -g cdk`
+3. Delete the "Grid" CloudFormation stack from your AWS account
