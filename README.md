@@ -2,8 +2,8 @@
 
 ### About
 
-This is a minimal example of a fully self-contained TypeScript fullstack app. It an NPM workspaces monorepo that
-contains the following NPM packages:
+This is a minimal example of a fully self-contained TypeScript fullstack app. It's an NPM workspaces monorepo that
+contains the following NPM workspace packages:
 
 * **cdk** - A TypeScript AWS CDK app that defines all the infrastructure for the fullstack app
 * **common** - A TypeScript library package that contains code used by the other packages in the app
@@ -23,7 +23,7 @@ it is released into the public domain.
 #### Installation
 
 1. `npm install -g cdk`
-2. `cdk bootstrap aws://<account-id>/<region>` (replace `<account-id>` and `<region>` with your AWS account and desired
+2. `cdk bootstrap aws://<account-id>/<region>` (replace `<account-id>` and `<region>` with your AWS account ID and desired
 region)
 3. `npm install --workspaces`
 
