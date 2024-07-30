@@ -48,7 +48,8 @@ export function App(props: Props) {
 				})
 			}
 		</div>
-		<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontSize: 500,
-			color: BACKGROUND_SHADE_T1, opacity: 0.5, userSelect: "none"}}>GRID</div>
+		<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+			fontSize: Math.min(window.innerWidth, window.innerHeight)/3, color: BACKGROUND_SHADE_T1,
+			opacity: 0.5, userSelect: "none"}}>GRID</div>
 	</div>
 }
