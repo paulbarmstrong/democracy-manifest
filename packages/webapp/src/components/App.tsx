@@ -2,6 +2,7 @@ import { MouseEvent, useState } from "react"
 import { BACKGROUND_SHADE_T1, GRID_ITEM_SIZE_PX } from "../utilities/Constants"
 import { DynamicWebappConfig } from "common"
 import { http } from "../utilities/Http"
+import { useWindowSize } from "../hooks/useWindowSize"
 
 interface Props {
 	config: DynamicWebappConfig,
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export function App(props: Props) {
+	useWindowSize()
 	const numRows = Math.floor(window.innerHeight / GRID_ITEM_SIZE_PX)
 	const numColumns = Math.floor(window.innerWidth / GRID_ITEM_SIZE_PX)
 	const [gridItems, setGridItems] = useState<Set<string>>(props.initialGridItems)
