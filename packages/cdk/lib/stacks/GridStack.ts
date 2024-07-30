@@ -16,7 +16,9 @@ export class GridStack extends cdk.Stack {
 		const gridItemsTable = new dynamodb.Table(this, "GridItemsTable", {
 			tableName: "GridItems",
 			billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-			partitionKey: { name: "id", type: dynamodb.AttributeType.STRING }
+			partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
+			// PLEASE do not use RemovalPolicy.DESTROY on a table containing anything of substance!
+			removalPolicy: cdk.RemovalPolicy.DESTROY
 		})
 
 		const httpApiFunction = new lambda_nodejs.NodejsFunction(this, "HttpApiFunction", {
