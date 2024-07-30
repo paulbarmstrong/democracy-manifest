@@ -36,6 +36,9 @@ app's infrastructure)
 
 #### Building webapp locally
 
-1. Add the `Grid.HttpApiEndpoint` from the output of the cdk command to the `httpApiEndpoint` property value of
-`packages/webapp/public/config.json`
+1. Add `packages/webapp/public/config.json` containing this, where `<Grid.WebsiteUrl>` is the `Grid.WebsiteUrl` output from the previous command:
+
+```
+{ "httpApiEndpoint": "<Grid.WebsiteUrl>" }
+```
 2. `npm run start -w webapp`

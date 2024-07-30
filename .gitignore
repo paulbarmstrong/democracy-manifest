@@ -3,3 +3,4 @@ dist
 *.d.ts
 .cdk.staging
 cdk.out
+packages/webapp/public/config.json
