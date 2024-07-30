@@ -40,6 +40,7 @@ export class GridStack extends cdk.Stack {
 		}))
 
 		const httpApi = new apigw.HttpApi(this, "HttpApi", {
+			apiName: "GridHttpApi",
 			corsPreflight: {
 				allowHeaders: [
 					"Content-Type",
