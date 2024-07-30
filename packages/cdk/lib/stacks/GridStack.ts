@@ -16,8 +16,7 @@ export class GridStack extends cdk.Stack {
 		const gridItemsTable = new dynamodb.Table(this, "GridItemsTable", {
 			tableName: "GridItems",
 			billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-			partitionKey: { name: "userId", type: dynamodb.AttributeType.STRING },
-			sortKey: { name: "id", type: dynamodb.AttributeType.STRING }
+			partitionKey: { name: "id", type: dynamodb.AttributeType.STRING }
 		})
 
 		const httpApiFunction = new lambda_nodejs.NodejsFunction(this, "HttpApiFunction", {
@@ -88,6 +87,10 @@ export class GridStack extends cdk.Stack {
 
 		new cdk.CfnOutput(this, "HttpApiEndpoint", {
 			value: httpApi.apiEndpoint
+		})
+
+		new cdk.CfnOutput(this, "WebsiteDistributionDomainName", {
+			value: website.distribution.domainName
 		})
 	}
 }

@@ -10,7 +10,7 @@ export async function listGridItems(event: HttpApiEvent, optimus: OptimusDdbClie
 	})
 
 	return validateDataShape({
-		data: { gridItems: gridItems },
+		data: { gridItems: gridItems.map(item => item.id) },
 		shape: listGridItemsResponseShape
 	})
 }

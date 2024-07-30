@@ -1,7 +1,7 @@
 import { OptimisticLockError, OptimusDdbClient } from "optimus-ddb-client"
 import { validateDataShape } from "shape-tape"
 import { ClientError, HttpApiEvent } from "../utilities/Http"
-import { gridItemShape } from "common"
+import { GridItem, gridItemShape } from "common"
 import { gridItemsTable } from "../utilities/Tables"
 
 export async function createGridItem(event: HttpApiEvent, optimus: OptimusDdbClient) {
@@ -11,7 +11,7 @@ export async function createGridItem(event: HttpApiEvent, optimus: OptimusDdbCli
 		shapeValidationErrorOverride: e => new ClientError(e.message)
 	})
 
-	const gridItem = optimus.draftItem({
+	const gridItem: GridItem = optimus.draftItem({
 		table: gridItemsTable,
 		item: { id: body.id }
 	})

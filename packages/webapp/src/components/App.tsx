@@ -1,6 +1,7 @@
 import { MouseEvent, useState } from "react"
 import { BACKGROUND_SHADE_T1, GRID_ITEM_SIZE_PX } from "../utilities/Constants"
 import { DynamicWebappConfig } from "common"
+import { http } from "../utilities/Http"
 
 interface Props {
 	config: DynamicWebappConfig,
@@ -18,8 +19,16 @@ export function App(props: Props) {
 		const newGridItems = new Set(gridItems)
 		if (!gridItems.has(`${x},${y}`)) {
 			newGridItems.add(`${x},${y}`)
+			http(`${props.config.httpApiEndpoint}/create-grid-item`, {
+				method: "POST",
+				body: JSON.stringify({ id: `${x},${y}` })
+			})
 		} else {
 			newGridItems.delete(`${x},${y}`)
+			http(`${props.config.httpApiEndpoint}/delete-grid-item`, {
+				method: "POST",
+				body: JSON.stringify({ id: `${x},${y}` })
+			})
 		}
 		setGridItems(newGridItems)
 	}
