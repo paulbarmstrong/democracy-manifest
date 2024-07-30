@@ -89,8 +89,8 @@ export class GridStack extends cdk.Stack {
 			value: httpApi.apiEndpoint
 		})
 
-		new cdk.CfnOutput(this, "WebsiteDistributionDomainName", {
-			value: website.distribution.domainName
+		new cdk.CfnOutput(this, "WebsiteUrl", {
+			value: `https://${website.distribution.domainName}`
 		})
 	}
 }
