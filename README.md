@@ -36,9 +36,9 @@ app's infrastructure)
 
 #### Building webapp locally
 
-1. Add `packages/webapp/public/config.json` containing this, where `<Grid.WebsiteUrl>` is the `Grid.WebsiteUrl` output from the previous command:
+1. Add `packages/webapp/public/config.json` containing this, where `<Grid.HttpApiEndpoint>` is the `Grid.HttpApiEndpoint` output from the previous command:
 
 ```
-{ "httpApiEndpoint": "<Grid.WebsiteUrl>" }
+{ "httpApiEndpoint": "<Grid.HttpApiEndpoint>" }
 ```
 2. `npm run start -w webapp`
