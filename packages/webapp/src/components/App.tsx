@@ -14,8 +14,11 @@ export function App(props: Props) {
 	const [gridItems, setGridItems] = useState<Set<string>>(props.initialGridItems)
 
 	function onGridMouseDown(event: MouseEvent<HTMLDivElement>) {
-		const x = Math.ceil(event.clientX / GRID_ITEM_SIZE_PX)
-		const y = Math.ceil(event.clientY / GRID_ITEM_SIZE_PX)
+		const actualGridItemWidth = window.innerWidth / numColumns
+		const actualGridItemHeight = window.innerHeight / numRows
+
+		const x = Math.ceil(event.clientX / actualGridItemWidth)
+		const y = Math.ceil(event.clientY / actualGridItemHeight)
 		const newGridItems = new Set(gridItems)
 		if (!gridItems.has(`${x},${y}`)) {
 			newGridItems.add(`${x},${y}`)
@@ -45,6 +48,7 @@ export function App(props: Props) {
 				})
 			}
 		</div>
-		<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontSize: 500, color: BACKGROUND_SHADE_T1, opacity: 0.5, userSelect: "none"}}>GRID</div>
+		<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", fontSize: 500,
+			color: BACKGROUND_SHADE_T1, opacity: 0.5, userSelect: "none"}}>GRID</div>
 	</div>
 }
