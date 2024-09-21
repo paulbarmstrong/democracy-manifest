@@ -72,7 +72,7 @@ export class GridStack extends cdk.Stack {
 				exec("npx react-scripts build --color=always", {
 					env: { BUILD_PATH: outputDir },
 				})
-				exec(`rm ${outputDir}/config.json`)
+				exec(`rm -f ${outputDir}/config.json`)
 			},
 			deployTime: true
 		})
