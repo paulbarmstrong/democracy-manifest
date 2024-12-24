@@ -1,14 +1,13 @@
 import { OptimusDdbClient } from "optimus-ddb-client"
-import { validateDataShape } from "shape-tape"
 import { ClientError, HttpApiEvent } from "../utilities/Http"
-import { GridItem, gridItemShape } from "common"
+import { GridItem, gridItemZod, zodValidate } from "common"
 import { gridItemsTable } from "../utilities/Tables"
 
 export async function deleteGridItem(event: HttpApiEvent, optimus: OptimusDdbClient) {
-	const body = validateDataShape({
+	const body = zodValidate({
 		data: event.body,
-		shape: gridItemShape,
-		shapeValidationErrorOverride: e => new ClientError(e.message)
+		schema: gridItemZod,
+		errorMapping: e => new ClientError(e.message)
 	})
 
 	const gridItem: GridItem | undefined = await optimus.getItem({

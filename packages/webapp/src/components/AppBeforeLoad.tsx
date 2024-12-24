@@ -1,26 +1,25 @@
 import { useEffect, useState } from "react"
 import { App } from "./App"
 import { http } from "../utilities/Http"
-import { DynamicWebappConfig, dynamicWebappConfigShape, listGridItemsResponseShape } from "common"
-import { validateDataShape } from "shape-tape"
+import { DynamicWebappConfig, dynamicWebappConfigZod, listGridItemsResponseZod, zodValidate } from "common"
 
 export function AppBeforeLoad() {
 	const [config, setConfig] = useState<DynamicWebappConfig | undefined>(undefined)
 	const [gridItems, setGridItems] = useState<Set<string> | undefined>(undefined)
 	useEffect(() => {
 		(async () => {
-			setConfig(validateDataShape({
+			setConfig(zodValidate({
 				data: await http("/config.json"),
-				shape: dynamicWebappConfigShape
+				schema: dynamicWebappConfigZod
 			}))
 		})()
 	}, [])
 	useEffect(() => {
 		if (config !== undefined) {
 			(async () => {
-				const res = validateDataShape({
+				const res = zodValidate({
 					data: await http(`${config.httpApiEndpoint}/list-grid-items`),
-					shape: listGridItemsResponseShape
+					schema: listGridItemsResponseZod
 				})
 				setGridItems(new Set(res.gridItems))
 			})()

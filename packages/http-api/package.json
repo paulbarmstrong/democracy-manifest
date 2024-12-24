@@ -11,7 +11,7 @@
 		"@aws-sdk/client-ses": "^3.474.0",
 		"@aws-sdk/s3-presigned-post": "^3.395.0",
 		"common": "*",
-		"optimus-ddb-client": "1.0.43",
-		"shape-tape": "^1.0.22"
+		"optimus-ddb-client": "2.0.0",
+		"zod": "^3.24.1"
 	}
 }

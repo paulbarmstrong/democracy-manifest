@@ -25,21 +25,7 @@ export class GridStack extends cdk.Stack {
 			runtime: lambda.Runtime.NODEJS_20_X,
 			entry: "../http-api/src/index.ts",
 		})
-		httpApiFunction.addToRolePolicy(new iam.PolicyStatement({
-			actions: [
-				"dynamodb:GetItem",
-				"dynamodb:DeleteItem",
-				"dynamodb:PutItem",
-				"dynamodb:Scan",
-				"dynamodb:Query",
-				"dynamodb:UpdateItem",
-				"dynamodb:BatchWriteItem",
-				"dynamodb:BatchGetItem",
-				"dynamodb:DescribeTable",
-				"dynamodb:ConditionCheckItem"
-			],
-			resources: [gridItemsTable.tableArn, `${gridItemsTable.tableArn}/*`]
-		}))
+		gridItemsTable.grantReadWriteData(httpApiFunction)
 
 		const httpApi = new apigw.HttpApi(this, "HttpApi", {
 			apiName: "GridHttpApi",
