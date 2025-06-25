@@ -1,11 +1,12 @@
 import { Construct } from "constructs"
 import * as cdk from "aws-cdk-lib"
-import * as dynamodb from "aws-cdk-lib/aws-dynamodb"
 import * as lambda from "aws-cdk-lib/aws-lambda"
 import * as lambda_nodejs from "aws-cdk-lib/aws-lambda-nodejs"
-import * as iam from "aws-cdk-lib/aws-iam"
 import * as apigw from "aws-cdk-lib/aws-apigatewayv2"
 import * as apigwinteg from "aws-cdk-lib/aws-apigatewayv2-integrations"
+import * as route53 from "aws-cdk-lib/aws-route53"
+import * as acm from "aws-cdk-lib/aws-certificatemanager"
+import * as route53_targets from "aws-cdk-lib/aws-route53-targets"
 import { AssetWithBuild, StaticWebsite } from "@paulbarmstrong/cdk-static-website-from-asset"
 import { DynamicWebappConfig } from "common"
 
@@ -13,10 +14,41 @@ export class WebgemonyStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
 		super(scope, id, props)
 
+		const HOSTED_ZONE_ID: string | undefined = process.env.HOSTED_ZONE_ID
+		const HOSTED_ZONE_NAME: string | undefined = process.env.HOSTED_ZONE_NAME
+		const WEBGEMONY_DOMAIN: string | undefined = process.env.WEBGEMONY_DOMAIN
+
+		const hostedZone: route53.IHostedZone | undefined = HOSTED_ZONE_ID !== undefined ? (
+			route53.HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
+				hostedZoneId: HOSTED_ZONE_ID!,
+				zoneName: HOSTED_ZONE_NAME!
+			})
+		) : (
+			undefined
+		)
+
 		const httpApiFunction = new lambda_nodejs.NodejsFunction(this, "HttpApiFunction", {
 			runtime: lambda.Runtime.NODEJS_20_X,
 			entry: "../http-api/src/index.ts",
 		})
+
+		const httpApiCert: acm.Certificate | undefined = hostedZone !== undefined ? (
+			new acm.Certificate(this, "HttpApiCert", {
+				validation: acm.CertificateValidation.fromDns(hostedZone),
+				domainName: `api.${WEBGEMONY_DOMAIN!}`
+			})
+		) : (
+			undefined
+		)
+
+		const httpApiDomainName: apigw.DomainName | undefined = httpApiCert !== undefined ? (
+			new apigw.DomainName(this, "HttpApiDomainName", {
+				domainName: `api.${WEBGEMONY_DOMAIN!}`,
+				certificate: httpApiCert
+			})
+		) : (
+			undefined
+		)
 
 		const httpApi = new apigw.HttpApi(this, "HttpApi", {
 			apiName: "WebgemonyHttpApi",
@@ -34,8 +66,18 @@ export class WebgemonyStack extends cdk.Stack {
 					apigw.CorsHttpMethod.OPTIONS
 				],
 				allowOrigins: ["*"]
-			}
+			},
+			defaultDomainMapping: httpApiDomainName !== undefined ? { domainName: httpApiDomainName } : undefined,
 		})
+
+		if (httpApiDomainName !== undefined) {
+			const httpApiARecord = new route53.ARecord(this, "HttpApiARecord", {
+				zone: hostedZone!,
+				recordName: `api.${WEBGEMONY_DOMAIN!}`,
+				target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayv2DomainProperties(
+					httpApiDomainName.regionalDomainName, httpApiDomainName.regionalHostedZoneId))
+			})
+		}
 		
 		httpApi.addRoutes({
 			path: "/{api}",
@@ -55,10 +97,14 @@ export class WebgemonyStack extends cdk.Stack {
 		})
 		
 		const website = new StaticWebsite(this, "Website", {
-			asset: websiteAsset
+			asset: websiteAsset,
+			domains: hostedZone !== undefined ? [{domainName: WEBGEMONY_DOMAIN!, hostedZone}] : []
 		})
+
+		const httpApiEndpoint: string = hostedZone !== undefined ? `https://api.${WEBGEMONY_DOMAIN}` : httpApi.apiEndpoint
+
 		const dynamicWebappConfig: DynamicWebappConfig = {
-			httpApiEndpoint: httpApi.apiEndpoint
+			httpApiEndpoint
 		}
 		website.addObject({
 			key: "config.json",
@@ -66,7 +112,7 @@ export class WebgemonyStack extends cdk.Stack {
 		})
 
 		new cdk.CfnOutput(this, "HttpApiEndpoint", {
-			value: httpApi.apiEndpoint
+			value: httpApiEndpoint
 		})
 
 		new cdk.CfnOutput(this, "WebsiteUrl", {

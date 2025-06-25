@@ -1,7 +1,12 @@
 import { BACKGROUND_SHADE_T1 } from "../utilities/Constants"
 import { useWindowSize } from "../hooks/useWindowSize"
+import { DynamicWebappConfig } from "common"
 
-export function App() {
+interface Props {
+	config: DynamicWebappConfig,
+}
+
+export function App(props: Props) {
 	useWindowSize()
 
 	return <div>

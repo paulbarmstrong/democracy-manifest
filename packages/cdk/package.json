@@ -22,10 +22,11 @@
 		"typescript": "~4.9.5"
 	},
 	"dependencies": {
-		"aws-cdk-lib": "^2.121.1",
 		"@paulbarmstrong/cdk-static-website-from-asset": "^0.1.9-alpha",
+		"aws-cdk-lib": "^2.121.1",
 		"common": "*",
 		"constructs": "^10.3.0",
+		"dotenv": "^16.5.0",
 		"lodash": "^4.17.21"
 	},
 	"directories": {

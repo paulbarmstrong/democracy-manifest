@@ -1,5 +1,9 @@
 import * as z from "zod"
 
+export const dynamicWebappConfigZod = z.strictObject({
+	httpApiEndpoint: z.string()
+})
+
 export function zodValidate<T extends z.ZodTypeAny>(params: {
 	schema: T,
 	data: any,

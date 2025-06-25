@@ -4,3 +4,4 @@ dist
 .cdk.staging
 cdk.out
 packages/webapp/public/config.json
+.env
