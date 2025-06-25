@@ -1,7 +1,7 @@
 {
 	"name": "common",
 	"version": "1.0.0",
-	"license": "Unlicense",
+	"license": "MIT",
 	"main": "dist/index",
 	"typings": "dist/index",
 	"scripts": {

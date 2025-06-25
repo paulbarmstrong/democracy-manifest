@@ -1,7 +1,7 @@
 {
 	"name": "http-api",
 	"version": "1.0.0",
-	"license": "Unlicense",
+	"license": "MIT",
 	"main": "index.ts",
 	"devDependencies": {
 		"@types/aws-lambda": "^8.10.115"

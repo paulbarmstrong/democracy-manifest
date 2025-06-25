@@ -9,26 +9,17 @@ import * as apigwinteg from "aws-cdk-lib/aws-apigatewayv2-integrations"
 import { AssetWithBuild, StaticWebsite } from "@paulbarmstrong/cdk-static-website-from-asset"
 import { DynamicWebappConfig } from "common"
 
-export class GridStack extends cdk.Stack {
+export class WebgemonyStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
 		super(scope, id, props)
-
-		const gridItemsTable = new dynamodb.Table(this, "GridItemsTable", {
-			tableName: "GridItems",
-			billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-			partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
-			// PLEASE do not use RemovalPolicy.DESTROY on a table containing anything of substance!
-			removalPolicy: cdk.RemovalPolicy.DESTROY
-		})
 
 		const httpApiFunction = new lambda_nodejs.NodejsFunction(this, "HttpApiFunction", {
 			runtime: lambda.Runtime.NODEJS_20_X,
 			entry: "../http-api/src/index.ts",
 		})
-		gridItemsTable.grantReadWriteData(httpApiFunction)
 
 		const httpApi = new apigw.HttpApi(this, "HttpApi", {
-			apiName: "GridHttpApi",
+			apiName: "WebgemonyHttpApi",
 			corsPreflight: {
 				allowHeaders: [
 					"Content-Type",

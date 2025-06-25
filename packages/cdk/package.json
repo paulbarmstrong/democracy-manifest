@@ -1,7 +1,7 @@
 {
 	"name": "cdk",
 	"version": "1.0.0",
-	"license": "Unlicense",
+	"license": "MIT",
 	"bin": {
 		"cdk": "bin/cdk.js"
 	},
