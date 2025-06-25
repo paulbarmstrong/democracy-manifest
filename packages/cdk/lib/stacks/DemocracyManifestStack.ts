@@ -10,13 +10,13 @@ import * as route53_targets from "aws-cdk-lib/aws-route53-targets"
 import { AssetWithBuild, StaticWebsite } from "@paulbarmstrong/cdk-static-website-from-asset"
 import { DynamicWebappConfig } from "common"
 
-export class WebgemonyStack extends cdk.Stack {
+export class DemocracyManifestStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
 		super(scope, id, props)
 
 		const HOSTED_ZONE_ID: string | undefined = process.env.HOSTED_ZONE_ID
 		const HOSTED_ZONE_NAME: string | undefined = process.env.HOSTED_ZONE_NAME
-		const WEBGEMONY_DOMAIN: string | undefined = process.env.WEBGEMONY_DOMAIN
+		const DEMOCRACY_MANIFEST_DOMAIN: string | undefined = process.env.DEMOCRACY_MANIFEST_DOMAIN
 
 		const hostedZone: route53.IHostedZone | undefined = HOSTED_ZONE_ID !== undefined ? (
 			route53.HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
@@ -35,7 +35,7 @@ export class WebgemonyStack extends cdk.Stack {
 		const httpApiCert: acm.Certificate | undefined = hostedZone !== undefined ? (
 			new acm.Certificate(this, "HttpApiCert", {
 				validation: acm.CertificateValidation.fromDns(hostedZone),
-				domainName: `api.${WEBGEMONY_DOMAIN!}`
+				domainName: `api.${DEMOCRACY_MANIFEST_DOMAIN!}`
 			})
 		) : (
 			undefined
@@ -43,7 +43,7 @@ export class WebgemonyStack extends cdk.Stack {
 
 		const httpApiDomainName: apigw.DomainName | undefined = httpApiCert !== undefined ? (
 			new apigw.DomainName(this, "HttpApiDomainName", {
-				domainName: `api.${WEBGEMONY_DOMAIN!}`,
+				domainName: `api.${DEMOCRACY_MANIFEST_DOMAIN!}`,
 				certificate: httpApiCert
 			})
 		) : (
@@ -51,7 +51,7 @@ export class WebgemonyStack extends cdk.Stack {
 		)
 
 		const httpApi = new apigw.HttpApi(this, "HttpApi", {
-			apiName: "WebgemonyHttpApi",
+			apiName: "DemocracyManifestHttpApi",
 			corsPreflight: {
 				allowHeaders: [
 					"Content-Type",
@@ -73,7 +73,7 @@ export class WebgemonyStack extends cdk.Stack {
 		if (httpApiDomainName !== undefined) {
 			const httpApiARecord = new route53.ARecord(this, "HttpApiARecord", {
 				zone: hostedZone!,
-				recordName: `api.${WEBGEMONY_DOMAIN!}`,
+				recordName: `api.${DEMOCRACY_MANIFEST_DOMAIN!}`,
 				target: route53.RecordTarget.fromAlias(new route53_targets.ApiGatewayv2DomainProperties(
 					httpApiDomainName.regionalDomainName, httpApiDomainName.regionalHostedZoneId))
 			})
@@ -98,10 +98,10 @@ export class WebgemonyStack extends cdk.Stack {
 		
 		const website = new StaticWebsite(this, "Website", {
 			asset: websiteAsset,
-			domains: hostedZone !== undefined ? [{domainName: WEBGEMONY_DOMAIN!, hostedZone}] : []
+			domains: hostedZone !== undefined ? [{domainName: DEMOCRACY_MANIFEST_DOMAIN!, hostedZone}] : []
 		})
 
-		const httpApiEndpoint: string = hostedZone !== undefined ? `https://api.${WEBGEMONY_DOMAIN}` : httpApi.apiEndpoint
+		const httpApiEndpoint: string = hostedZone !== undefined ? `https://api.${DEMOCRACY_MANIFEST_DOMAIN}` : httpApi.apiEndpoint
 
 		const dynamicWebappConfig: DynamicWebappConfig = {
 			httpApiEndpoint

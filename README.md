@@ -1,4 +1,4 @@
-## webgemony
+## Democracy Manifest
 
 ### About
 
