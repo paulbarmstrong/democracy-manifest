@@ -2,4 +2,4 @@
 
 ### About
 
-This will be a web-based multiplayer asymmetric worker management game.
+This will be a web adaptation of a worker management board game.

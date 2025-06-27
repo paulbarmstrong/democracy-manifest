@@ -4,3 +4,8 @@ body {
 	'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
 	sans-serif;
 }
+
+.clickable {
+	cursor: pointer;
+	user-select: none;
+}
