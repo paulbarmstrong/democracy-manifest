@@ -1,4 +1,4 @@
-import { CompanyType, GameState, PlayerClass } from "./Types"
+import { CompanyType, GameState, Industry, PlayerClass } from "./Types"
 
 export const COMPANY_SIZE_PX = 250
 
@@ -6,97 +6,89 @@ export const MENU_WIDTH: string = "max(35vw, min(500px, 100%))"
 
 export const BACKGROUND_SHADE_T0 = "#374247"
 export const BACKGROUND_SHADE_T1 = "#2b3438"
-export const ACCENT_COLOR_SATURATION = 20
+export const ACCENT_COLOR_SATURATION = 25
 export const ACCENT_COLOR_LIGHTNESS = 40
+
+export const INDUSTRIES: Array<Industry> = [
+	{name: "Food", hue: 120},
+	{name: "Luxury", hue: 210},
+	{name: "Healthcare", hue: 0},
+	{name: "Education", hue: 30},
+	{name: "Media", hue: 260}
+]
 
 export const PLAYER_CLASSES: Array<PlayerClass> = [
 	{
 		name: "Working Class",
-		colorT0: "#ab4343",
-		hue: 4,
+		hue: 300,
 		maxCompanies: 3
 	}, {
 		name: "Middle Class",
-		colorT0: "#ab8f43",
-		hue: 44,
+		hue: 60,
 		maxCompanies: 8
 	}, {
 		name: "Capitalist Class",
-		colorT0: "#434dab",
-		hue: 234,
+		hue: 180,
 		maxCompanies: 12
 	}, {
 		name: "State",
-		colorT0: "#787878",
-		hue: 108,
 		maxCompanies: 9
 	}
 ]
 
 export const COMPANY_TYPES: Array<CompanyType> = [
 	{
+		name: "Clinic",
+		industry: "Healthcare",
+		production: 6,
+		wageLevels: [10, 20, 30],
+		workerSlots: [
+			{skilled: false},
+			{skilled: false},
+			{skilled: false, classRequirement: "Machine", productionBonus: 2}
+		]
+	},
+	{
 		name: "Shopping Mall",
 		industry: "Luxury",
 		production: 6,
-		wageLevels: {
-			low: 15,
-			medium: 20,
-			high: 25
-		},
+		wageLevels: [15, 20, 25],
 		workerSlots: [
-			{
-				skilled: true
-			},
-			{
-				skilled: false
-			},
-			{
-				skilled: false,
-				classRequirement: "Machine",
-				productionBonus: 2
-			}
+			{skilled: true},
+			{skilled: false},
+			{skilled: false, classRequirement: "Machine", productionBonus: 2}
 		]
 	},
 	{
 		name: "Convenience Store",
 		industry: "Food",
 		production: 2,
-		wageLevels: {
-			low: 6,
-			medium: 8,
-			high: 10
-		},
+		wageLevels: [6, 8, 10],
 		workerSlots: [
-			{
-				skilled: true,
-				classRequirement: "Middle Class",
-			},
-			{
-				skilled: false,
-				classRequirement: "Working Class",
-				productionBonus: 1
-			}
+			{skilled: true, classRequirement: "Middle Class"},
+			{skilled: false, classRequirement: "Working Class", productionBonus: 1}
 		]
 	},
 	{
 		name: "University",
 		industry: "Education",
 		production: 6,
-		wageLevels: {
-			low: 25,
-			medium: 30,
-			high: 35
-		},
+		wageLevels: [25, 30, 35],
 		workerSlots: [
-			{
-				skilled: true
-			},
-			{
-				skilled: false
-			},
-			{
-				skilled: false
-			}
+			{skilled: true},
+			{skilled: false},
+			{skilled: false}
+		]
+	},
+	{
+		name: "NPR",
+		industry: "Media",
+		production: 4,
+		wageLevels: [25, 30, 35],
+		workerSlots: [
+			{skilled: true},
+			{skilled: false},
+			{skilled: false}
 		]
 	}
 ]
@@ -114,13 +106,8 @@ export const GAME_STATE: GameState = {
 					name: "Convenience Store",
 					wageLevel: "low",
 					workers: [
-						{
-							class: "Middle Class",
-							skill: "Food"
-						},
-						{
-							class: "Working Class"
-						}
+						{class: "Middle Class", skill: "Food"},
+						{class: "Working Class"}
 					]
 				}
 			]
@@ -129,16 +116,19 @@ export const GAME_STATE: GameState = {
 			className: "Capitalist Class",
 			companies: [
 				{
+					name: "Clinic",
+					wageLevel: "medium",
+					workers: [
+						{class: "Middle Class"},
+						{class: "Middle Class", skill: "Media"}
+					]
+				},
+				{
 					name: "Shopping Mall",
 					wageLevel: "medium",
 					workers: [
-						{
-							class: "Working Class",
-							skill: "Luxury"
-						},
-						{
-							class: "Working Class"
-						}
+						{class: "Working Class", skill: "Luxury"},
+						{class: "Working Class", skill: "Healthcare"}
 					]
 				}
 			]
@@ -149,6 +139,15 @@ export const GAME_STATE: GameState = {
 				{
 					name: "University",
 					wageLevel: "medium",
+					workers: [
+						{class: "Middle Class", skill: "Education"},
+						{class: "Middle Class"},
+						{class: "Middle Class"}
+					]
+				},
+				{
+					name: "NPR",
+					wageLevel: "low",
 					workers: []
 				}
 			]

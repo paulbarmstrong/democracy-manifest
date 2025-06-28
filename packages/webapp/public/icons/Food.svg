@@ -1,0 +1,32 @@
+<svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg" version="1.1">
+
+ <g>
+  <title>Layer 1</title>
+  <g  id="layer2" >
+   <path stroke-width="6.1243" fill="#803300"  id="path4" d="m313.57369,271.76253l5.97081,-97.02562l28.36133,-105.98184c0,0 -10.44892,-71.64971 8.9562,-68.66431c19.40514,2.98541 16.41974,68.66429 16.41974,68.66429c0,0 -25.37594,76.12779 -26.86863,101.50374c-1.4927,25.37595 0,105.98186 0,105.98186"/>
+   <path stroke-width="6.1243" fill="#338000" id="path5" d="m325.51531,153.83908c0,0 -52.24457,13.43433 -86.57671,1.4927c-34.33215,-11.94162 -86.57673,-56.72268 -86.57673,-56.72268c0,0 83.59131,-13.43432 110.45995,-5.97082c26.86863,7.46353 62.69349,61.2008 62.69349,61.2008z"/>
+  </g>
+  <g id="layer1"  >
+   <g transform="matrix(1.62039 0 0 1.62039 -462.631 -104.676)" id="g5">
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="87.05346" cy="424.38435" cx="593.79476" id="path1"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="72.31425" cy="474.12919" cx="541.2863" id="path2"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="64.48405" cy="474.58979" cx="686.37539" id="path3"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="87.05346" cy="642.16346" cx="621.03542" id="path1-2"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="72.31425" cy="575.83698" cx="544.57576" id="path2-8"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="64.48405" cy="589.19447" cx="716.37966" id="path3-6"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="87.05346" cy="446.45619" cx="477.16115" id="path1-6"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="72.31425" cy="504.4918" cx="784.84218" id="path2-5"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="64.48405" cy="405.46275" cx="786.22396" id="path3-0"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="87.05346" cy="242.86894" cx="665.18929" id="path1-1"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="72.31425" cy="361.70384" cx="725.98854" id="path2-3"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="64.48405" cy="293.07438" cx="782.64235" id="path3-8"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="87.05346" cy="263.21034" cx="462.04482" id="path1-60"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="72.31425" cy="539.57057" cx="614.96413" id="path2-6"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="64.48405" cy="278.41017" cx="635.69112" id="path3-61"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="87.05346" cy="299.55555" cx="532.94719" id="path1-3"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="72.31425" cy="349.30039" cx="480.43874" id="path2-7"/>
+    <circle stroke-width="3.77953" stroke="#808080" fill="#99ff55" r="64.48405" cy="349.761" cx="625.52785" id="path3-88"/>
+   </g>
+  </g>
+ </g>
+</svg>

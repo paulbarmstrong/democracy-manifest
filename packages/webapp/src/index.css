@@ -9,3 +9,7 @@ body {
 	cursor: pointer;
 	user-select: none;
 }
+
+img.white-out {
+  filter: brightness(0) invert(1);
+}

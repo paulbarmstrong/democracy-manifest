@@ -21,6 +21,7 @@ export function interpolateHexColors(color0Hex: string, color1Hex: string, t: nu
 	return `#${interpolatedValues.map(x => x.toString(16).padStart(2, "0")).reduce((a, b) => a + b)}`
 }
 
-export function getColor(hue: number, darkness: number) {
-	return "#"+convert.hsl.hex([hue, ACCENT_COLOR_SATURATION, ACCENT_COLOR_LIGHTNESS - 5 * darkness])
+export function getColor(hue: number | undefined, darkness: number) {
+	const saturation: number = hue !== undefined ? ACCENT_COLOR_SATURATION : 0
+	return "#"+convert.hsl.hex([hue ?? 0, saturation, ACCENT_COLOR_LIGHTNESS - 5 * darkness])
 }

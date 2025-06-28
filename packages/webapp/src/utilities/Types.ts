@@ -1,21 +1,16 @@
-
+export type PlayerClassName = "Working Class" | "Middle Class" | "Capitalist Class" | "State"
 
 export type PlayerClass = {
-	name: string,
-	colorT0: string,
-	hue: number,
+	name: PlayerClassName,
+	hue?: number,
 	maxCompanies: number
 }
 
 export type CompanyType = {
 	name: string,
-	industry: Industry,
+	industry: IndustryName,
 	production: number,
-	wageLevels: {
-		low: number,
-		medium: number,
-		high: number
-	},
+	wageLevels: [number, number, number],
 	workerSlots: Array<{
 		classRequirement?: WorkerClass,
 		skilled: boolean,
@@ -25,11 +20,16 @@ export type CompanyType = {
 
 export type WorkerClass = "Middle Class" | "Working Class" | "Machine"
 
-export type Industry = "Food" | "Luxury" | "Healthcare" | "Education" | "Media"
+export type IndustryName = "Food" | "Luxury" | "Healthcare" | "Education" | "Media"
+
+export type Industry = {
+	name: IndustryName,
+	hue: number
+}
 
 export type Worker = {
 	class: WorkerClass
-	skill?: Industry
+	skill?: IndustryName
 }
 
 export type GameState = {

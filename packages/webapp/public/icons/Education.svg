@@ -1,0 +1,23 @@
+<svg width="1080" height="1080" xmlns="http://www.w3.org/2000/svg" version="1.1">
+
+ <g>
+  <title>Layer 1</title>
+  <g id="layer1"  >
+   <g id="g4">
+    <g id="g32"/>
+   </g>
+   <g transform="matrix(9.38017 0 0 9.38017 -397.6 -700.865)" id="g1">
+    <rect stroke-width="1.5" stroke="#1a1a1a" fill="#f2f2f2" y="112.50444" x="53.39111" height="5.15242" width="93.11153" id="rect1"/>
+    <rect stroke-width="1.5" stroke="#1a1a1a" fill="#f2f2f2" y="166.28355" x="53.73783" height="5.15242" width="93.11153" id="rect1-3"/>
+    <rect stroke-width="1.5" stroke="#1a1a1a" fill="#f2f2f2" y="177.12796" x="44.7629" height="9.48516" width="111.06138" id="rect1-3-7"/>
+    <path stroke-width="1.5" stroke="#1a1a1a" fill="#f2f2f2"  d="m99.94756,78.12916l-57.24042,28.70626l114.4571,0.73587l-57.21668,-29.44213zm-0.0005,15.39234c2.77308,0.00019 5.02098,2.24832 5.02088,5.0214c-0.00018,2.77288 -2.248,5.0207 -5.02088,5.02088c-2.77308,0.00011 -5.02122,-2.24779 -5.0214,-5.02088c-0.0001,-2.77328 2.24811,-5.0215 5.0214,-5.0214z" id="path4"/>
+    <g stroke-width="1.5" stroke="#1a1a1a" fill="#f2f2f2" id="g3">
+     <rect stroke-width="1.5" stroke="#1a1a1a" fill="#f2f2f2" y="120.62448" x="59.67853" height="43.05948" width="9.20074" id="rect2"/>
+     <rect stroke-width="1.5" stroke="#1a1a1a" fill="#f2f2f2" y="120.62448" x="83.44298" height="43.05948" width="9.20074" id="rect2-8"/>
+     <rect stroke-width="1.5" stroke="#1a1a1a" fill="#f2f2f2" y="120.62448" x="107.20742" height="43.05948" width="9.20074" id="rect2-5"/>
+     <rect stroke-width="1.5" stroke="#1a1a1a" fill="#f2f2f2" y="120.62448" x="130.97185" height="43.05948" width="9.20074" id="rect2-3"/>
+    </g>
+   </g>
+  </g>
+ </g>
+</svg>
