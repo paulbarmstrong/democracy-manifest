@@ -57,7 +57,7 @@ export function CompanyCard(props: Props) {
 										}
 										{
 											props.company.workers[workerIndex] !== undefined && props.company.workers[workerIndex].class !== "Machine" ? (
-												<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 30, height: 30, backgroundColor: getWorkerColor(props.company.workers[workerIndex]), borderRadius: workerSlot.classRequirement === "Middle Class" ? "50%" : 4, borderWidth: 2, borderColor: "white", borderStyle: "solid"}}/>
+												<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 30, height: 30, backgroundColor: getWorkerColor(props.company.workers[workerIndex]), borderRadius: props.company.workers[workerIndex].class === "Middle Class" ? "50%" : 4, borderWidth: 2, borderColor: "white", borderStyle: "solid"}}/>
 											) : (
 												undefined
 											)
