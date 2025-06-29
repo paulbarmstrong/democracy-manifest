@@ -35,15 +35,15 @@ export function CompanyCard(props: Props) {
 									const workerIndex = (isMainWorkerSlotGroup ? 0 : mainWorkerSlots.length) + i
 									return <div style={{width: 60, height: 60, display: "flex", justifyContent: "center", alignItems: "center", position: "relative"}}>
 										{
-											[undefined, "Working Class"].includes(workerSlot.classRequirement) ? (
+											[undefined, "Middle Class"].includes(workerSlot.classRequirement) ? (
 												<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: workerSlot.classRequirement ? 60 : 50, height: workerSlot.classRequirement ? 60 : 50, backgroundColor: getColor(workerSlot.skilled ? industry.hue : undefined, -1), borderRadius: 4}}/>
 											) : (
 												undefined
 											)
 										}
 										{
-											[undefined, "Middle Class"].includes(workerSlot.classRequirement) ? (
-												<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 60, height: 60, backgroundColor: getColor(workerSlot.skilled ? industry.hue : undefined, -1), borderRadius: workerSlot.classRequirement === "Working Class" ? 4 : "50%"}}/>
+											[undefined, "Working Class"].includes(workerSlot.classRequirement) ? (
+												<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 60, height: 60, backgroundColor: getColor(workerSlot.skilled ? industry.hue : undefined, -1), borderRadius: workerSlot.classRequirement === "Middle Class" ? 4 : "50%"}}/>
 											) : (
 												undefined
 											)
@@ -57,7 +57,7 @@ export function CompanyCard(props: Props) {
 										}
 										{
 											props.company.workers[workerIndex] !== undefined && props.company.workers[workerIndex].class !== "Machine" ? (
-												<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 30, height: 30, backgroundColor: getWorkerColor(props.company.workers[workerIndex]), borderRadius: props.company.workers[workerIndex].class === "Middle Class" ? "50%" : 4, borderWidth: 2, borderColor: "white", borderStyle: "solid"}}/>
+												<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 30, height: 30, backgroundColor: getWorkerColor(props.company.workers[workerIndex]), borderRadius: props.company.workers[workerIndex].class === "Working Class" ? "50%" : 4, borderWidth: 2, borderColor: "white", borderStyle: "solid"}}/>
 											) : (
 												undefined
 											)
