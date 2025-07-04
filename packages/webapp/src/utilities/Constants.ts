@@ -1,13 +1,13 @@
 import { CompanyType, GameState, Industry, PlayerClass } from "./Types"
 
-export const COMPANY_SIZE_PX = 250
+export const COMPANY_SIZE_PX = 220
 
 export const MENU_WIDTH: string = "max(35vw, min(500px, 100%))"
 
 export const BACKGROUND_SHADE_T0 = "#374247"
 export const BACKGROUND_SHADE_T1 = "#2b3438"
 export const ACCENT_COLOR_SATURATION = 25
-export const ACCENT_COLOR_LIGHTNESS = 40
+export const ACCENT_COLOR_LIGHTNESS = 45
 
 export const INDUSTRIES: Array<Industry> = [
 	{name: "Food", hue: 120},
@@ -21,7 +21,7 @@ export const PLAYER_CLASSES: Array<PlayerClass> = [
 	{
 		name: "Working Class",
 		hue: 300,
-		maxCompanies: 3
+		maxCompanies: 2
 	}, {
 		name: "Middle Class",
 		hue: 60,
@@ -41,6 +41,7 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 		name: "Clinic",
 		industry: "Healthcare",
 		production: 6,
+		price: 16,
 		wageLevels: [10, 20, 30],
 		workerSlots: [
 			{skilled: false},
@@ -52,6 +53,7 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 		name: "Shopping Mall",
 		industry: "Luxury",
 		production: 6,
+		price: 16,
 		wageLevels: [15, 20, 25],
 		workerSlots: [
 			{skilled: true},
@@ -63,6 +65,7 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 		name: "Convenience Store",
 		industry: "Food",
 		production: 2,
+		price: 14,
 		wageLevels: [6, 8, 10],
 		workerSlots: [
 			{skilled: true, classRequirement: "Middle Class"},
@@ -73,6 +76,7 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 		name: "University",
 		industry: "Education",
 		production: 6,
+		price: 30,
 		wageLevels: [25, 30, 35],
 		workerSlots: [
 			{skilled: true},
@@ -84,6 +88,7 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 		name: "NPR",
 		industry: "Media",
 		production: 4,
+		price: 30,
 		wageLevels: [25, 30, 35],
 		workerSlots: [
 			{skilled: true},
@@ -104,10 +109,10 @@ export const GAME_STATE: GameState = {
 			companies: [
 				{
 					name: "Convenience Store",
-					wageLevel: "low",
+					wageLevel: 0,
 					workers: [
-						{class: "Middle Class", skill: "Food"},
-						{class: "Working Class"}
+						{class: "Middle Class", skill: "Food", committed: false},
+						{class: "Working Class", committed: false}
 					]
 				}
 			]
@@ -117,18 +122,19 @@ export const GAME_STATE: GameState = {
 			companies: [
 				{
 					name: "Clinic",
-					wageLevel: "medium",
+					wageLevel: 1,
 					workers: [
-						{class: "Middle Class"},
-						{class: "Middle Class", skill: "Media"}
+						{class: "Middle Class", committed: true},
+						{class: "Middle Class", skill: "Media", committed: true}
 					]
 				},
 				{
 					name: "Shopping Mall",
-					wageLevel: "medium",
+					wageLevel: 1,
 					workers: [
-						{class: "Working Class", skill: "Luxury"},
-						{class: "Working Class", skill: "Healthcare"}
+						{class: "Working Class", skill: "Luxury", committed: false},
+						{class: "Working Class", skill: "Healthcare", committed: false},
+						{class: "Machine", committed: false}
 					]
 				}
 			]
@@ -138,16 +144,16 @@ export const GAME_STATE: GameState = {
 			companies: [
 				{
 					name: "University",
-					wageLevel: "medium",
+					wageLevel: 1,
 					workers: [
-						{class: "Middle Class", skill: "Education"},
-						{class: "Middle Class"},
-						{class: "Middle Class"}
+						{class: "Middle Class", skill: "Education", committed: false},
+						{class: "Middle Class", committed: false},
+						{class: "Middle Class", committed: false}
 					]
 				},
 				{
 					name: "NPR",
-					wageLevel: "low",
+					wageLevel: 0,
 					workers: []
 				}
 			]

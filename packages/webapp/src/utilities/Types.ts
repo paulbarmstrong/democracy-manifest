@@ -10,6 +10,7 @@ export type CompanyType = {
 	name: string,
 	industry: IndustryName,
 	production: number,
+	price: number,
 	wageLevels: [number, number, number],
 	workerSlots: Array<{
 		classRequirement?: WorkerClass,
@@ -29,16 +30,19 @@ export type Industry = {
 
 export type Worker = {
 	class: WorkerClass
-	skill?: IndustryName
+	skill?: IndustryName,
+	committed: boolean
+}
+
+export type Company = {
+	name: string,
+	wageLevel: number,
+	workers: Array<Worker>
 }
 
 export type GameState = {
 	players: Array<{
 		className: "Working Class" | "Middle Class" | "Capitalist Class" | "State",
-		companies: Array<{
-			name: string,
-			wageLevel: "low" | "medium" | "high",
-			workers: Array<Worker>
-		}>
+		companies: Array<Company>
 	}>
 }
