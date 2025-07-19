@@ -14,7 +14,7 @@ export function CompanyCard(props: Props) {
 	const industry = INDUSTRIES.find(industry => industry.name === companyType.industry)!
 	const mainWorkerSlots = companyType.workerSlots.filter(workerSlot => workerSlot.productionBonus === undefined)
 	const bonusWorkerSlots = companyType.workerSlots.filter(workerSlot => workerSlot.productionBonus !== undefined)
-	return <div style={{position: "relative", width: COMPANY_SIZE_PX, height: COMPANY_SIZE_PX, backgroundColor: getColor(industry.hue, 0), boxSizing: "border-box"}}>
+	return <div style={{position: "relative", width: COMPANY_SIZE_PX, height: COMPANY_SIZE_PX, backgroundColor: getColor(industry.hue, 0), boxSizing: "border-box", borderRadius: 4}}>
 		<div style={{position: "absolute", top: 0, right: 0, borderRadius: 4, backgroundColor: getColor(industry.hue, 1), padding: 4, fontSize: "small"}}>${companyType.price}</div>
 		<div style={{width: "100%", height: "100%", backgroundColor: getColor(industry.hue, 0), display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center", borderRadius: 4, padding: 10, boxSizing: "border-box"}}>
 			<span>{props.company.name}</span>

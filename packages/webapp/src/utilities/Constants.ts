@@ -99,7 +99,7 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 ]
 
 export const GAME_STATE: GameState = {
-	players: [
+	classes: [
 		{
 			className: "Working Class",
 			companies: []

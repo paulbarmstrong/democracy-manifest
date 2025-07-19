@@ -40,9 +40,11 @@ export type Company = {
 	workers: Array<Worker>
 }
 
+export type ClassState = {
+	className: PlayerClassName,
+	companies: Array<Company>
+}
+
 export type GameState = {
-	players: Array<{
-		className: "Working Class" | "Middle Class" | "Capitalist Class" | "State",
-		companies: Array<Company>
-	}>
+	classes: Array<ClassState>
 }
