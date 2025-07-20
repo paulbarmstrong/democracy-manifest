@@ -1,5 +1,7 @@
 import convert from "color-convert"
 import { ACCENT_COLOR_LIGHTNESS, ACCENT_COLOR_SATURATION, BACKGROUND_SHADE_T0, BACKGROUND_SHADE_T1 } from "./Constants"
+import { Worker } from "./Types"
+import { getIndustry } from "./Game"
 
 export function getShade(darkness: number): string {
 	return interpolateHexColors(BACKGROUND_SHADE_T0, BACKGROUND_SHADE_T1, darkness)
@@ -24,4 +26,12 @@ export function interpolateHexColors(color0Hex: string, color1Hex: string, t: nu
 export function getColor(hue: number | undefined, darkness: number) {
 	const saturation: number = hue !== undefined ? ACCENT_COLOR_SATURATION : 0
 	return "#"+convert.hsl.hex([hue ?? 0, saturation, ACCENT_COLOR_LIGHTNESS - 5 * darkness])
+}
+
+export function getWorkerColor(worker: Worker): string {
+	if (worker.skill !== undefined) {
+		return getColor(getIndustry(worker.skill).hue, 0)
+	} else {
+		return getColor(undefined, 0)
+	}
 }

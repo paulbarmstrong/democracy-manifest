@@ -14,25 +14,89 @@ export const INDUSTRIES: Array<Industry> = [
 	{name: "Luxury", hue: 210},
 	{name: "Healthcare", hue: 0},
 	{name: "Education", hue: 30},
-	{name: "Media", hue: 260}
+	{name: "Influence", hue: 260}
 ]
+
+export const WAREHOUSE_CAPACITIES = {
+	Food: 8,
+	Luxury: 12,
+	Healthcare: 12,
+	Education: 8,
+	Influence: 0
+}
 
 export const PLAYER_CLASSES: Array<PlayerClass> = [
 	{
 		name: "Working Class",
 		hue: 300,
-		maxCompanies: 2
+		maxCompanies: 2,
+		baseStorages: {
+			Food: 0,
+			Luxury: 0,
+			Education: 0,
+			Healthcare: 0,
+			Influence: 0
+		},
+		storagePriceOptions: {
+			Food: [],
+			Luxury: [],
+			Education: [],
+			Healthcare: [],
+			Influence: []
+		}
 	}, {
 		name: "Middle Class",
 		hue: 60,
-		maxCompanies: 8
+		maxCompanies: 8,
+		baseStorages: {
+			Food: 8,
+			Luxury: 8,
+			Education: 8,
+			Healthcare: 8,
+			Influence: 0
+		},
+		storagePriceOptions: {
+			Food: [9, 12, 15],
+			Luxury: [5, 8, 10],
+			Education: [5, 8, 10],
+			Healthcare: [5, 8, 10],
+			Influence: []
+		}
 	}, {
 		name: "Capitalist Class",
 		hue: 180,
-		maxCompanies: 12
+		maxCompanies: 12,
+		baseStorages: {
+			Food: 8,
+			Luxury: 12,
+			Education: 12,
+			Healthcare: 12,
+			Influence: 0
+		},
+		storagePriceOptions: {
+			Food: [9, 12, 15],
+			Luxury: [5, 8, 10],
+			Education: [5, 8, 10],
+			Healthcare: [5, 8, 10],
+			Influence: []
+		}
 	}, {
 		name: "State",
-		maxCompanies: 9
+		maxCompanies: 9,
+		baseStorages: {
+			Food: 6,
+			Luxury: 6,
+			Education: 6,
+			Healthcare: 6,
+			Influence: 6
+		},
+		storagePriceOptions: {
+			Food: [12],
+			Luxury: [8],
+			Education: [0, 5, 10],
+			Healthcare: [0, 5, 10],
+			Influence: [10]
+		}
 	}
 ]
 
@@ -86,7 +150,7 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 	},
 	{
 		name: "NPR",
-		industry: "Media",
+		industry: "Influence",
 		production: 4,
 		price: 30,
 		wageLevels: [25, 30, 35],
@@ -102,10 +166,28 @@ export const GAME_STATE: GameState = {
 	classes: [
 		{
 			className: "Working Class",
+			cash: 20,
+			storedResources: {
+				Food: {quantity: 0, price: 0},
+				Luxury: {quantity: 0, price: 0},
+				Healthcare: {quantity: 0, price: 0},
+				Education: {quantity: 0, price: 0},
+				Influence: {quantity: 0, price: 0}
+			},
+			warehouses: [],
 			companies: []
 		},
 		{
 			className: "Middle Class",
+			cash: 40,
+			storedResources: {
+				Food: {quantity: 2, price: 12},
+				Luxury: {quantity: 0, price: 8},
+				Healthcare: {quantity: 0, price: 8},
+				Education: {quantity: 0, price: 8},
+				Influence: {quantity: 0, price: 0}
+			},
+			warehouses: [],
 			companies: [
 				{
 					name: "Convenience Store",
@@ -119,13 +201,22 @@ export const GAME_STATE: GameState = {
 		},
 		{
 			className: "Capitalist Class",
+			cash: 60,
+			storedResources: {
+				Food: {quantity: 2, price: 12},
+				Luxury: {quantity: 25, price: 8},
+				Healthcare: {quantity: 0, price: 8},
+				Education: {quantity: 0, price: 8},
+				Influence: {quantity: 0, price: 0}
+			},
+			warehouses: ["Luxury", "Luxury"],
 			companies: [
 				{
 					name: "Clinic",
 					wageLevel: 1,
 					workers: [
 						{class: "Middle Class", committed: true},
-						{class: "Middle Class", skill: "Media", committed: true}
+						{class: "Middle Class", skill: "Influence", committed: true}
 					]
 				},
 				{
@@ -141,6 +232,15 @@ export const GAME_STATE: GameState = {
 		},
 		{
 			className: "State",
+			cash: 50,
+			storedResources: {
+				Food: {quantity: 0, price: 12},
+				Luxury: {quantity: 0, price: 8},
+				Healthcare: {quantity: 0, price: 5},
+				Education: {quantity: 6, price: 5},
+				Influence: {quantity: 0, price: 10}
+			},
+			warehouses: [],
 			companies: [
 				{
 					name: "University",

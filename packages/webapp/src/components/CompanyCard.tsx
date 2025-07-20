@@ -1,9 +1,9 @@
 import { sum } from "lodash"
-import { getColor } from "../utilities/Color"
+import { getColor, getWorkerColor } from "../utilities/Color"
 import { COMPANY_SIZE_PX, COMPANY_TYPES, INDUSTRIES } from "../utilities/Constants"
 import { Company, WorkerClass } from "../utilities/Types"
-import { getWorkerColor } from "../utilities/Misc"
 import { RadioSelector } from "./RadioSelector"
+import { IndustryIcon } from "./IndustryIcon"
 
 interface Props {
 	company: Company
@@ -77,7 +77,7 @@ export function CompanyCard(props: Props) {
 								<img className="white-out" src="icons/CurlyBracket.svg" style={{width: workerSlotsGroup.length*60, height: 5}}/>
 								<div style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 2, width: workerSlotsGroup.length*60}}>
 									<span>{isMainWorkerSlotGroup ? companyType.production : `+${sum(workerSlotsGroup.map(x => x.productionBonus))}`}</span>
-									<img className="white-out" src={`icons/${industry.name}.svg`} style={{width: 24, height: 24}}/>
+									<IndustryIcon industryName={companyType.industry}/>
 								</div>
 								{
 									takesWage ? (
@@ -88,6 +88,7 @@ export function CompanyCard(props: Props) {
 												onChange={() => undefined}
 												value={props.company.wageLevel}
 												radioButtonSize={16}
+												active={false}
 											/>
 										</div>
 									) : (
