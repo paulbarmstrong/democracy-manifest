@@ -167,25 +167,42 @@ export const GAME_STATE: GameState = {
 		{
 			className: "Working Class",
 			cash: 20,
-			storedResources: {
+			storedGoods: {
 				Food: {quantity: 0, price: 0},
 				Luxury: {quantity: 0, price: 0},
 				Healthcare: {quantity: 0, price: 0},
 				Education: {quantity: 0, price: 0},
 				Influence: {quantity: 0, price: 0}
 			},
-			warehouses: [],
-			companies: []
+			consumableGoods: {
+				Food: 0,
+				Luxury: 2,
+				Healthcare: 0,
+				Education: 0,
+				Influence: 0
+			},
+			companies: [],
+			prosperity: 0,
+			unionLeaders: {
+				Food: {class: "Working Class", skill: "Food", committed: false}
+			}
 		},
 		{
 			className: "Middle Class",
 			cash: 40,
-			storedResources: {
+			storedGoods: {
 				Food: {quantity: 2, price: 12},
 				Luxury: {quantity: 0, price: 8},
 				Healthcare: {quantity: 0, price: 8},
 				Education: {quantity: 0, price: 8},
 				Influence: {quantity: 0, price: 0}
+			},
+			consumableGoods: {
+				Food: 0,
+				Luxury: 0,
+				Healthcare: 3,
+				Education: 3,
+				Influence: 0
 			},
 			warehouses: [],
 			companies: [
@@ -197,17 +214,25 @@ export const GAME_STATE: GameState = {
 						{class: "Working Class", committed: false}
 					]
 				}
-			]
+			],
+			prosperity: 0,
 		},
 		{
 			className: "Capitalist Class",
 			cash: 60,
-			storedResources: {
+			storedGoods: {
 				Food: {quantity: 2, price: 12},
 				Luxury: {quantity: 25, price: 8},
 				Healthcare: {quantity: 0, price: 8},
 				Education: {quantity: 0, price: 8},
 				Influence: {quantity: 0, price: 0}
+			},
+			consumableGoods: {
+				Food: 0,
+				Luxury: 0,
+				Healthcare: 0,
+				Education: 0,
+				Influence: 5
 			},
 			warehouses: ["Luxury", "Luxury"],
 			companies: [
@@ -228,19 +253,28 @@ export const GAME_STATE: GameState = {
 						{class: "Machine", committed: false}
 					]
 				}
-			]
+			],
+			capital: 0,
+			machines: 0,
+			wealth: 0
 		},
 		{
 			className: "State",
 			cash: 50,
-			storedResources: {
+			storedGoods: {
 				Food: {quantity: 0, price: 12},
 				Luxury: {quantity: 0, price: 8},
 				Healthcare: {quantity: 0, price: 5},
 				Education: {quantity: 6, price: 5},
 				Influence: {quantity: 0, price: 10}
 			},
-			warehouses: [],
+			consumableGoods: {
+				Food: 0,
+				Luxury: 0,
+				Healthcare: 0,
+				Education: 0,
+				Influence: 0
+			},
 			companies: [
 				{
 					name: "University",
@@ -256,7 +290,20 @@ export const GAME_STATE: GameState = {
 					wageLevel: 0,
 					workers: []
 				}
-			]
+			],
+			favor: {
+				"Working Class": 0,
+				"Middle Class": 0,
+				"Capitalist Class": 0
+			}
 		}
+	],
+	unemployedWorkers: [
+		{class: "Middle Class", skill: "Education", committed: false},
+		{class: "Middle Class", skill: "Influence", committed: false},
+		{class: "Middle Class", committed: false},
+		{class: "Working Class", skill: "Luxury", committed: false},
+		{class: "Working Class", committed: false},
+		{class: "Working Class", committed: false}
 	]
 }

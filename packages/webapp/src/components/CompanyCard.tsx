@@ -1,9 +1,10 @@
 import { sum } from "lodash"
-import { getColor, getWorkerColor } from "../utilities/Color"
+import { getColor } from "../utilities/Color"
 import { COMPANY_SIZE_PX, COMPANY_TYPES, INDUSTRIES } from "../utilities/Constants"
 import { Company, WorkerClass } from "../utilities/Types"
 import { RadioSelector } from "./RadioSelector"
 import { IndustryIcon } from "./IndustryIcon"
+import { WorkerView } from "./WorkerView"
 
 interface Props {
 	company: Company
@@ -56,15 +57,8 @@ export function CompanyCard(props: Props) {
 											)
 										}
 										{
-											props.company.workers[workerIndex] !== undefined && props.company.workers[workerIndex].class !== "Machine" ? (
-												<div style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 30, height: 30, backgroundColor: getWorkerColor(props.company.workers[workerIndex]), borderRadius: props.company.workers[workerIndex].class === "Working Class" ? "50%" : 4, borderWidth: 2, borderColor: "white", borderStyle: "solid"}}/>
-											) : (
-												undefined
-											)
-										}
-										{
-											props.company.workers[workerIndex] !== undefined && props.company.workers[workerIndex].committed ? (
-												<span className="material-symbols-outlined" style={{position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", color: "white"}}>handshake</span>
+											props.company.workers[workerIndex] !== undefined ? (
+												<WorkerView worker={props.company.workers[workerIndex]}/>
 											) : (
 												undefined
 											)

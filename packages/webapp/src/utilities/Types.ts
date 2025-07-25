@@ -54,20 +54,60 @@ export type Company = {
 	workers: Array<Worker>
 }
 
-export type ClassState = {
+type CommonClassState = {
 	className: PlayerClassName,
 	cash: number,
-	storedResources: {
-		Food: {quantity: number, price: number}
-		Luxury: {quantity: number, price: number}
-		Healthcare: {quantity: number, price: number}
-		Education: {quantity: number, price: number}
+	storedGoods: {
+		Food: {quantity: number, price: number},
+		Luxury: {quantity: number, price: number},
+		Healthcare: {quantity: number, price: number},
+		Education: {quantity: number, price: number},
 		Influence: {quantity: number, price: number}
+	},
+	consumableGoods: {
+		Food: number,
+		Luxury: number,
+		Healthcare: number,
+		Education: number,
+		Influence: number
 	}
-	warehouses: Array<Exclude<IndustryName, "Influence">>,
-	companies: Array<Company>,
+	companies: Array<Company>
+}
+
+export type WorkingClassState = CommonClassState & {
+	prosperity: number,
+	unionLeaders: {
+		Food?: Worker,
+		Luxury?: Worker,
+		Healthcare?: Worker,
+		Education?: Worker,
+		Influence?: Worker
+	}
+}
+
+export type MiddleClassState = CommonClassState & {
+	prosperity: number,
+	warehouses: Array<Exclude<IndustryName, "Influence">>
+}
+
+export type CapitalistClassState = CommonClassState & {
+	capital: number,
+	machines: number,
+	wealth: number,
+	warehouses: Array<Exclude<IndustryName, "Influence">>
+}
+
+export type ClassState = WorkingClassState | MiddleClassState | CapitalistClassState | StateClassState
+
+export type StateClassState = CommonClassState & {
+	favor: {
+		"Working Class": number,
+		"Middle Class": number,
+		"Capitalist Class": number
+	}
 }
 
 export type GameState = {
-	classes: Array<ClassState>
+	classes: [WorkingClassState, MiddleClassState, CapitalistClassState, StateClassState],
+	unemployedWorkers: Array<Worker>
 }
