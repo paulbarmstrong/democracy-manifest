@@ -1,10 +1,10 @@
 import { range } from "lodash"
-import { getColor } from "../utilities/Color"
-import { CapitalistClassState, GameState, PlayerClass, Worker, WorkerClass, WorkingClassState } from "../utilities/Types"
-import { COMPANY_SIZE_PX, INDUSTRIES } from "../utilities/Constants"
+import { getColor, getPlayerColor } from "../utilities/Color"
+import { CapitalistClassState, GameState, PlayerClass, PlayerClassName, StateClassState, Worker, WorkingClassState } from "../utilities/Types"
+import { COMPANY_SIZE_PX, INDUSTRIES, WEALTH_TIER_THRESHOLDS } from "../utilities/Constants"
 import { CompanyCard } from "./CompanyCard"
 import { IndustryIcon } from "./IndustryIcon"
-import { getMaxStorage } from "../utilities/Game"
+import { capitalToWealthTier, getMaxStorage } from "../utilities/Game"
 import { RadioSelector } from "./RadioSelector"
 import { Details } from "./Details"
 import { WorkerView } from "./WorkerView"
@@ -98,6 +98,52 @@ export function ClassView(props: Props) {
 				undefined
 			)},
 			{name: "Capital", content: (classState as CapitalistClassState).capital !== undefined ? `$${(classState as CapitalistClassState).capital}` : undefined},
+			{name: "Wealth", content: (classState as CapitalistClassState).capital !== undefined ? (
+				<div style={{display: "flex", flexDirection: "column", gap: 5}}>
+					<div style={{display: "flex", gap: 2, borderRadius: 4, overflow: "hidden"}}>
+						{
+							WEALTH_TIER_THRESHOLDS.map((capitalThreshold, wealthTier) => <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: 5, paddingTop: 10, paddingBottom: 10, position: "relative", width: 24, gap: 5, backgroundColor: getPlayerColor("Capitalist Class", 2)}}>
+								<span>{wealthTier+1}</span>
+								<span style={{fontSize: "small"}}>{`$${capitalThreshold}`}</span>
+							</div>)
+						}
+					</div>
+					<div style={{width: "100%", position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: getPlayerColor("Capitalist Class", 2), borderRadius: 4, overflow: "hidden"}}>
+						<div style={{position: "absolute", top: 0, left: 0, height: "100%", width: `${100 * (capitalToWealthTier((classState as CapitalistClassState).capital)/WEALTH_TIER_THRESHOLDS.length)}%`, backgroundColor: getPlayerColor("Capitalist Class", 1)}}/>
+						<span style={{zIndex: 1, padding: 10}}>Current:</span>
+						<span style={{zIndex: 1, padding: 10}}>{capitalToWealthTier((classState as CapitalistClassState).capital)}/{WEALTH_TIER_THRESHOLDS.length}</span>
+					</div>
+					<div style={{width: "100%", position: "relative", display: "flex", justifyContent: "space-between", alignItems: "center", backgroundColor: getPlayerColor("Capitalist Class", 2), borderRadius: 4, overflow: "hidden"}}>
+						<div style={{position: "absolute", top: 0, left: 0, height: "100%", width: `${100 * ((classState as CapitalistClassState).peakWealthTier/WEALTH_TIER_THRESHOLDS.length)}%`, backgroundColor: getPlayerColor("Capitalist Class", 1)}}/>
+						<span style={{zIndex: 1, padding: 10}}>Peak:</span>
+						<span style={{zIndex: 1, padding: 10}}>{(classState as CapitalistClassState).peakWealthTier}/{WEALTH_TIER_THRESHOLDS.length}</span>
+					</div>
+				</div>
+			) : (
+				undefined
+			)},
+			{name: "Machines", content: (classState as CapitalistClassState).machines > 0? (
+				<div style={{display: "flex", gap: 10}}>
+					{
+						range(0, (classState as CapitalistClassState).machines).map(_ => <span className="material-symbols-outlined" style={{fontSize: 60, color: "white"}}>settings</span>)
+					}
+				</div>
+			) : (
+				undefined
+			)},
+			{name: "Credibility", content: (classState as StateClassState).credibility !== undefined ? (
+				<div style={{display: "flex", flexDirection: "column", gap: 5}}>
+					{
+						Object.entries((classState as StateClassState).credibility).map(credEntry => <div style={{display: "flex", justifyContent: "space-between", gap: 100, backgroundColor: getPlayerColor(credEntry[0] as PlayerClassName, 1), borderRadius: 4, overflow: "hidden", position: "relative"}}>
+							<div style={{position: "absolute", top: 0, left: 0, height: "100%", width: `${100 * (credEntry[1]/10)}%`, backgroundColor: getPlayerColor(credEntry[0] as PlayerClassName, 0)}}/>
+							<span style={{zIndex: 1, padding: 10}}>{credEntry[0]}:</span>
+							<span style={{zIndex: 1, padding: 10}}>{credEntry[1]}/10</span>
+						</div>)
+					}
+				</div>
+			) : (
+				undefined
+			)},
 			{name: "Companies", content:
 				<div style={{display: "flex", flexWrap: "wrap", gap: 10}}>
 					{

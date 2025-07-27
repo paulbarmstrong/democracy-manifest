@@ -1,7 +1,7 @@
 import convert from "color-convert"
 import { ACCENT_COLOR_LIGHTNESS, ACCENT_COLOR_SATURATION, BACKGROUND_SHADE_T0, BACKGROUND_SHADE_T1 } from "./Constants"
-import { Worker } from "./Types"
-import { getIndustry } from "./Game"
+import { PlayerClassName, Worker } from "./Types"
+import { getIndustry, getPlayerClass } from "./Game"
 
 export function getShade(darkness: number): string {
 	return interpolateHexColors(BACKGROUND_SHADE_T0, BACKGROUND_SHADE_T1, darkness)
@@ -34,4 +34,8 @@ export function getWorkerColor(worker: Worker): string {
 	} else {
 		return getColor(undefined, 0)
 	}
+}
+
+export function getPlayerColor(playerClassName: PlayerClassName, darkness: number): string {
+	return getColor(getPlayerClass(playerClassName).hue, darkness)
 }

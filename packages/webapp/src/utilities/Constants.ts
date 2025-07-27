@@ -25,6 +25,8 @@ export const WAREHOUSE_CAPACITIES = {
 	Influence: 0
 }
 
+export const WEALTH_TIER_THRESHOLDS = [10, 25, 50, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500]
+
 export const PLAYER_CLASSES: Array<PlayerClass> = [
 	{
 		name: "Working Class",
@@ -254,9 +256,9 @@ export const GAME_STATE: GameState = {
 					]
 				}
 			],
-			capital: 0,
-			machines: 0,
-			wealth: 0
+			capital: 62,
+			machines: 2,
+			peakWealthTier: 7
 		},
 		{
 			className: "State",
@@ -291,10 +293,10 @@ export const GAME_STATE: GameState = {
 					workers: []
 				}
 			],
-			favor: {
-				"Working Class": 0,
-				"Middle Class": 0,
-				"Capitalist Class": 0
+			credibility: {
+				"Working Class": 3,
+				"Middle Class": 2,
+				"Capitalist Class": 1
 			}
 		}
 	],

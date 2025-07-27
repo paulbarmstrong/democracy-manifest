@@ -93,14 +93,14 @@ export type MiddleClassState = CommonClassState & {
 export type CapitalistClassState = CommonClassState & {
 	capital: number,
 	machines: number,
-	wealth: number,
+	peakWealthTier: number,
 	warehouses: Array<Exclude<IndustryName, "Influence">>
 }
 
 export type ClassState = WorkingClassState | MiddleClassState | CapitalistClassState | StateClassState
 
 export type StateClassState = CommonClassState & {
-	favor: {
+	credibility: {
 		"Working Class": number,
 		"Middle Class": number,
 		"Capitalist Class": number
