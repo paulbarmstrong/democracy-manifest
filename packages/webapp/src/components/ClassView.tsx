@@ -122,10 +122,10 @@ export function ClassView(props: Props) {
 			) : (
 				undefined
 			)},
-			{name: "Machines", content: (classState as CapitalistClassState).machines > 0? (
+			{name: "Spare Machines", content: (classState as CapitalistClassState).numSpareMachines > 0? (
 				<div style={{display: "flex", gap: 10}}>
 					{
-						range(0, (classState as CapitalistClassState).machines).map(_ => <span className="material-symbols-outlined" style={{fontSize: 60, color: "white"}}>settings</span>)
+						range(0, (classState as CapitalistClassState).numSpareMachines).map(_ => <span className="material-symbols-outlined" style={{fontSize: 60, color: "white"}}>settings</span>)
 					}
 				</div>
 			) : (

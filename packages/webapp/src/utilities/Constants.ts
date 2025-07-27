@@ -257,7 +257,7 @@ export const GAME_STATE: GameState = {
 				}
 			],
 			capital: 62,
-			machines: 2,
+			numSpareMachines: 2,
 			peakWealthTier: 7
 		},
 		{

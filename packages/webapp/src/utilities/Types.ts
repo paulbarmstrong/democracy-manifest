@@ -92,7 +92,7 @@ export type MiddleClassState = CommonClassState & {
 
 export type CapitalistClassState = CommonClassState & {
 	capital: number,
-	machines: number,
+	numSpareMachines: number,
 	peakWealthTier: number,
 	warehouses: Array<Exclude<IndustryName, "Influence">>
 }
