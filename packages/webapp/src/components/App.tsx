@@ -3,7 +3,6 @@ import { useWindowSize } from "../hooks/useWindowSize"
 import { DynamicWebappConfig } from "common"
 import { useRefState } from "../hooks/useRefState"
 import { PlayerClass } from "../utilities/Types"
-import { getColor } from "../utilities/Color"
 import { ClassView } from "./ClassView"
 
 interface Props {
@@ -60,20 +59,28 @@ function Sidebar() {
 
 export function App(props: Props) {
 	useWindowSize()
-	const selectedPlayerClass = useRefState<PlayerClass>(PLAYER_CLASSES[0])
+	const selectedPlayerClass = useRefState<PlayerClass | undefined>(undefined)
 
 	return (
 		<div style={{ display: "flex" , fontWeight: "bold"}}>
 			<Sidebar />
 			<div style={{ marginLeft: "250px", width: "100%" }}>
-				<div style={{display: "flex", justifyContent: "flex-start", gap: 4}}>
-					{
-						PLAYER_CLASSES.map(playerClass => {
-							return <div key={playerClass.name} className="clickable" onClick={() => selectedPlayerClass.current = playerClass} style={{backgroundColor: getColor(playerClass.hue, 0), borderTopLeftRadius: 10, borderTopRightRadius: 10, padding: 10}}>{playerClass.name}</div>
-						})
-					}
-				</div>
-				<ClassView playerClass={selectedPlayerClass.current} gameState={GAME_STATE}/>
+				{
+					selectedPlayerClass.current !== undefined ? (
+						<ClassView playerClass={selectedPlayerClass.current} gameState={GAME_STATE} zoomed={true} onClickZoom={() => selectedPlayerClass.current = undefined}/>
+					) : (
+						<div style={{display: "flex", flexDirection: "column"}}>
+							<div style={{display: "flex"}}>
+								<ClassView playerClass={PLAYER_CLASSES[0]} gameState={GAME_STATE} zoomed={false} onClickZoom={() => selectedPlayerClass.current = PLAYER_CLASSES[0]}/>
+								<ClassView playerClass={PLAYER_CLASSES[1]} gameState={GAME_STATE} zoomed={false} onClickZoom={() => selectedPlayerClass.current = PLAYER_CLASSES[1]}/>
+							</div>
+							<div style={{display: "flex"}}>
+								<ClassView playerClass={PLAYER_CLASSES[2]} gameState={GAME_STATE} zoomed={false} onClickZoom={() => selectedPlayerClass.current = PLAYER_CLASSES[2]}/>
+								<ClassView playerClass={PLAYER_CLASSES[3]} gameState={GAME_STATE} zoomed={false} onClickZoom={() => selectedPlayerClass.current = PLAYER_CLASSES[3]}/>
+							</div>
+						</div>
+					)
+				}
 			</div>
 		</div>
   	);
