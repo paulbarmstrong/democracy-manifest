@@ -13,7 +13,7 @@ type Policy = {
 }
 
 const POLICIES: Array<Policy> = [
-	{name: "Fiscal Policy", hue: 210, content: ["State has 9 companies and may not take a loan", "State has 6 companies and may take one loan", "State has 3 companies and may take one loan"]},
+	{name: "Fiscal Policy", hue: 210, content: [0, 1, 2].map(level => `State may have ${3*(3-level)} companies, but ${level === 2 ? "one" : "two"} unpaid loan${level === 2 ? "" : "s"} triggers IMF`)},
 	{name: "Labor Market", hue: 260, content: ["High minimum wage", "Medium minimum wage", "Low minimum wage"]},
 	{name: "Taxation", hue: 305, content: [0, 1, 2].map(level => <span style={{display: "flex", alignItems: "center"}}>
         +{3-level} <Icon name="tax-multiplier" gap={3}/>, and the Healthcare and Education policies' <Icon name="tax-multiplier" gap={3}/> are {2-level}x
