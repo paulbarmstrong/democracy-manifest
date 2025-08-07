@@ -1,4 +1,11 @@
-export type PlayerClassName = "Working Class" | "Middle Class" | "Capitalist Class" | "State"
+import { z } from "zod"
+import { playerClassNameZod, tabNameZod } from "./Zod"
+
+export type PlayerClassName = z.infer<typeof playerClassNameZod>
+
+export type TabName = z.infer<typeof tabNameZod>
+
+export type PolicyName = "Fiscal Policy" | "Labor Market" | "Taxation" | "Healthcare" | "Education" | "Foreign Trade" | "Immigration"
 
 export type PlayerClass = {
 	name: PlayerClassName,
@@ -108,6 +115,9 @@ export type StateClassState = CommonClassState & {
 }
 
 export type GameState = {
+	policies: {
+		[K in PolicyName]: 0 | 1 | 2
+	}
 	classes: [WorkingClassState, MiddleClassState, CapitalistClassState, StateClassState],
 	unemployedWorkers: Array<Worker>
 }

@@ -1,13 +1,13 @@
 import { range } from "lodash"
-import { getColor, getPlayerColor } from "../utilities/Color"
-import { CapitalistClassState, GameState, PlayerClass, PlayerClassName, StateClassState, Worker, WorkingClassState } from "../utilities/Types"
-import { COMPANY_SIZE_PX, INDUSTRIES, WEALTH_TIER_THRESHOLDS } from "../utilities/Constants"
-import { CompanyCard } from "./CompanyCard"
-import { IndustryIcon } from "./IndustryIcon"
-import { capitalToWealthTier, getMaxStorage } from "../utilities/Game"
-import { RadioSelector } from "./RadioSelector"
-import { Details } from "./Details"
-import { WorkerView } from "./WorkerView"
+import { getColor, getPlayerColor } from "../../utilities/Color"
+import { CapitalistClassState, GameState, PlayerClass, PlayerClassName, StateClassState, Worker, WorkingClassState } from "../../utilities/Types"
+import { COMPANY_SIZE_PX, INDUSTRIES, WEALTH_TIER_THRESHOLDS } from "../../utilities/Constants"
+import { CompanyCard } from "../CompanyCard"
+import { capitalToWealthTier, getMaxStorage } from "../../utilities/Game"
+import { RadioSelector } from "../RadioSelector"
+import { Details } from "../Details"
+import { WorkerView } from "../WorkerView"
+import { Icon } from "../Icon"
 
 interface Props {
 	playerClass: PlayerClass,
@@ -16,7 +16,7 @@ interface Props {
 	onClickZoom: () => void
 }
 
-export function ClassView(props: Props) {
+export function PlayerClassPanel(props: Props) {
 	const classState = props.gameState.classes.find(clazz => clazz.className === props.playerClass.name)!
 	const unionLeaderWorkers: Array<Worker> | undefined = (classState as WorkingClassState).unionLeaders !== undefined ? (
 		Object.values((classState as WorkingClassState).unionLeaders)
@@ -44,10 +44,10 @@ export function ClassView(props: Props) {
 				<div style={{display: "flex", gap: 5, borderColor: "white", borderWidth: 2, borderRadius: 4}}>
 					{
 						INDUSTRIES.filter(industry => getMaxStorage(classState, industry) > 0).map(industry => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(industry.hue, 0), padding: 10, gap: 10, borderRadius: 4}}>
-							<IndustryIcon industryName={industry.name}/>
+							<Icon name={industry.name}/>
 							<span>{classState.storedGoods[industry.name].quantity}/{getMaxStorage(classState, industry)}</span>
 							<RadioSelector
-								choices={props.playerClass.storagePriceOptions[industry.name].map(price => ({value: price, text: `$${price}`})).reverse()}
+								choices={props.playerClass.storagePriceOptions[industry.name].map(price => ({value: price, content: `$${price}`})).reverse()}
 								onChange={() => undefined}
 								value={classState.storedGoods[industry.name].price}
 								radioButtonSize={16}
@@ -64,7 +64,7 @@ export function ClassView(props: Props) {
 				<div style={{display: "flex", gap: 5, borderColor: "white", borderWidth: 2, borderRadius: 4}}>
 					{
 						INDUSTRIES.filter(industry => classState.consumableGoods[industry.name] > 0).map(industry => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(industry.hue, 0), padding: 10, gap: 10, borderRadius: 4}}>
-							<IndustryIcon industryName={industry.name}/>
+							<Icon name={industry.name}/>
 							<span>{classState.consumableGoods[industry.name]}</span>
 						</div>)
 					}
@@ -76,7 +76,7 @@ export function ClassView(props: Props) {
 				<div style={{display: "flex", gap: 5}}>
 					{
 						INDUSTRIES.map(industry => <div style={{display: "flex", flexDirection: "column", alignItems: "center", backgroundColor: getColor(industry.hue, 0), borderRadius: 4, gap: 10, padding: 10}}>
-							<IndustryIcon industryName={industry.name}/>
+							<Icon name={industry.name}/>
 							<div style={{width: 50, height: 50, backgroundColor: getColor(industry.hue, -1), borderRadius: "50%", display: "flex", justifyContent: "center", alignItems: "center"}}>
 								{
 									(classState as WorkingClassState).unionLeaders[industry.name] !== undefined ? (

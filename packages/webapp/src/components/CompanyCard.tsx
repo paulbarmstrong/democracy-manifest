@@ -3,8 +3,8 @@ import { getColor } from "../utilities/Color"
 import { COMPANY_SIZE_PX, COMPANY_TYPES, INDUSTRIES } from "../utilities/Constants"
 import { Company, WorkerClass } from "../utilities/Types"
 import { RadioSelector } from "./RadioSelector"
-import { IndustryIcon } from "./IndustryIcon"
 import { WorkerView } from "./WorkerView"
+import { Icon } from "./Icon"
 
 interface Props {
 	company: Company
@@ -71,14 +71,14 @@ export function CompanyCard(props: Props) {
 								<img className="white-out" src="icons/CurlyBracket.svg" style={{width: workerSlotsGroup.length*60, height: 5}}/>
 								<div style={{display: "flex", justifyContent: "center", alignItems: "center", gap: 2, width: workerSlotsGroup.length*60}}>
 									<span>{isMainWorkerSlotGroup ? companyType.production : `+${sum(workerSlotsGroup.map(x => x.productionBonus))}`}</span>
-									<IndustryIcon industryName={companyType.industry}/>
+									<Icon name={companyType.industry}/>
 								</div>
 								{
 									takesWage ? (
 										<div style={{display: "flex", alignItems: "center", justifyContent: "center", fontSize: "small", gap: 5}}>
 											<span>Wages:</span>
 											<RadioSelector
-												choices={companyType.wageLevels.map((wageLevel, i) => ({value: i, text: `$${wageLevel}`})).reverse()}
+												choices={companyType.wageLevels.map((wageLevel, i) => ({value: i, content: `$${wageLevel}`})).reverse()}
 												onChange={() => undefined}
 												value={props.company.wageLevel}
 												radioButtonSize={16}

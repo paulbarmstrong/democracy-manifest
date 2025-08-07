@@ -2,7 +2,7 @@ type Value = string | number
 
 type Choice = {
 	value: Value,
-	text: string
+	content: any
 }
 
 interface Props {
@@ -22,7 +22,7 @@ export function RadioSelector(props: Props) {
 					<span className="material-symbols-outlined" style={{fontSize: props.radioButtonSize}}>
 						{choice.value === props.value ? "radio_button_checked" : "radio_button_unchecked"}
 					</span>
-					{choice.text}
+					{choice.content}
 				</div>
 			})
 		}

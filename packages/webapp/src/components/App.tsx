@@ -1,9 +1,14 @@
-import { GAME_STATE, PLAYER_CLASSES } from "../utilities/Constants"
+import { GAME_STATE } from "../utilities/Constants"
 import { useWindowSize } from "../hooks/useWindowSize"
 import { DynamicWebappConfig } from "common"
 import { useRefState } from "../hooks/useRefState"
-import { PlayerClass } from "../utilities/Types"
-import { ClassView } from "./ClassView"
+import { PlayerClassName, TabName } from "../utilities/Types"
+import { playerClassNameZod, tabNameZod } from "../utilities/Zod"
+import { getPlayerClass } from "../utilities/Game"
+import { getPlayerColor, getShade } from "../utilities/Color"
+import { PlayerClassPanel } from "./panels/PlayerClassPanel"
+import { AllClassesPanel } from "./panels/AllClassesPanel"
+import { PoliciesPanel } from "./panels/PoliciesPanel"
 
 interface Props {
 	config: DynamicWebappConfig,
@@ -59,27 +64,36 @@ function Sidebar() {
 
 export function App(props: Props) {
 	useWindowSize()
-	const selectedPlayerClass = useRefState<PlayerClass | undefined>(undefined)
+	const selectedTab = useRefState<TabName>(tabNameZod.options[0])
+	const gameState = GAME_STATE
 
 	return (
 		<div style={{ display: "flex" , fontWeight: "bold"}}>
 			<Sidebar />
 			<div style={{ marginLeft: "250px", width: "100%" }}>
+				<div style={{display: "flex", justifyContent: "flex-start", gap: 4}}>
+					{
+						tabNameZod.options.map(tabName => {
+							const color = playerClassNameZod.options.includes(tabName as PlayerClassName) ? (
+								getPlayerColor(tabName as PlayerClassName, 0)
+							) : (
+								getShade(1)
+							)
+							return <div key={tabName} className="clickable" onClick={() => selectedTab.current = tabName} style={{backgroundColor: selectedTab.current === tabName ? color : undefined, borderTopLeftRadius: 10, borderTopRightRadius: 10, padding: 10}}>{tabName}</div>
+						})
+					}
+				</div>
 				{
-					selectedPlayerClass.current !== undefined ? (
-						<ClassView playerClass={selectedPlayerClass.current} gameState={GAME_STATE} zoomed={true} onClickZoom={() => selectedPlayerClass.current = undefined}/>
-					) : (
-						<div style={{display: "flex", flexDirection: "column"}}>
-							<div style={{display: "flex"}}>
-								<ClassView playerClass={PLAYER_CLASSES[0]} gameState={GAME_STATE} zoomed={false} onClickZoom={() => selectedPlayerClass.current = PLAYER_CLASSES[0]}/>
-								<ClassView playerClass={PLAYER_CLASSES[1]} gameState={GAME_STATE} zoomed={false} onClickZoom={() => selectedPlayerClass.current = PLAYER_CLASSES[1]}/>
-							</div>
-							<div style={{display: "flex"}}>
-								<ClassView playerClass={PLAYER_CLASSES[2]} gameState={GAME_STATE} zoomed={false} onClickZoom={() => selectedPlayerClass.current = PLAYER_CLASSES[2]}/>
-								<ClassView playerClass={PLAYER_CLASSES[3]} gameState={GAME_STATE} zoomed={false} onClickZoom={() => selectedPlayerClass.current = PLAYER_CLASSES[3]}/>
-							</div>
-						</div>
-					)
+					(() => {
+						if (selectedTab.current === "All classes") {
+							return <AllClassesPanel selectedTab={selectedTab} gameState={gameState}/>
+						}
+						if (playerClassNameZod.options.includes(selectedTab.current as PlayerClassName)) {
+							return <PlayerClassPanel playerClass={getPlayerClass(selectedTab.current as PlayerClassName)} gameState={gameState} zoomed={true} onClickZoom={() => selectedTab.current = "All classes"}/>
+						} else if (selectedTab.current === "Policies") {
+							return <PoliciesPanel gameState={gameState}/>
+						}
+					})()
 				}
 			</div>
 		</div>
