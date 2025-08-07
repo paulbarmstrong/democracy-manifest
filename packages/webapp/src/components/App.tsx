@@ -1,10 +1,14 @@
-import { GAME_STATE, PLAYER_CLASSES } from "../utilities/Constants"
+import { GAME_STATE } from "../utilities/Constants"
 import { useWindowSize } from "../hooks/useWindowSize"
 import { DynamicWebappConfig } from "common"
 import { useRefState } from "../hooks/useRefState"
-import { PlayerClass } from "../utilities/Types"
-import { getColor } from "../utilities/Color"
-import { ClassView } from "./ClassView"
+import { PlayerClassName, TabName } from "../utilities/Types"
+import { playerClassNameZod, tabNameZod } from "../utilities/Zod"
+import { getPlayerClass } from "../utilities/Game"
+import { getPlayerColor, getShade } from "../utilities/Color"
+import { PlayerClassPanel } from "./panels/PlayerClassPanel"
+import { AllPlayerClassesPanel } from "./panels/AllPlayerClassesPanel"
+import { PoliciesPanel } from "./panels/PoliciesPanel"
 
 interface Props {
 	config: DynamicWebappConfig,
@@ -60,7 +64,8 @@ function Sidebar() {
 
 export function App(props: Props) {
 	useWindowSize()
-	const selectedPlayerClass = useRefState<PlayerClass>(PLAYER_CLASSES[0])
+	const selectedTab = useRefState<TabName>(tabNameZod.options[0])
+	const gameState = GAME_STATE
 
 	return (
 		<div style={{ display: "flex" , fontWeight: "bold"}}>
@@ -68,12 +73,28 @@ export function App(props: Props) {
 			<div style={{ marginLeft: "250px", width: "100%" }}>
 				<div style={{display: "flex", justifyContent: "flex-start", gap: 4}}>
 					{
-						PLAYER_CLASSES.map(playerClass => {
-							return <div key={playerClass.name} className="clickable" onClick={() => selectedPlayerClass.current = playerClass} style={{backgroundColor: getColor(playerClass.hue, 0), borderTopLeftRadius: 10, borderTopRightRadius: 10, padding: 10}}>{playerClass.name}</div>
+						tabNameZod.options.map(tabName => {
+							const color = playerClassNameZod.options.includes(tabName as PlayerClassName) ? (
+								getPlayerColor(tabName as PlayerClassName, 0)
+							) : (
+								getShade(1)
+							)
+							return <div key={tabName} className="clickable" onClick={() => selectedTab.current = tabName} style={{backgroundColor: selectedTab.current === tabName ? color : undefined, borderTopLeftRadius: 10, borderTopRightRadius: 10, padding: 10}}>{tabName}</div>
 						})
 					}
 				</div>
-				<ClassView playerClass={selectedPlayerClass.current} gameState={GAME_STATE}/>
+				{
+					(() => {
+						if (selectedTab.current === "All classes") {
+							return <AllPlayerClassesPanel selectedTab={selectedTab} gameState={gameState}/>
+						}
+						if (playerClassNameZod.options.includes(selectedTab.current as PlayerClassName)) {
+							return <PlayerClassPanel playerClass={getPlayerClass(selectedTab.current as PlayerClassName)} gameState={gameState} zoomed={true} onClickZoom={() => selectedTab.current = "All classes"}/>
+						} else if (selectedTab.current === "Policies") {
+							return <PoliciesPanel gameState={gameState}/>
+						}
+					})()
+				}
 			</div>
 		</div>
   	);

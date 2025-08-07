@@ -165,6 +165,15 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 ]
 
 export const GAME_STATE: GameState = {
+	policies: {
+		"Fiscal Policy": 0,
+		"Labor Market":  1,
+		"Taxation": 1,
+		"Healthcare": 2,
+		"Education": 2,
+		"Foreign Trade": 2,
+		"Immigration": 0
+	},
 	classes: [
 		{
 			className: "Working Class",

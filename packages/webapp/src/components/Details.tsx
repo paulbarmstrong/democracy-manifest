@@ -1,6 +1,7 @@
 interface Detail {
 	name: string,
 	content: any,
+	backgroundColor?: string
 }
 
 interface Props {
@@ -13,7 +14,7 @@ export function Details(props: Props) {
 			props.details
 				.filter(detail => detail.content !== undefined)
 				.map(detail => {
-					return <div key={detail.name} style={{display: "flex", flexDirection: "column", padding: 10, gap: 10}}>
+					return <div key={detail.name} style={{display: "flex", flexDirection: "column", padding: 10, gap: 10, backgroundColor: detail.backgroundColor, borderRadius: 4}}>
 						<div><b>{detail.name}:</b></div>
 						<div style={{userSelect: "text"}}>{["string", "number"].includes(typeof detail.content) ? (
 							<span style={{fontSize: "xxx-large"}}>{detail.content}</span>
