@@ -4,7 +4,7 @@ import { GameState, TabName } from "../../utilities/Types"
 import { getShade } from "../../utilities/Color"
 import { PlayerClassPanel } from "./PlayerClassPanel"
 
-export function AllClassesPanel(props: {
+export function AllPlayerClassesPanel(props: {
     selectedTab: MutableRefObject<TabName | undefined>,
     gameState: GameState
 }) {

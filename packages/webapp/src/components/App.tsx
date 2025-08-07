@@ -7,7 +7,7 @@ import { playerClassNameZod, tabNameZod } from "../utilities/Zod"
 import { getPlayerClass } from "../utilities/Game"
 import { getPlayerColor, getShade } from "../utilities/Color"
 import { PlayerClassPanel } from "./panels/PlayerClassPanel"
-import { AllClassesPanel } from "./panels/AllClassesPanel"
+import { AllPlayerClassesPanel } from "./panels/AllPlayerClassesPanel"
 import { PoliciesPanel } from "./panels/PoliciesPanel"
 
 interface Props {
@@ -86,7 +86,7 @@ export function App(props: Props) {
 				{
 					(() => {
 						if (selectedTab.current === "All classes") {
-							return <AllClassesPanel selectedTab={selectedTab} gameState={gameState}/>
+							return <AllPlayerClassesPanel selectedTab={selectedTab} gameState={gameState}/>
 						}
 						if (playerClassNameZod.options.includes(selectedTab.current as PlayerClassName)) {
 							return <PlayerClassPanel playerClass={getPlayerClass(selectedTab.current as PlayerClassName)} gameState={gameState} zoomed={true} onClickZoom={() => selectedTab.current = "All classes"}/>
