@@ -33,7 +33,7 @@ const POLICIES: Array<Policy> = [
 export function PoliciesPanel(props: {
     gameState: GameState
 }) {
-    return <div style={{backgroundColor: getShade(1), display: "flex", flexDirection: "column", padding: 10, gap: 10}}>
+    return <div style={{backgroundColor: getShade(1), padding: 20}}>
         <Details details={POLICIES.map(policy => ({
             name: policy.name,
             backgroundColor: getColor(policy.hue, 0),
