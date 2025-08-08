@@ -9,6 +9,11 @@ export const BACKGROUND_SHADE_T1 = "#2b3438"
 export const ACCENT_COLOR_SATURATION = 25
 export const ACCENT_COLOR_LIGHTNESS = 45
 
+export const MATERIAL_ICON_NAME_MAPPINGS = {
+	"tax-multiplier": "receipt_long",
+	"vote": "gavel"
+}
+
 export const INDUSTRIES: Array<Industry> = [
 	{name: "Food", hue: 120},
 	{name: "Luxury", hue: 210},
@@ -166,13 +171,35 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 
 export const GAME_STATE: GameState = {
 	policies: {
-		"Fiscal Policy": 0,
-		"Labor Market":  1,
-		"Taxation": 1,
-		"Healthcare": 2,
-		"Education": 2,
-		"Foreign Trade": 2,
-		"Immigration": 0
+		"Fiscal Policy": {
+			state: 0,
+			proposal: {
+				playerClassName: "Capitalist Class",
+				proposedState: 1
+			}
+		},
+		"Labor Market": {
+			state: 0
+		},
+		"Taxation": {
+			state: 1,
+			proposal: {
+				playerClassName: "Working Class",
+				proposedState: 2
+			}
+		},
+		"Healthcare": {
+			state: 2
+		},
+		"Education": {
+			state: 2
+		},
+		"Foreign Trade": {
+			state: 2
+		},
+		"Immigration": {
+			state: 2
+		}
 	},
 	classes: [
 		{
