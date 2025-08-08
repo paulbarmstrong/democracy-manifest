@@ -116,8 +116,14 @@ export type StateClassState = CommonClassState & {
 
 export type GameState = {
 	policies: {
-		[K in PolicyName]: 0 | 1 | 2
-	}
+		[K in PolicyName]: {
+			state: 0 | 1 | 2,
+			proposal?: {
+				playerClassName: PlayerClassName,
+				proposedState: 0 | 1 | 2
+			}
+		}
+	},
 	classes: [WorkingClassState, MiddleClassState, CapitalistClassState, StateClassState],
 	unemployedWorkers: Array<Worker>
 }
