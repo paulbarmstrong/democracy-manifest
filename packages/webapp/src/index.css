@@ -11,5 +11,24 @@ body {
 }
 
 img.white-out {
-  filter: brightness(0) invert(1);
+	filter: brightness(0) invert(1);
+}
+
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+td, th {
+	padding: 10px;
+}
+
+th {
+	border-bottom: 2px solid white;
+}
+
+tr:nth-child(even) {
+	background-color: rgba(0, 0, 0, 0.06);
+	background-blend-mode: multiply;
 }

@@ -10,6 +10,7 @@ import { PlayerClassPanel } from "./panels/PlayerClassPanel"
 import { AllPlayerClassesPanel } from "./panels/AllPlayerClassesPanel"
 import { PoliciesPanel } from "./panels/PoliciesPanel"
 import { VotingBagPanel } from "./panels/VotingBagPanel"
+import { MarketplacePanel } from "./panels/MarketplacePanel"
 
 interface Props {
 	config: DynamicWebappConfig,
@@ -95,6 +96,8 @@ export function App(props: Props) {
 							return <PoliciesPanel gameState={gameState}/>
 						} else if (selectedTab.current === "Voting Bag") {
 							return <VotingBagPanel gameState={gameState}/>
+						} else if (selectedTab.current === "Marketplace") {
+							return <MarketplacePanel gameState={gameState}/>
 						}
 					})()
 				}
