@@ -14,6 +14,9 @@ export const MATERIAL_ICON_NAME_MAPPINGS = {
 	"vote": "gavel"
 }
 
+export const MAX_CREDIBILITY_PER_CLASS = 10
+export const TOTAL_NUM_VOTING_CUBES_PER_CLASS = 25
+
 export const INDUSTRIES: Array<Industry> = [
 	{name: "Food", hue: 120},
 	{name: "Luxury", hue: 210},
@@ -200,6 +203,11 @@ export const GAME_STATE: GameState = {
 		"Immigration": {
 			state: 2
 		}
+	},
+	votingBag: {
+		"Working Class": 7,
+		"Middle Class": 8,
+		"Capitalist Class": 3
 	},
 	classes: [
 		{

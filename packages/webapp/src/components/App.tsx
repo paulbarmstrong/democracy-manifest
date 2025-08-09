@@ -9,6 +9,7 @@ import { getPlayerColor, getShade } from "../utilities/Color"
 import { PlayerClassPanel } from "./panels/PlayerClassPanel"
 import { AllPlayerClassesPanel } from "./panels/AllPlayerClassesPanel"
 import { PoliciesPanel } from "./panels/PoliciesPanel"
+import { VotingBagPanel } from "./panels/VotingBagPanel"
 
 interface Props {
 	config: DynamicWebappConfig,
@@ -92,6 +93,8 @@ export function App(props: Props) {
 							return <PlayerClassPanel playerClass={getPlayerClass(selectedTab.current as PlayerClassName)} gameState={gameState} zoomed={true} onClickZoom={() => selectedTab.current = "All classes"}/>
 						} else if (selectedTab.current === "Policies") {
 							return <PoliciesPanel gameState={gameState}/>
+						} else if (selectedTab.current === "Voting Bag") {
+							return <VotingBagPanel gameState={gameState}/>
 						}
 					})()
 				}
