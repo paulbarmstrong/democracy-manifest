@@ -114,6 +114,22 @@ export type StateClassState = CommonClassState & {
 	}
 }
 
+export type ImportDeal = {
+	foodQuantity: number,
+	luxuryQuantity: number,
+	cost: {
+		0: number,
+		1: number,
+		2: number
+	}
+}
+
+export type ExportDeals = Array<{
+	industry: IndustryName,
+	quantity: number,
+	award: number
+}>
+
 export type GameState = {
 	policies: {
 		[K in PolicyName]: {
@@ -128,7 +144,9 @@ export type GameState = {
 		"Working Class": number,
 		"Middle Class": number,
 		"Capitalist Class": number
-	}
+	},
+	importDeals: Array<number>,
+	exportDeals: number,
 	classes: [WorkingClassState, MiddleClassState, CapitalistClassState, StateClassState],
 	unemployedWorkers: Array<Worker>
 }

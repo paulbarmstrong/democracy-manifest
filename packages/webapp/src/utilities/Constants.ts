@@ -1,4 +1,4 @@
-import { CompanyType, GameState, Industry, PlayerClass } from "./Types"
+import { CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass } from "./Types"
 
 export const COMPANY_SIZE_PX = 220
 
@@ -11,7 +11,9 @@ export const ACCENT_COLOR_LIGHTNESS = 45
 
 export const MATERIAL_ICON_NAME_MAPPINGS = {
 	"tax-multiplier": "receipt_long",
-	"vote": "gavel"
+	"vote": "gavel",
+	"infinity": "all_inclusive",
+	"produces": "arrow_right_alt"
 }
 
 export const MAX_CREDIBILITY_PER_CLASS = 10
@@ -108,6 +110,40 @@ export const PLAYER_CLASSES: Array<PlayerClass> = [
 			Influence: [10]
 		}
 	}
+]
+
+export const IMPORT_DEALS: Array<ImportDeal> = [
+	{
+		foodQuantity: 7,
+		luxuryQuantity: 5,
+		cost: {
+			0: 84,
+			1: 82,
+			2: 70
+		}
+	},
+	{
+		foodQuantity: 0,
+		luxuryQuantity: 8,
+		cost: {
+			0: 46,
+			1: 38,
+			2: 30
+		}
+	}
+]
+
+export const EXPORT_DEALS: Array<ExportDeals> = [
+	[
+		{quantity: 3, industry: "Food", award: 25},
+		{quantity: 6, industry: "Food", award: 50},
+		{quantity: 3, industry: "Luxury", award: 20},
+		{quantity: 7, industry: "Luxury", award: 50},
+		{quantity: 3, industry: "Healthcare", award: 20},
+		{quantity: 7, industry: "Healthcare", award: 40},
+		{quantity: 2, industry: "Education", award: 15},
+		{quantity: 7, industry: "Education", award: 55}
+	]
 ]
 
 export const COMPANY_TYPES: Array<CompanyType> = [
@@ -209,6 +245,8 @@ export const GAME_STATE: GameState = {
 		"Middle Class": 8,
 		"Capitalist Class": 3
 	},
+	importDeals: [0, 1],
+	exportDeals: 0,
 	classes: [
 		{
 			className: "Working Class",

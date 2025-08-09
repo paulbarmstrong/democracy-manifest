@@ -1,5 +1,5 @@
 import { getColor, getPlayerColor, getShade } from "../../utilities/Color"
-import { getIndustry } from "../../utilities/Game"
+import { getImportPrice, getIndustry } from "../../utilities/Game"
 import { isAre, s } from "../../utilities/Misc"
 import { GameState, PolicyName } from "../../utilities/Types"
 import { Details } from "../Details"
@@ -25,7 +25,7 @@ const POLICIES: Array<Policy> = [
         +{2-level} <Icon name="tax-multiplier" gap={3}/>, and public <Icon name="Education" gap={3}/> costs ${level * 5}
     </span>)},
 	{name: "Foreign Trade", hue: 90, content: [0, 1, 2].map(level => <span style={{display: "flex", alignItems: "center"}}>
-        Imports of <Icon name="Food" gap={3}/> cost ${10 + 5*(2-level)}, imports of <Icon name="Luxury" gap={3}/> cost ${6 + 3*(2-level)}, and {level} trade deal{s(level)} {isAre(level)} drawn
+        Imports of <Icon name="Food" gap={3}/> cost ${getImportPrice("Food", level)}, imports of <Icon name="Luxury" gap={3}/> cost ${getImportPrice("Luxury", level)}, and {level} trade deal{s(level)} {isAre(level)} drawn
     </span>)},
 	{name: "Immigration", hue: 135, content: [0, 1, 2].map(level => `+${level} middle class and working class workers per round`)}
 ]

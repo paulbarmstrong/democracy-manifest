@@ -1,5 +1,5 @@
 import { INDUSTRIES, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
-import { CapitalistClassState, ClassState, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, WorkerClass } from "./Types"
+import { CapitalistClassState, ClassState, GameState, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, WorkerClass } from "./Types"
 
 export function getIndustry(industryName: IndustryName): Industry {
 	return INDUSTRIES.find(industry => industry.name === industryName)!
@@ -22,4 +22,12 @@ export function capitalToWealthTier(capital: number): number {
 		if (capital > WEALTH_TIER_THRESHOLDS[i]) return i
 	}
 	return 0
+}
+
+export function getImportPrice(industryName: "Food" | "Luxury", level: number): number {
+	if (industryName === "Food") {
+		return 10 + 5*(2-level)
+	} else {
+		return 6 + 3*(2-level)
+	}
 }
