@@ -124,6 +124,11 @@ export type GameState = {
 			}
 		}
 	},
+	votingBag: {
+		"Working Class": number,
+		"Middle Class": number,
+		"Capitalist Class": number
+	}
 	classes: [WorkingClassState, MiddleClassState, CapitalistClassState, StateClassState],
 	unemployedWorkers: Array<Worker>
 }

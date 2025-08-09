@@ -1,7 +1,7 @@
 import { range } from "lodash"
 import { getColor, getPlayerColor } from "../../utilities/Color"
 import { CapitalistClassState, GameState, PlayerClass, PlayerClassName, StateClassState, Worker, WorkingClassState } from "../../utilities/Types"
-import { COMPANY_SIZE_PX, INDUSTRIES, WEALTH_TIER_THRESHOLDS } from "../../utilities/Constants"
+import { COMPANY_SIZE_PX, INDUSTRIES, MAX_CREDIBILITY_PER_CLASS, WEALTH_TIER_THRESHOLDS } from "../../utilities/Constants"
 import { CompanyCard } from "../CompanyCard"
 import { capitalToWealthTier, getMaxStorage } from "../../utilities/Game"
 import { RadioSelector } from "../RadioSelector"
@@ -130,9 +130,9 @@ export function PlayerClassPanel(props: Props) {
 				<div style={{display: "flex", flexDirection: "column", gap: 5}}>
 					{
 						Object.entries((classState as StateClassState).credibility).map(credEntry => <div style={{display: "flex", justifyContent: "space-between", gap: 100, backgroundColor: getPlayerColor(credEntry[0] as PlayerClassName, 1), borderRadius: 4, overflow: "hidden", position: "relative"}}>
-							<div style={{position: "absolute", top: 0, left: 0, height: "100%", width: `${100 * (credEntry[1]/10)}%`, backgroundColor: getPlayerColor(credEntry[0] as PlayerClassName, 0)}}/>
+							<div style={{position: "absolute", top: 0, left: 0, height: "100%", width: `${100 * (credEntry[1]/MAX_CREDIBILITY_PER_CLASS)}%`, backgroundColor: getPlayerColor(credEntry[0] as PlayerClassName, 0)}}/>
 							<span style={{zIndex: 1, padding: 10}}>{credEntry[0]}:</span>
-							<span style={{zIndex: 1, padding: 10}}>{credEntry[1]}/10</span>
+							<span style={{zIndex: 1, padding: 10}}>{credEntry[1]}/{MAX_CREDIBILITY_PER_CLASS}</span>
 						</div>)
 					}
 				</div>
