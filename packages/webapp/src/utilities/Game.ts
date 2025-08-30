@@ -1,4 +1,4 @@
-import { INDUSTRIES, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
+import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, INDUSTRIES, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
 import { CapitalistClassState, ClassState, GameState, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, WorkerClass } from "./Types"
 
 export function getIndustry(industryName: IndustryName): Industry {
@@ -24,10 +24,12 @@ export function capitalToWealthTier(capital: number): number {
 	return 0
 }
 
+export function getImportTariff(industryName: "Food" | "Luxury", level: number): number {
+	const basePrice = industryName === "Food" ? BASE_FOOD_IMPORT_PRICE : BASE_LUXURY_IMPORT_PRICE
+	return (basePrice / 2)*(2-level)
+}
+
 export function getImportPrice(industryName: "Food" | "Luxury", level: number): number {
-	if (industryName === "Food") {
-		return 10 + 5*(2-level)
-	} else {
-		return 6 + 3*(2-level)
-	}
+	const basePrice = industryName === "Food" ? BASE_FOOD_IMPORT_PRICE : BASE_LUXURY_IMPORT_PRICE
+	return basePrice + getImportTariff(industryName, level)
 }

@@ -19,6 +19,9 @@ export const MATERIAL_ICON_NAME_MAPPINGS = {
 export const MAX_CREDIBILITY_PER_CLASS = 10
 export const TOTAL_NUM_VOTING_CUBES_PER_CLASS = 25
 
+export const BASE_FOOD_IMPORT_PRICE = 10
+export const BASE_LUXURY_IMPORT_PRICE = 6
+
 export const INDUSTRIES: Array<Industry> = [
 	{name: "Food", hue: 120},
 	{name: "Luxury", hue: 210},
