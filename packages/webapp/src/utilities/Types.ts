@@ -78,7 +78,8 @@ type CommonClassState = {
 		Education: number,
 		Influence: number
 	}
-	companies: Array<Company>
+	companies: Array<Company>,
+	drawActions: Array<Action>
 }
 
 export type WorkingClassState = CommonClassState & {
@@ -149,4 +150,22 @@ export type GameState = {
 	exportDeals: number,
 	classes: [WorkingClassState, MiddleClassState, CapitalistClassState, StateClassState],
 	unemployedWorkers: Array<Worker>
+}
+
+export type Action = {
+	name: string,
+	type: "drawn" | "basic" | "free",
+	description: string,
+	credibilityDescription?: Array<string>,
+	playerClasses: Array<PlayerClassName>,
+	requiredPolicy?: {
+		name: PolicyName,
+		states: Array<0 | 1 | 2>
+	}
+}
+
+export type Policy = {
+	name: PolicyName,
+	hue: number,
+	content: Array<string>
 }

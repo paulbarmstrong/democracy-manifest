@@ -1,6 +1,10 @@
-import { CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass } from "./Types"
+import { take } from "lodash"
+import { Action, CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass, Policy } from "./Types"
+import { getImportPrice, getIndustry } from "./Game"
+import { isAre, s } from "./Misc"
 
 export const COMPANY_SIZE_PX = 220
+export const ACTION_SIZE_PX = 500
 
 export const MENU_WIDTH: string = "max(35vw, min(500px, 100%))"
 
@@ -13,7 +17,17 @@ export const MATERIAL_ICON_NAME_MAPPINGS = {
 	"tax-multiplier": "receipt_long",
 	"vote": "gavel",
 	"infinity": "all_inclusive",
-	"produces": "arrow_right_alt"
+	"produces": "arrow_right_alt",
+	"credibility": "thumb_up",
+	"prosperity": "sentiment_satisfied",
+	"vp": "award_star",
+	"drawn": "casino"
+}
+
+export const PLAYER_CLASS_CREDIBILITY_ICON_CLASS_MAPPINGS = {
+	"working-class-credibility": "Working Class",
+	"middle-class-credibility": "Middle Class",
+	"capitalist-class-credibility": "Capitalist Class"
 }
 
 export const MAX_CREDIBILITY_PER_CLASS = 10
@@ -211,6 +225,65 @@ export const COMPANY_TYPES: Array<CompanyType> = [
 	}
 ]
 
+export const POLICIES: Array<Policy> = [
+	{name: "Fiscal Policy", hue: 210, content: [0, 1, 2].map(level => `State may have ${3*(3-level)} companies, but ${level === 2 ? "one" : "two"} unpaid loan${level === 2 ? "" : "s"} triggers IMF`)},
+	{name: "Labor Market", hue: 260, content: ["High minimum wage", "Medium minimum wage", "Low minimum wage"]},
+	{name: "Taxation", hue: 280, content: [0, 1, 2].map(level => `+${3-level} <tax-multiplier>, and the Healthcare and Education policies' <tax-multiplier> are ${2-level}x`)},
+	{name: "Healthcare", hue: getIndustry("Healthcare").hue, content: [0, 1, 2].map(level => `+${2-level} <tax-multiplier>, and public <Healthcare> costs ${level * 5}`)},
+	{name: "Education", hue: getIndustry("Education").hue, content: [0, 1, 2].map(level => `+${2-level} <tax-multiplier>, and public <Education> costs ${level * 5}`)},
+	{name: "Foreign Trade", hue: 90, content: [0, 1, 2].map(level => `${50 * (2-level)}% tariffs cause imports of <Food> to cost ${getImportPrice("Food", level)}, imports of <Luxury> to cost ${getImportPrice("Luxury", level)}, and ${level} trade deal${s(level)} ${isAre(level)} drawn`)},
+	{name: "Immigration", hue: 135, content: [0, 1, 2].map(level => `+${level} middle class and working class workers per round`)}
+]
+
+export const DRAWN_ACTIONS: Array<Action> = [
+	{name: "Need for change", type: "drawn", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Pay $25 to propose 2 bills."},
+	{name: "Public opinion polling", type: "drawn", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Propose a bill and reveal 5 units from the voting bag. You may call for an immediate vote on it without using <Influence>, and using the units revealed from the bag."},
+	{name: "State scholarship", type: "drawn", playerClasses: ["Working Class", "Middle Class"], description: "Buy <Education> from the State, up to half of your population. Pay half price (rounded up).", requiredPolicy: {name: "Education", states: [1,2]}, credibilityDescription: ["+1 <middle-class-credibility>"]},
+	{name: "Workplace accident", type: "drawn", playerClasses: ["Working Class"], description: "Choose an industry. Get $8 from another player for each of their companies of that industry with your workers."},
+	{name: "Push political agenda", type: "drawn", playerClasses: ["Capitalist Class"], description: "Pay $25 to propose 2 bills."},
+	{name: "Extra shift", type: "drawn", playerClasses: ["Capitalist Class"], description: "Choose one of your non-automated companies. Pay wages and produce."},
+	{name: "Bid rigging", type: "drawn", playerClasses: ["Capitalist Class"], description: "Sell up to 6 <Luxury> to the state for $10 each. Get 1 <Influnce>", credibilityDescription: ["+1 <capitalist-class-credibility> per 3 <Luxury>"]},
+	{name: "Cooperative farm", type: "drawn", playerClasses: ["Working Class"], description: "If you have at least 3 unemployed workers, build a Cooperative Farm and assign three workers there."},
+	{name: "Health crisis", type: "drawn", playerClasses: ["Capitalist Class"], description: "Sell up to 9 <Healthcare> to the State for $10 each.", credibilityDescription: ["+1 <capitalist-class-credibility> per 3 <Healthcare>"]},
+	{name: "Higher education program", type: "drawn", playerClasses: ["Capitalist Class"], description: "Sell up to 9 <Education> to the State for $10 each.", credibilityDescription: ["+1 <capitalist-class-credibility> per 3 <Education>"]},
+	{name: "Healthcare benefits", type: "drawn", playerClasses: ["Working Class"], description: "Buy <Healthcare> from the State, up to your population, for half the cost (rounded up).", requiredPolicy: {name: "Healthcare", states: [1,2]}},
+	{name: "Immediate response", type: "drawn", playerClasses: ["State"], description: "Perform an event's action twice."},
+	{name: "Foreign partner", type: "drawn", playerClasses: ["Capitalist Class"], description: "Make an import deal. You may then make export deals.", requiredPolicy: {name: "Foreign Trade", states: [1,2]}},
+	{name: "Construction boom", type: "drawn", playerClasses: ["State"], description: "State, Working Class, and Capitalist Class each get $15.", credibilityDescription: ["+1 <working-class-credibility>", "+1 <capitalist-class-credibility>"]}
+]
+
+export const BASIC_ACTIONS: Array<Action> = [
+	{name: "Propose bill", type: "basic", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Select a policy and a position adjacent to its existing position. The vote will take place in the election phase, or may triggered immediately vote using 1 <Influence>."},
+	{name: "Address event", type: "basic", playerClasses: ["State"], description: "Address one of the State events."},
+	{name: "Show support", type: "basic", playerClasses: ["State"], description: "Give 2 of your <Influence> to another class for +1 <credibility> with that class."},
+	{name: "Collect extra tax", type: "basic", playerClasses: ["State"], description: "Get $10 from each class and -1 <credibility> from the 2 classes with the lowest <credibility>."},
+	{name: "Campaign", type: "basic", playerClasses: ["State"], description: "Convert up to 3 stored <Influence> to consumable <Influence>."},
+	{name: "Assign workers", type: "basic", playerClasses: ["Working Class", "Middle Class"], description: "Choose up to 3 of your Workers on the board and place them on the corresponding slots of available Companies."},
+	{name: "Purchase company", type: "basic", playerClasses: ["Middle Class", "Capitalist Class"], description: "Purchase a company from your company market for its listed price."},
+	{name: "Sell company", type: "basic", playerClasses: ["Middle Class", "Capitalist Class"], description: "Remove one of your companies and gain its listed price."},
+	{name: "Make export deals", type: "basic", playerClasses: ["Middle Class", "Capitalist Class", "State"], description: "Complete any number of export deals a maximum of 1 time."},
+	{name: "Make import deal", type: "basic", playerClasses: ["Capitalist Class"], description: "Perform an import deal once."},
+	{name: "Lobby", type: "basic", playerClasses: ["Capitalist Class"], description: "Spend $30 from capital to gain 3 Influence"},
+	{name: "Buy goods", type: "basic", playerClasses: ["Working Class", "Middle Class"], description: "Buy a single type of good from up to two sellers. The number of goods must be less than or equal to your population."},
+	{name: "Work extra shift", type: "basic", playerClasses: ["Middle Class"], description: "Choose one of your companies with non-committed Middle Class workers. Pay wages and produce."},
+	{name: "Strike", type: "basic", playerClasses: ["Working Class"], description: "Choose 2 companies where your workers work, with no committed workers, and without the maximum wage level. Those companies will not not function if they have not increased to thew maximum wage level by the production phase."},
+	{name: "Demonstrate", type: "basic", playerClasses: ["Working Class"], description: "When played then if the following remains true till the production phase then gain 1 <Influence> and other players lose VP: The number of your unemployed workers is at least 2 more than the number of unoccupied worker slots."},
+	{name: "Use influence", type: "basic", playerClasses: ["Working Class", "Middle Class", "Capitalist Class"], description: "Add 3 units to the voting bag."}
+]
+
+export const FREE_ACTIONS: Array<Action> = [
+	{name: "Consume healthcare", type: "free", playerClasses: ["Working Class", "Middle Class"], description: "Consume healthcare equal to your population to gain 1 <prosperity>, 2 <vp>, and a new unskilled worker."},
+	{name: "Consume education", type: "free", playerClasses: ["Working Class", "Middle Class"], description: "Consume education equal to your population to gain 1 <prosperity> and educate one of your unskilled workers."},
+	{name: "Consume luxury", type: "free", playerClasses: ["Working Class", "Middle Class"], description: "Consume luxury equal to your population to gain 1 <vp>."},
+	{name: "Adjust prices", type: "free", playerClasses: ["Middle Class", "Capitalist Class"], description: "Change the sell prices of the goods in your storages."},
+	{name: "Adjust wages", type: "free", playerClasses: ["Middle Class", "Capitalist Class", "State"], description: "Change the wage levels of your companies."},
+	{name: "Give bonus", type: "free", playerClasses: ["Capitalist Class"], description: "Pay the class of the workers in one of your companies $5 in order to commit them."},
+	{name: "Buy warehouse", type: "free", playerClasses: ["Capitalist Class"], description: "Pay $20 to gain a warehouse to store more of one type of good."},
+	{name: "Swap workers", type: "free", playerClasses: ["Working Class", "Middle Class"], description: "Swap any number of workers in unskilled slots with unemployed workers."},
+	{name: "Claim state benefits", type: "free", playerClasses: ["Working Class", "Middle Class", "Capitalist Class"], description: "Claim whatever is in the State benefits section for your class. +1 <vp> to the State."},
+	{name: "Pay off loan", type: "free", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Spend $50 to remove a loan."}
+]
+
 export const GAME_STATE: GameState = {
 	policies: {
 		"Fiscal Policy": {
@@ -254,6 +327,7 @@ export const GAME_STATE: GameState = {
 		{
 			className: "Working Class",
 			cash: 20,
+			drawActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Working Class")), 4),
 			storedGoods: {
 				Food: {quantity: 0, price: 0},
 				Luxury: {quantity: 0, price: 0},
@@ -277,6 +351,7 @@ export const GAME_STATE: GameState = {
 		{
 			className: "Middle Class",
 			cash: 40,
+			drawActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Middle Class")), 4),
 			storedGoods: {
 				Food: {quantity: 2, price: 12},
 				Luxury: {quantity: 0, price: 8},
@@ -302,11 +377,12 @@ export const GAME_STATE: GameState = {
 					]
 				}
 			],
-			prosperity: 0,
+			prosperity: 0
 		},
 		{
 			className: "Capitalist Class",
 			cash: 60,
+			drawActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Capitalist Class")), 4),
 			storedGoods: {
 				Food: {quantity: 2, price: 12},
 				Luxury: {quantity: 25, price: 8},
@@ -348,6 +424,7 @@ export const GAME_STATE: GameState = {
 		{
 			className: "State",
 			cash: 50,
+			drawActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("State")), 4),
 			storedGoods: {
 				Food: {quantity: 0, price: 12},
 				Luxury: {quantity: 0, price: 8},
