@@ -5,7 +5,7 @@ import { isAre, s } from "./Misc"
 
 export const COMPANY_SIZE_PX = 220
 export const ACTION_SIZE_PX = 500
-
+export const SIDEBAR_WIDTH_PX = 250
 export const MENU_WIDTH: string = "max(35vw, min(500px, 100%))"
 
 export const BACKGROUND_SHADE_T0 = "#374247"
@@ -253,7 +253,18 @@ export const DRAWN_ACTIONS: Array<Action> = [
 ]
 
 export const BASIC_ACTIONS: Array<Action> = [
-	{name: "Propose bill", type: "basic", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Select a policy and a position adjacent to its existing position. The vote will take place in the election phase, or may triggered immediately vote using 1 <Influence>."},
+	{name: "Propose bill",
+		type: "basic",
+		playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"],
+		description: "Select a policy and a position adjacent to its existing position. The vote will take place in the election phase, or may triggered immediately vote using 1 <Influence>.",
+		isPossible: (gameState: GameState, _) => Object.values(gameState.policies).filter(x => x.proposal !== undefined).length < 3,
+		execute: async (gameState, setGameState, playerClass, setText, selectPolicyPosition) => {
+			setText("Select a policy position adjacent to that policy's existing position.")
+			const policyPosition = await selectPolicyPosition(policyPosition => Math.abs(gameState.current.policies[policyPosition.name].state - policyPosition.position) === 1 && gameState.current.policies[policyPosition.name].proposal === undefined)
+			gameState.current.policies[policyPosition.name].proposal = {playerClassName: playerClass.name, proposedState: policyPosition.position}
+			setGameState(gameState.current)
+		}
+	},
 	{name: "Address event", type: "basic", playerClasses: ["State"], description: "Address one of the State events."},
 	{name: "Show support", type: "basic", playerClasses: ["State"], description: "Give 2 of your <Influence> to another class for +1 <credibility> with that class."},
 	{name: "Collect extra tax", type: "basic", playerClasses: ["State"], description: "Get $10 from each class and -1 <credibility> from the 2 classes with the lowest <credibility>."},
@@ -268,7 +279,21 @@ export const BASIC_ACTIONS: Array<Action> = [
 	{name: "Work extra shift", type: "basic", playerClasses: ["Middle Class"], description: "Choose one of your companies with non-committed Middle Class workers. Pay wages and produce."},
 	{name: "Strike", type: "basic", playerClasses: ["Working Class"], description: "Choose 2 companies where your workers work, with no committed workers, and without the maximum wage level. Those companies will not not function if they have not increased to thew maximum wage level by the production phase."},
 	{name: "Demonstrate", type: "basic", playerClasses: ["Working Class"], description: "When played then if the following remains true till the production phase then gain 1 <Influence> and other players lose VP: The number of your unemployed workers is at least 2 more than the number of unoccupied worker slots."},
-	{name: "Use influence", type: "basic", playerClasses: ["Working Class", "Middle Class", "Capitalist Class"], description: "Add 3 units to the voting bag."}
+	{
+		name: "Apply political pressure",
+		type: "basic",
+		playerClasses: ["Working Class", "Middle Class", "Capitalist Class"],
+		description: "Add 3 units to the voting bag.",
+		execute: async (gameState, setGameState, playerClass, setText) => {
+			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
+			gameState.current.votingBag[playerClassName] = Math.min(gameState.current.votingBag[playerClassName] + 3, 25)
+			setGameState(gameState.current)
+		},
+		isPossible: (gameState, playerClass) => {
+			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
+			return gameState.votingBag[playerClassName] < 25
+		}
+	}
 ]
 
 export const FREE_ACTIONS: Array<Action> = [
@@ -287,11 +312,7 @@ export const FREE_ACTIONS: Array<Action> = [
 export const GAME_STATE: GameState = {
 	policies: {
 		"Fiscal Policy": {
-			state: 0,
-			proposal: {
-				playerClassName: "Capitalist Class",
-				proposedState: 1
-			}
+			state: 0
 		},
 		"Labor Market": {
 			state: 0
