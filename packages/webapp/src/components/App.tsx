@@ -1,4 +1,4 @@
-import { GAME_STATE } from "../utilities/Constants"
+import { GAME_STATE, PLAYER_CLASSES } from "../utilities/Constants"
 import { useWindowSize } from "../hooks/useWindowSize"
 import { DynamicWebappConfig } from "common"
 import { useRefState } from "../hooks/useRefState"
@@ -11,6 +11,8 @@ import { AllPlayerClassesPanel } from "./panels/AllPlayerClassesPanel"
 import { PoliciesPanel } from "./panels/PoliciesPanel"
 import { VotingBagPanel } from "./panels/VotingBagPanel"
 import { MarketplacePanel } from "./panels/MarketplacePanel"
+import { ActionsPanel } from "./panels/ActionsPanel"
+import { RadioSelector } from "./RadioSelector"
 
 interface Props {
 	config: DynamicWebappConfig,
@@ -66,13 +68,18 @@ function Sidebar() {
 
 export function App(props: Props) {
 	useWindowSize()
+	const observingAsPlayerClassName = useRefState<PlayerClassName>(playerClassNameZod.options[0])
 	const selectedTab = useRefState<TabName>(tabNameZod.options[0])
 	const gameState = GAME_STATE
 
 	return (
-		<div style={{ display: "flex" , fontWeight: "bold"}}>
+		<div style={{ display: "flex"}}>
 			<Sidebar />
 			<div style={{ marginLeft: "250px", width: "100%" }}>
+				<div style={{display: "flex", alignItems: "center", gap: 10, padding: 5, fontSize: 16}}>
+					<div>Observing as:</div>
+					<RadioSelector choices={PLAYER_CLASSES.map(playerClass => ({value: playerClass.name, content: playerClass.name}))} value={observingAsPlayerClassName.current} onChange={newClassName => observingAsPlayerClassName.current = newClassName as PlayerClassName} radioButtonSize={16}/>
+				</div>
 				<div style={{display: "flex", justifyContent: "flex-start", gap: 4}}>
 					{
 						tabNameZod.options.map(tabName => {
@@ -81,7 +88,7 @@ export function App(props: Props) {
 							) : (
 								getShade(1)
 							)
-							return <div key={tabName} className="clickable" onClick={() => selectedTab.current = tabName} style={{backgroundColor: selectedTab.current === tabName ? color : undefined, borderTopLeftRadius: 10, borderTopRightRadius: 10, padding: 10}}>{tabName}</div>
+							return <div key={tabName} className="clickable" onClick={() => selectedTab.current = tabName} style={{backgroundColor: selectedTab.current === tabName ? color : undefined, fontWeight: "bold", borderTopLeftRadius: 10, borderTopRightRadius: 10, padding: 10}}>{tabName}</div>
 						})
 					}
 				</div>
@@ -98,6 +105,8 @@ export function App(props: Props) {
 							return <VotingBagPanel gameState={gameState}/>
 						} else if (selectedTab.current === "Marketplace") {
 							return <MarketplacePanel gameState={gameState}/>
+						} else if (selectedTab.current === "Actions") {
+							return <ActionsPanel gameState={gameState} playerClass={getPlayerClass(observingAsPlayerClassName.current)}/>
 						}
 					})()
 				}
