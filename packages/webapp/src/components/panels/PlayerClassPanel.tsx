@@ -52,7 +52,6 @@ export function PlayerClassPanel(props: Props) {
 								value={classState.storedGoods[industry.name].price}
 								radioButtonSize={16}
 								fontSize="small"
-								active={false}
 							/>
 						</div>)
 					}

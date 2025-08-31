@@ -16,11 +16,11 @@ export function Details(props: Props) {
 				.map(detail => {
 					return <div key={detail.name} style={{display: "flex", flexDirection: "column", padding: 10, gap: 10, backgroundColor: detail.backgroundColor, borderRadius: 4}}>
 						<div><b>{detail.name}:</b></div>
-						<div style={{userSelect: "text"}}>{["string", "number"].includes(typeof detail.content) ? (
+						{["string", "number"].includes(typeof detail.content) ? (
 							<span style={{fontSize: "xxx-large"}}>{detail.content}</span>
 						) : (
 							detail.content
-						)}</div>
+						)}
 					</div>
 				})
 		}
