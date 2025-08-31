@@ -1,16 +1,22 @@
 import { getColor, getPlayerColor, getShade } from "../../utilities/Color"
 import { POLICIES } from "../../utilities/Constants"
-import { getImportPrice, getImportTariff, getIndustry } from "../../utilities/Game"
-import { isAre, s } from "../../utilities/Misc"
-import { GameState, PolicyName } from "../../utilities/Types"
+import { ActionExecution, GameState, PolicyPosition } from "../../utilities/Types"
 import { Details } from "../Details"
 import { Icon } from "../Icon"
 import { IconedText } from "../IconedText"
 import { RadioSelector } from "../RadioSelector"
 
 export function PoliciesPanel(props: {
-    gameState: GameState
+    gameState: GameState,
+    actionExecution: ActionExecution | undefined
 }) {
+
+    function onClickPolicyPosition(policyPosition: PolicyPosition) {
+        if (props.actionExecution?.policyPositionPredicate !== undefined && props.actionExecution!.policyPositionPredicate(policyPosition)) {
+            props.actionExecution.policyPositionCallback!(policyPosition)
+        }
+    }
+
     return <div style={{backgroundColor: getShade(1), padding: 20}}>
         <Details details={POLICIES.map(policy => ({
             name: policy.name,
@@ -30,8 +36,9 @@ export function PoliciesPanel(props: {
                         )
                     }
                 </div>,
-                value: index
-            }))} value={props.gameState.policies[policy.name].state} onChange={() => undefined} active={false}/>
+                value: index as 0 | 1 | 2,
+                allowed: props.actionExecution?.policyPositionPredicate !== undefined && props.actionExecution!.policyPositionPredicate({name: policy.name, position: index as 0 | 1 | 2})
+            }))} value={props.gameState.policies[policy.name].state} onChange={index => onClickPolicyPosition({name: policy.name, position: index})}/>
         }))}/>
     </div>
 }

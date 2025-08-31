@@ -1,5 +1,7 @@
 import { z } from "zod"
 import { playerClassNameZod, tabNameZod } from "./Zod"
+import { ImmutableRefObject } from "../classes/ImmutableRefObject"
+import { MutableRefObject } from "react"
 
 export type PlayerClassName = z.infer<typeof playerClassNameZod>
 
@@ -161,11 +163,31 @@ export type Action = {
 	requiredPolicy?: {
 		name: PolicyName,
 		states: Array<0 | 1 | 2>
-	}
+	},
+	isPossible?: (gameState: GameState, playerClass: PlayerClass) => boolean,
+	execute?: (
+		gameState: ImmutableRefObject<GameState>,
+		setGameState: (newGameState: GameState) => void,
+		playerClass: PlayerClass,
+		setText: (text: string) => void,
+		selectPolicyPosition: (predicate: (policyPosition: PolicyPosition) => boolean) => Promise<PolicyPosition>
+	) => Promise<void>
+}
+
+export type ActionExecution = {
+	action: Action,
+	policyPositionPredicate?: (policyPosition: PolicyPosition) => boolean,
+	policyPositionCallback?: (policyPosition: PolicyPosition) => void,
+	text?: string
 }
 
 export type Policy = {
 	name: PolicyName,
 	hue: number,
 	content: Array<string>
+}
+
+export type PolicyPosition = {
+	name: PolicyName,
+	position: 0 | 1 | 2
 }
