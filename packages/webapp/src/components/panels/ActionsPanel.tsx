@@ -1,5 +1,5 @@
 import { getColor, getShade } from "../../utilities/Color"
-import { ACTION_SIZE_PX, BASIC_ACTIONS, FREE_ACTIONS, POLICIES } from "../../utilities/Constants"
+import { ACTION_SIZE_PX, BASIC_ACTIONS, DRAWN_ACTIONS, FREE_ACTIONS, POLICIES } from "../../utilities/Constants"
 import { Action, GameState, PlayerClass } from "../../utilities/Types"
 import { Details } from "../Details"
 import { Icon } from "../Icon"
@@ -12,10 +12,12 @@ export function ActionsPanel(props: {
 }) {
 	const playerState = props.gameState.classes.find(playerClassState => playerClassState.className === props.playerClass.name)!
 
+	const playerDrawnActions = playerState.drawnActions.map(x => DRAWN_ACTIONS[x])
+
 	const actionsGroups = [
 		{
 			name: "Main actions",
-			actions: [...playerState.drawActions, ...BASIC_ACTIONS].filter(action => action.playerClasses.includes(props.playerClass.name))
+			actions: [...playerDrawnActions, ...BASIC_ACTIONS].filter(action => action.playerClasses.includes(props.playerClass.name))
 		}, {
 			name: "Free actions",
 			actions: FREE_ACTIONS.filter(action => action.playerClasses.includes(props.playerClass.name))

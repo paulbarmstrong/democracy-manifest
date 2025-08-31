@@ -348,7 +348,7 @@ export const GAME_STATE: GameState = {
 		{
 			className: "Working Class",
 			cash: 20,
-			drawActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Working Class")), 4),
+			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Working Class")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
 				Food: {quantity: 0, price: 0},
 				Luxury: {quantity: 0, price: 0},
@@ -372,7 +372,7 @@ export const GAME_STATE: GameState = {
 		{
 			className: "Middle Class",
 			cash: 40,
-			drawActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Middle Class")), 4),
+			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Middle Class")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
 				Food: {quantity: 2, price: 12},
 				Luxury: {quantity: 0, price: 8},
@@ -403,7 +403,7 @@ export const GAME_STATE: GameState = {
 		{
 			className: "Capitalist Class",
 			cash: 60,
-			drawActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Capitalist Class")), 4),
+			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Capitalist Class")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
 				Food: {quantity: 2, price: 12},
 				Luxury: {quantity: 25, price: 8},
@@ -445,7 +445,7 @@ export const GAME_STATE: GameState = {
 		{
 			className: "State",
 			cash: 50,
-			drawActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("State")), 4),
+			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("State")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
 				Food: {quantity: 0, price: 12},
 				Luxury: {quantity: 0, price: 8},
