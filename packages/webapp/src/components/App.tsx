@@ -2,14 +2,13 @@ import { GAME_STATE, PLAYER_CLASSES, SIDEBAR_WIDTH_PX } from "../utilities/Const
 import { useWindowSize } from "../hooks/useWindowSize"
 import { DynamicWebappConfig } from "common"
 import { useRefState } from "../hooks/useRefState"
-import { Action, ActionExecution, PlayerClassName, Policy, PolicyPosition, TabName } from "../utilities/Types"
+import { Action, ActionExecution, PlayerClassName, PolicyPosition, TabName } from "../utilities/Types"
 import { playerClassNameZod, tabNameZod } from "../utilities/Zod"
 import { getPlayerClass } from "../utilities/Game"
 import { getPlayerColor, getShade } from "../utilities/Color"
 import { PlayerClassPanel } from "./panels/PlayerClassPanel"
 import { AllPlayerClassesPanel } from "./panels/AllPlayerClassesPanel"
-import { PoliciesPanel } from "./panels/PoliciesPanel"
-import { VotingBagPanel } from "./panels/VotingBagPanel"
+import { PoliticsPanel } from "./panels/PoliticsPanel"
 import { MarketplacePanel } from "./panels/MarketplacePanel"
 import { ActionsPanel } from "./panels/ActionsPanel"
 import { RadioSelector } from "./RadioSelector"
@@ -82,7 +81,7 @@ export function App(props: Props) {
 	}
 
 	async function selectPolicyPosition(predicate: (policyPosition: PolicyPosition) => boolean): Promise<PolicyPosition> {
-		selectedTab.current = "Policies"
+		selectedTab.current = "Politics"
 		return new Promise<PolicyPosition>((resolve, _) => {
 			actionExecution.current = {...actionExecution.current!, policyPositionPredicate: predicate, policyPositionCallback: resolve}
 		})
@@ -112,13 +111,10 @@ export function App(props: Props) {
 					(() => {
 						if (selectedTab.current === "All Classes") {
 							return <AllPlayerClassesPanel gameState={gameState.current}/>
-						}
-						if (selectedTab.current === "My Class") {
+						} else if (selectedTab.current === "My Class") {
 							return <PlayerClassPanel playerClass={getPlayerClass(observingAsPlayerClassName.current)} gameState={gameState.current}/>
-						} else if (selectedTab.current === "Policies") {
-							return <PoliciesPanel gameState={gameState.current} actionExecution={actionExecution.current}/>
-						} else if (selectedTab.current === "Voting Bag") {
-							return <VotingBagPanel gameState={gameState.current}/>
+						} else if (selectedTab.current === "Politics") {
+							return <PoliticsPanel gameState={gameState.current} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "Marketplace") {
 							return <MarketplacePanel gameState={gameState.current}/>
 						} else if (selectedTab.current === "Actions") {

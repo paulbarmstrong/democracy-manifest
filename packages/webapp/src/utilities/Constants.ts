@@ -237,7 +237,7 @@ export const POLICIES: Array<Policy> = [
 
 export const DRAWN_ACTIONS: Array<Action> = [
 	{name: "Need for change", type: "drawn", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Pay $25 to propose 2 bills."},
-	{name: "Public opinion polling", type: "drawn", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Propose a bill and reveal 5 units from the voting bag. You may call for an immediate vote on it without using <Influence>, and using the units revealed from the bag."},
+	{name: "Public opinion polling", type: "drawn", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Propose a bill and reveal a political pressure result. You may call for an immediate vote on it without using <Influence>, and using that political pressure result."},
 	{name: "State scholarship", type: "drawn", playerClasses: ["Working Class", "Middle Class"], description: "Buy <Education> from the State, up to half of your population. Pay half price (rounded up).", requiredPolicy: {name: "Education", states: [1,2]}, credibilityDescription: ["+1 <middle-class-credibility>"]},
 	{name: "Workplace accident", type: "drawn", playerClasses: ["Working Class"], description: "Choose an industry. Get $8 from another player for each of their companies of that industry with your workers."},
 	{name: "Push political agenda", type: "drawn", playerClasses: ["Capitalist Class"], description: "Pay $25 to propose 2 bills."},
@@ -283,15 +283,15 @@ export const BASIC_ACTIONS: Array<Action> = [
 		name: "Apply political pressure",
 		type: "basic",
 		playerClasses: ["Working Class", "Middle Class", "Capitalist Class"],
-		description: "Add 3 units to the voting bag.",
+		description: "Add 3 political pressure.",
 		execute: async (gameState, setGameState, playerClass, setText) => {
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
-			gameState.current.votingBag[playerClassName] = Math.min(gameState.current.votingBag[playerClassName] + 3, 25)
+			gameState.current.politicalPressure[playerClassName] = Math.min(gameState.current.politicalPressure[playerClassName] + 3, 25)
 			setGameState(gameState.current)
 		},
 		isPossible: (gameState, playerClass) => {
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
-			return gameState.votingBag[playerClassName] < 25
+			return gameState.politicalPressure[playerClassName] < 25
 		}
 	}
 ]
@@ -353,7 +353,7 @@ export const GAME_STATE: GameState = {
 			state: 2
 		}
 	},
-	votingBag: {
+	politicalPressure: {
 		"Working Class": 7,
 		"Middle Class": 8,
 		"Capitalist Class": 3
