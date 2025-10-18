@@ -11,9 +11,7 @@ import { Icon } from "../Icon"
 
 interface Props {
 	playerClass: PlayerClass,
-	gameState: GameState,
-	zoomed: boolean,
-	onClickZoom: () => void
+	gameState: GameState
 }
 
 export function PlayerClassPanel(props: Props) {
@@ -33,8 +31,7 @@ export function PlayerClassPanel(props: Props) {
 	const numberOfWorkers = workers.length > 0 ? workers.length : undefined
 	const populationLevel = numberOfWorkers !== undefined ? Math.floor(numberOfWorkers / 3) : undefined
 
-	return <div style={{backgroundColor: getColor(props.playerClass.hue, 0), display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 10, gap: 10, position: "relative"}}>
-		<span className="clickable material-symbols-outlined" onClick={props.onClickZoom} style={{position: "absolute", top: 20, right: 20, color: "white", fontSize: 36}}>{props.zoomed ? "zoom_in_map" : "zoom_out_map"}</span>
+	return <div style={{backgroundColor: getColor(props.playerClass.hue, 0), display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 10, gap: 10}}>
 		<div style={{padding: 10, fontSize: "xx-large"}}>{props.playerClass.name}</div>
 		<Details details={[
 			{name: "Cash", content: `$${classState.cash}`},
