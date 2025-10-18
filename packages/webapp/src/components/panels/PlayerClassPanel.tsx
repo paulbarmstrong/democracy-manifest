@@ -88,6 +88,15 @@ export function PlayerClassPanel(props: Props) {
 			) : (
 				undefined
 			)},
+			{name: "Unemployed workers", content: unemployedWorkers.length > 0 ? (
+				<div style={{display: "flex", gap: 10}}>
+					{
+						props.gameState.unemployedWorkers.filter(worker => worker.class === classState.className).map(worker => <div style={{width: 30, height: 30, display: "flex", justifyContent: "center", alignItems: "center"}}><WorkerView worker={worker}/></div>)
+					}
+				</div>
+			) : (
+				undefined
+			)},
 			{name: "Capital", content: (classState as CapitalistClassState).capital !== undefined ? `$${(classState as CapitalistClassState).capital}` : undefined},
 			{name: "Wealth", content: (classState as CapitalistClassState).capital !== undefined ? (
 				<div style={{display: "flex", flexDirection: "column", gap: 5}}>
