@@ -148,7 +148,7 @@ export type GameState = {
 			}
 		}
 	},
-	votingBag: {
+	politicalPressure: {
 		"Working Class": number,
 		"Middle Class": number,
 		"Capitalist Class": number
