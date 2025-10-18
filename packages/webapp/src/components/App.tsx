@@ -99,8 +99,8 @@ export function App(props: Props) {
 				<div style={{display: "flex", justifyContent: "flex-start", gap: 4}}>
 					{
 						tabNameZod.options.map(tabName => {
-							const color = playerClassNameZod.options.includes(tabName as PlayerClassName) ? (
-								getPlayerColor(tabName as PlayerClassName, 0)
+							const color = tabName === "My Class" ? (
+								getPlayerColor(observingAsPlayerClassName.current, 0)
 							) : (
 								getShade(1)
 							)
@@ -110,11 +110,11 @@ export function App(props: Props) {
 				</div>
 				{
 					(() => {
-						if (selectedTab.current === "All classes") {
-							return <AllPlayerClassesPanel selectedTab={selectedTab} gameState={gameState.current}/>
+						if (selectedTab.current === "All Classes") {
+							return <AllPlayerClassesPanel gameState={gameState.current}/>
 						}
-						if (playerClassNameZod.options.includes(selectedTab.current as PlayerClassName)) {
-							return <PlayerClassPanel playerClass={getPlayerClass(selectedTab.current as PlayerClassName)} gameState={gameState.current} zoomed={true} onClickZoom={() => selectedTab.current = "All classes"}/>
+						if (selectedTab.current === "My Class") {
+							return <PlayerClassPanel playerClass={getPlayerClass(observingAsPlayerClassName.current)} gameState={gameState.current}/>
 						} else if (selectedTab.current === "Policies") {
 							return <PoliciesPanel gameState={gameState.current} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "Voting Bag") {
