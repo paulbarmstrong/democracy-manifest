@@ -8,6 +8,7 @@ import { RadioSelector } from "../RadioSelector"
 import { Details } from "../Details"
 import { WorkerView } from "../WorkerView"
 import { Icon } from "../Icon"
+import { Highlight } from "../Highlight"
 
 interface Props {
 	playerClass: PlayerClass,
@@ -31,7 +32,7 @@ export function PlayerClassPanel(props: Props) {
 	const numberOfWorkers = workers.length > 0 ? workers.length : undefined
 	const populationLevel = numberOfWorkers !== undefined ? Math.floor(numberOfWorkers / 3) : undefined
 
-	return <div style={{backgroundColor: getColor(props.playerClass.hue, 0), display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 10, gap: 10}}>
+	return <div style={{backgroundColor: getColor(props.playerClass.hue, 0)}}><Highlight active={props.gameState.turnPlayerClass === props.playerClass.name}><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 10, gap: 10}}>
 		<div style={{padding: 10, fontSize: "xx-large"}}>{props.playerClass.name}</div>
 		<Details details={[
 			{name: "Cash", content: `$${classState.cash}`},
@@ -83,15 +84,6 @@ export function PlayerClassPanel(props: Props) {
 								}
 							</div>
 						</div>)
-					}
-				</div>
-			) : (
-				undefined
-			)},
-			{name: "Unemployed workers", content: unemployedWorkers.length > 0 ? (
-				<div style={{display: "flex", gap: 10}}>
-					{
-						props.gameState.unemployedWorkers.filter(worker => worker.class === classState.className).map(worker => <div style={{width: 30, height: 30, display: "flex", justifyContent: "center", alignItems: "center"}}><WorkerView worker={worker}/></div>)
 					}
 				</div>
 			) : (
@@ -170,5 +162,5 @@ export function PlayerClassPanel(props: Props) {
 				</div>
 			},
 		]}/>
-	</div>
+	</div></Highlight></div>
 }

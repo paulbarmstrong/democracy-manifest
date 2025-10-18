@@ -139,6 +139,11 @@ export type ExportDeals = Array<{
 }>
 
 export type GameState = {
+	roundNumber: 1 | 2 | 3 | 4 | 5,
+	turnNumber: 1 | 2 | 3 | 4 | 5 | 6 | 7,
+	turnPlayerClass: PlayerClassName,
+	mainActionCompleted: boolean,
+	freeActionCompleted: boolean
 	policies: {
 		[K in PolicyName]: {
 			state: 0 | 1 | 2,

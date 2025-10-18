@@ -82,7 +82,6 @@ export function CompanyCard(props: Props) {
 												onChange={() => undefined}
 												value={props.company.wageLevel}
 												radioButtonSize={16}
-												active={false}
 											/>
 										</div>
 									) : (
