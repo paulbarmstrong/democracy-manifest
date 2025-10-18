@@ -326,6 +326,11 @@ export const FREE_ACTIONS: Array<Action> = [
 ]
 
 export const GAME_STATE: GameState = {
+	roundNumber: 1,
+	turnNumber: 3,
+	turnPlayerClass: "Working Class",
+	mainActionCompleted: false,
+	freeActionCompleted: false,
 	policies: {
 		"Fiscal Policy": {
 			state: 0
