@@ -114,6 +114,11 @@ export type StateClassState = CommonClassState & {
 		"Working Class": number,
 		"Middle Class": number,
 		"Capitalist Class": number
+	},
+	stateBenefits: {
+		"Working Class": number,
+		"Middle Class": number,
+		"Capitalist Class": number
 	}
 }
 

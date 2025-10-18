@@ -1,6 +1,6 @@
 import { take } from "lodash"
-import { Action, CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass, Policy } from "./Types"
-import { getImportPrice, getIndustry } from "./Game"
+import { Action, CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass, Policy, StateClassState } from "./Types"
+import { getClassState, getImportPrice, getIndustry } from "./Game"
 import { isAre, s } from "./Misc"
 
 export const COMPANY_SIZE_PX = 220
@@ -305,7 +305,23 @@ export const FREE_ACTIONS: Array<Action> = [
 	{name: "Give bonus", type: "free", playerClasses: ["Capitalist Class"], description: "Pay the class of the workers in one of your companies $5 in order to commit them."},
 	{name: "Buy warehouse", type: "free", playerClasses: ["Capitalist Class"], description: "Pay $20 to gain a warehouse to store more of one type of good."},
 	{name: "Swap workers", type: "free", playerClasses: ["Working Class", "Middle Class"], description: "Swap any number of workers in unskilled slots with unemployed workers."},
-	{name: "Claim state benefits", type: "free", playerClasses: ["Working Class", "Middle Class", "Capitalist Class"], description: "Claim whatever is in the State benefits section for your class. +1 <vp> to the State."},
+	{
+		name: "Claim state benefits",
+		type: "free",
+		playerClasses: ["Working Class", "Middle Class", "Capitalist Class"],
+		description: "Claim whatever is in the State benefits section for your class. +1 <vp> to the State.",
+		isPossible: (gameState, playerClass) => {
+			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
+			return (getClassState(gameState, "State") as StateClassState).stateBenefits[playerClassName] > 0
+		},
+		execute: async (gameState, setGameState, playerClass, setText, selectPolicyPosition) => {
+			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
+			const stateClassState: StateClassState = getClassState(gameState.current, "State") as StateClassState
+			getClassState(gameState.current, playerClassName).cash += stateClassState.stateBenefits[playerClassName]
+			stateClassState.stateBenefits[playerClassName] = 0
+			setGameState(gameState.current)
+		}
+	},
 	{name: "Pay off loan", type: "free", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Spend $50 to remove a loan."}
 ]
 
@@ -480,6 +496,11 @@ export const GAME_STATE: GameState = {
 				"Working Class": 3,
 				"Middle Class": 2,
 				"Capitalist Class": 1
+			},
+			stateBenefits: {
+				"Working Class": 0,
+				"Middle Class": 10,
+				"Capitalist Class": 0
 			}
 		}
 	],
