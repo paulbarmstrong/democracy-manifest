@@ -138,6 +138,18 @@ export function PlayerClassPanel(props: Props) {
 			) : (
 				undefined
 			)},
+			{name: "State Benefits", content: (classState as StateClassState).stateBenefits !== undefined ? (
+				<div style={{display: "flex", gap: 5}}>
+					{
+						Object.entries((classState as StateClassState).stateBenefits).map(benefitsEntry => <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center", gap: 20, padding: 10, backgroundColor: getPlayerColor(benefitsEntry[0] as PlayerClassName, 1), borderRadius: 4}}>
+							<span>{benefitsEntry[0]}</span>
+							<span style={{fontSize: "x-large"}}>${benefitsEntry[1]}</span>
+						</div>)
+					}
+				</div>
+			) : (
+				undefined
+			)},
 			{name: "Companies", content:
 				<div style={{display: "flex", flexWrap: "wrap", gap: 10}}>
 					{
@@ -150,7 +162,7 @@ export function PlayerClassPanel(props: Props) {
 						})
 					}
 				</div>
-			}
+			},
 		]}/>
 	</div>
 }

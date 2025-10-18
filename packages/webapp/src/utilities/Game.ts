@@ -9,6 +9,10 @@ export function getPlayerClass(playerClassName: PlayerClassName): PlayerClass {
 	return PLAYER_CLASSES.find(playerClass => playerClass.name === playerClassName)!
 }
 
+export function getClassState(gameState: GameState, playerClassName: PlayerClassName): ClassState {
+	return gameState.classes.find(x => x.className === playerClassName)!
+}
+
 export function getMaxStorage(classState: ClassState, industry: Industry): number {
 	const playerClass: PlayerClass = getPlayerClass(classState.className)
 	const baseStorage: number = playerClass.baseStorages[industry.name]
