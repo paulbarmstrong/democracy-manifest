@@ -12,7 +12,8 @@ import { Highlight } from "../Highlight"
 
 interface Props {
 	playerClass: PlayerClass,
-	gameState: GameState
+	gameState: GameState,
+	zoomed: boolean
 }
 
 export function PlayerClassPanel(props: Props) {
@@ -32,7 +33,7 @@ export function PlayerClassPanel(props: Props) {
 	const numberOfWorkers = workers.length > 0 ? workers.length : undefined
 	const populationLevel = numberOfWorkers !== undefined ? Math.floor(numberOfWorkers / 3) : undefined
 
-	return <div style={{backgroundColor: getColor(props.playerClass.hue, 0)}}><Highlight active={getTurn(props.gameState).turnPlayerClassName === props.playerClass.name}><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 10, gap: 10}}>
+	return <div style={{backgroundColor: getColor(props.playerClass.hue, 0)}}><Highlight active={!props.zoomed && getTurn(props.gameState).turnPlayerClassName === props.playerClass.name}><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 10, gap: 10}}>
 		<div style={{padding: 10, fontSize: "xx-large"}}>{props.playerClass.name}</div>
 		<Details details={[
 			{name: "Cash", content: `$${classState.cash}`},
