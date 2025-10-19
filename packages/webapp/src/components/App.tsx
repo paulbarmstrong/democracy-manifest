@@ -76,7 +76,22 @@ export function App(props: Props) {
 	
 	async function onClickAction(action: Action) {
 		actionExecution.current = {action}
-		if (action.execute !== undefined) await action.execute(gameState, setGameState, observingAsPlayerClass, text => actionExecution.current = {...actionExecution.current!, text}, selectPolicyPosition)
+		if (action.execute !== undefined) await action.execute({
+			gameState,
+			playerClass: observingAsPlayerClass,
+			setText: text => actionExecution.current = {...actionExecution.current!, text}, selectPolicyPosition
+		})
+		if (action.type === "free") {
+			gameState.current.freeActionCompleted = true
+		} else {
+			gameState.current.mainActionCompleted = true
+		}
+		if (gameState.current.freeActionCompleted && gameState.current.mainActionCompleted) {
+			gameState.current.turnIndex += 1
+			gameState.current.mainActionCompleted = false
+			gameState.current.freeActionCompleted = false
+		}
+		setGameState(gameState.current)
 		actionExecution.current = undefined
 	}
 

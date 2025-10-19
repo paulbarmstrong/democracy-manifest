@@ -139,9 +139,7 @@ export type ExportDeals = Array<{
 }>
 
 export type GameState = {
-	roundNumber: 1 | 2 | 3 | 4 | 5,
-	turnNumber: 1 | 2 | 3 | 4 | 5 | 6 | 7,
-	turnPlayerClass: PlayerClassName,
+	turnIndex: number,
 	mainActionCompleted: boolean,
 	freeActionCompleted: boolean
 	policies: {
@@ -175,13 +173,12 @@ export type Action = {
 		states: Array<0 | 1 | 2>
 	},
 	isPossible?: (gameState: GameState, playerClass: PlayerClass) => boolean,
-	execute?: (
+	execute?: (args: {
 		gameState: ImmutableRefObject<GameState>,
-		setGameState: (newGameState: GameState) => void,
 		playerClass: PlayerClass,
 		setText: (text: string) => void,
 		selectPolicyPosition: (predicate: (policyPosition: PolicyPosition) => boolean) => Promise<PolicyPosition>
-	) => Promise<void>
+	}) => Promise<void>
 }
 
 export type ActionExecution = {

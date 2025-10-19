@@ -1,4 +1,4 @@
-import { take } from "lodash"
+import { identity, take } from "lodash"
 import { Action, CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass, Policy, StateClassState } from "./Types"
 import { getClassState, getImportPrice, getIndustry } from "./Game"
 import { isAre, s } from "./Misc"
@@ -258,11 +258,10 @@ export const BASIC_ACTIONS: Array<Action> = [
 		playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"],
 		description: "Select a policy and a position adjacent to its existing position. The vote will take place in the election phase, or may triggered immediately vote using 1 <Influence>.",
 		isPossible: (gameState: GameState, _) => Object.values(gameState.policies).filter(x => x.proposal !== undefined).length < 3,
-		execute: async (gameState, setGameState, playerClass, setText, selectPolicyPosition) => {
+		execute: async ({gameState, playerClass, setText, selectPolicyPosition}) => {
 			setText("Select a policy position adjacent to that policy's existing position.")
 			const policyPosition = await selectPolicyPosition(policyPosition => Math.abs(gameState.current.policies[policyPosition.name].state - policyPosition.position) === 1 && gameState.current.policies[policyPosition.name].proposal === undefined)
 			gameState.current.policies[policyPosition.name].proposal = {playerClassName: playerClass.name, proposedState: policyPosition.position}
-			setGameState(gameState.current)
 		}
 	},
 	{name: "Address event", type: "basic", playerClasses: ["State"], description: "Address one of the State events."},
@@ -284,10 +283,9 @@ export const BASIC_ACTIONS: Array<Action> = [
 		type: "basic",
 		playerClasses: ["Working Class", "Middle Class", "Capitalist Class"],
 		description: "Add 3 political pressure.",
-		execute: async (gameState, setGameState, playerClass, setText) => {
+		execute: async ({gameState, playerClass}) => {
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
 			gameState.current.politicalPressure[playerClassName] = Math.min(gameState.current.politicalPressure[playerClassName] + 3, 25)
-			setGameState(gameState.current)
 		},
 		isPossible: (gameState, playerClass) => {
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
@@ -314,21 +312,30 @@ export const FREE_ACTIONS: Array<Action> = [
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
 			return (getClassState(gameState, "State") as StateClassState).stateBenefits[playerClassName] > 0
 		},
-		execute: async (gameState, setGameState, playerClass, setText, selectPolicyPosition) => {
+		execute: async ({gameState, playerClass, setText, selectPolicyPosition}) => {
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
 			const stateClassState: StateClassState = getClassState(gameState.current, "State") as StateClassState
 			getClassState(gameState.current, playerClassName).cash += stateClassState.stateBenefits[playerClassName]
 			stateClassState.stateBenefits[playerClassName] = 0
-			setGameState(gameState.current)
 		}
 	},
-	{name: "Pay off loan", type: "free", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"], description: "Spend $50 to remove a loan."}
+	{
+		name: "Pay off loan",
+		type: "free", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"],
+		description: "Spend $50 to remove a loan."
+	},
+	{
+		name: "Pass",
+		type: "free",
+		playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"],
+		description: "Do nothing.",
+		isPossible: () => true,
+		execute: identity
+	}
 ]
 
 export const GAME_STATE: GameState = {
-	roundNumber: 1,
-	turnNumber: 3,
-	turnPlayerClass: "Working Class",
+	turnIndex: 8,
 	mainActionCompleted: false,
 	freeActionCompleted: false,
 	policies: {
