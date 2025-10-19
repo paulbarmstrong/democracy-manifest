@@ -37,3 +37,11 @@ export function getImportPrice(industryName: "Food" | "Luxury", level: number): 
 	const basePrice = industryName === "Food" ? BASE_FOOD_IMPORT_PRICE : BASE_LUXURY_IMPORT_PRICE
 	return basePrice + getImportTariff(industryName, level)
 }
+
+export function getTurn(gameState: GameState) {
+	return {
+		roundNumber: Math.floor(gameState.turnIndex / (4 * 5)) + 1,
+		turnNumber: Math.floor((gameState.turnIndex % (4 * 5)) / 4) + 1,
+		turnPlayerClassName: gameState.classes[gameState.turnIndex % 4].className
+	}
+}

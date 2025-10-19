@@ -3,7 +3,7 @@ import { getColor, getPlayerColor } from "../../utilities/Color"
 import { CapitalistClassState, GameState, PlayerClass, PlayerClassName, StateClassState, Worker, WorkingClassState } from "../../utilities/Types"
 import { COMPANY_SIZE_PX, INDUSTRIES, MAX_CREDIBILITY_PER_CLASS, WEALTH_TIER_THRESHOLDS } from "../../utilities/Constants"
 import { CompanyCard } from "../CompanyCard"
-import { capitalToWealthTier, getMaxStorage } from "../../utilities/Game"
+import { capitalToWealthTier, getMaxStorage, getTurn } from "../../utilities/Game"
 import { RadioSelector } from "../RadioSelector"
 import { Details } from "../Details"
 import { WorkerView } from "../WorkerView"
@@ -32,7 +32,7 @@ export function PlayerClassPanel(props: Props) {
 	const numberOfWorkers = workers.length > 0 ? workers.length : undefined
 	const populationLevel = numberOfWorkers !== undefined ? Math.floor(numberOfWorkers / 3) : undefined
 
-	return <div style={{backgroundColor: getColor(props.playerClass.hue, 0)}}><Highlight active={props.gameState.turnPlayerClass === props.playerClass.name}><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 10, gap: 10}}>
+	return <div style={{backgroundColor: getColor(props.playerClass.hue, 0)}}><Highlight active={getTurn(props.gameState).turnPlayerClassName === props.playerClass.name}><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 10, gap: 10}}>
 		<div style={{padding: 10, fontSize: "xx-large"}}>{props.playerClass.name}</div>
 		<Details details={[
 			{name: "Cash", content: `$${classState.cash}`},

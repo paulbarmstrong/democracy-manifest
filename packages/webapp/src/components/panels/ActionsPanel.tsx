@@ -1,5 +1,6 @@
 import { getColor, getShade } from "../../utilities/Color"
 import { ACTION_SIZE_PX, BASIC_ACTIONS, DRAWN_ACTIONS, FREE_ACTIONS, POLICIES } from "../../utilities/Constants"
+import { getTurn } from "../../utilities/Game"
 import { Action, GameState, PlayerClass } from "../../utilities/Types"
 import { Details } from "../Details"
 import { Highlight } from "../Highlight"
@@ -15,15 +16,17 @@ export function ActionsPanel(props: {
 
 	const playerDrawnActions = playerState.drawnActions.map(x => DRAWN_ACTIONS[x])
 
+	console.log(JSON.stringify(getTurn(props.gameState)))
+
 	const actionsGroups = [
 		{
 			name: "Main actions",
 			actions: [...playerDrawnActions, ...BASIC_ACTIONS].filter(action => action.playerClasses.includes(props.playerClass.name)),
-			active: props.gameState.turnPlayerClass === props.playerClass.name && !props.gameState.mainActionCompleted
+			active: getTurn(props.gameState).turnPlayerClassName === props.playerClass.name && !props.gameState.mainActionCompleted
 		}, {
 			name: "Free actions",
 			actions: FREE_ACTIONS.filter(action => action.playerClasses.includes(props.playerClass.name)),
-			active: props.gameState.turnPlayerClass === props.playerClass.name && !props.gameState.freeActionCompleted
+			active: getTurn(props.gameState).turnPlayerClassName === props.playerClass.name && !props.gameState.freeActionCompleted
 		}
 	]
 
@@ -32,7 +35,8 @@ export function ActionsPanel(props: {
 			{
 				group.actions.filter(action => action.playerClasses.includes(props.playerClass.name)).map(action => {
 					const isPossible = action.isPossible === undefined || action.isPossible(props.gameState, props.playerClass)
-					return <div className={isPossible && group.active ? "clickable" : undefined} onClick={isPossible ? () => props.onClickAction(action) : undefined} style={{padding: 10, borderRadius: 4, backgroundColor: getShade(2), display: "flex", flexDirection: "column", gap: 10, opacity: isPossible ? undefined : 0.5}}>
+					const isClickable = isPossible && group.active ? "clickable" : undefined
+					return <div className={isClickable ? "clickable" : undefined} onClick={isClickable ? () => props.onClickAction(action) : undefined} style={{padding: 10, borderRadius: 4, backgroundColor: getShade(2), display: "flex", flexDirection: "column", gap: 10, opacity: isPossible ? undefined : 0.5}}>
 						<span style={{fontSize: "large", fontWeight: "bold", display: "flex", gap: 3, alignItems: "center"}}>{action.type === "drawn" ? <Icon name="drawn"/> : undefined}{action.type === "drawn" ? "\"" : ""}{action.name}{action.type === "drawn" ? "\"" : ""}</span>
 						<span><IconedText text={action.description}/></span>
 						{action.requiredPolicy !== undefined ? (
