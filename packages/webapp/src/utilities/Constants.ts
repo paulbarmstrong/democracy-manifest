@@ -375,6 +375,7 @@ export const GAME_STATE: GameState = {
 	classes: [
 		{
 			className: "Working Class",
+			playerName: "paul",
 			cash: 20,
 			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Working Class")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
@@ -399,6 +400,7 @@ export const GAME_STATE: GameState = {
 		},
 		{
 			className: "Middle Class",
+			playerName: "alex",
 			cash: 40,
 			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Middle Class")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {

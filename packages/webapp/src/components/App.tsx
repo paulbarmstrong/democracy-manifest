@@ -13,6 +13,7 @@ import { MarketplacePanel } from "./panels/MarketplacePanel"
 import { ActionsPanel } from "./panels/ActionsPanel"
 import { RadioSelector } from "./RadioSelector"
 import { useGameState } from "../hooks/useGameState"
+import { Banner } from "./Banner"
 
 interface Props {
 	config: DynamicWebappConfig,
@@ -110,6 +111,7 @@ export function App(props: Props) {
 					<div>Observing as:</div>
 					<RadioSelector choices={PLAYER_CLASSES.map(playerClass => ({value: playerClass.name, content: playerClass.name}))} value={observingAsPlayerClassName.current} onChange={newClassName => observingAsPlayerClassName.current = newClassName as PlayerClassName} radioButtonSize={16}/>
 				</div>
+				<Banner gameState={gameState.current}/>
 				<div style={{display: "flex", justifyContent: "flex-start", gap: 4}}>
 					{
 						tabNameZod.options.map(tabName => {
@@ -127,7 +129,7 @@ export function App(props: Props) {
 						if (selectedTab.current === "All Classes") {
 							return <AllPlayerClassesPanel gameState={gameState.current}/>
 						} else if (selectedTab.current === "My Class") {
-							return <PlayerClassPanel playerClass={getPlayerClass(observingAsPlayerClassName.current)} gameState={gameState.current}/>
+							return <PlayerClassPanel playerClass={getPlayerClass(observingAsPlayerClassName.current)} gameState={gameState.current} zoomed={true}/>
 						} else if (selectedTab.current === "Politics") {
 							return <PoliticsPanel gameState={gameState.current} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "Marketplace") {

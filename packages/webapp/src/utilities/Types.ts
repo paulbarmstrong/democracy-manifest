@@ -1,7 +1,6 @@
 import { z } from "zod"
 import { playerClassNameZod, tabNameZod } from "./Zod"
 import { ImmutableRefObject } from "../classes/ImmutableRefObject"
-import { MutableRefObject } from "react"
 
 export type PlayerClassName = z.infer<typeof playerClassNameZod>
 
@@ -65,6 +64,7 @@ export type Company = {
 
 type CommonClassState = {
 	className: PlayerClassName,
+	playerName?: string,
 	cash: number,
 	storedGoods: {
 		Food: {quantity: number, price: number},
