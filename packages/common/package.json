@@ -1,9 +1,17 @@
 {
 	"name": "common",
 	"version": "1.0.0",
+	"private": true,
+	"type": "module",
 	"license": "MIT",
-	"main": "dist/index",
-	"typings": "dist/index",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"scripts": {
 		"build": "tsc"
 	},
