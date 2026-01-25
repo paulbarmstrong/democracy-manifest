@@ -1,46 +1,20 @@
-import { getColor, getPlayerColor, getShade } from "../../utilities/Color"
+import { getPlayerColor, getShade } from "../../utilities/Color"
 import { POLICIES, TOTAL_NUM_VOTING_CUBES_PER_CLASS } from "../../utilities/Constants"
-import { ActionExecution, GameState, PlayerClassName, PolicyPosition } from "../../utilities/Types"
+import { ActionExecution, GameState, PlayerClassName } from "../../utilities/Types"
 import { Details } from "../Details"
-import { Icon } from "../Icon"
-import { IconedText } from "../IconedText"
-import { RadioSelector } from "../RadioSelector"
+import { PolicyPanel } from "./PolicyPanel"
 
 export function PoliticsPanel(props: {
+	playerClassName: PlayerClassName
 	gameState: GameState,
+	setGameState: (newGameState: GameState) => void,
 	actionExecution: ActionExecution | undefined
 }) {
 
-	function onClickPolicyPosition(policyPosition: PolicyPosition) {
-		if (props.actionExecution?.policyPositionPredicate !== undefined && props.actionExecution!.policyPositionPredicate(policyPosition)) {
-			props.actionExecution.policyPositionCallback!(policyPosition)
-		}
-	}
-
-	return <div style={{backgroundColor: getShade(1), padding: 20}}>
+	return <div style={{backgroundColor: getShade(1), padding: 10}}>
 		<Details details={[
 			{name: "Policies", content: <div style={{display: "flex", flexWrap: "wrap", gap: 20}}>{
-				POLICIES.map(policy => <div style={{backgroundColor: getColor(policy.hue, 0), borderRadius: 4, padding: 10, display: "flex", flexDirection: "column", gap: 10}}>
-					<div><b>{policy.name}:</b></div>
-					<RadioSelector choices={policy.content.map((text, index) => ({
-						content: <div style={{display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap"}}>
-							<span>{String.fromCharCode(65 + index)}</span>
-							<span>|</span>
-							<IconedText text={text}/>
-							{
-								(props.gameState.policies[policy.name].proposal?.proposedState === index) ? (
-									<div style={{backgroundColor: getPlayerColor(props.gameState.policies[policy.name].proposal!.playerClassName, 0), borderRadius: "50%", height: 20, width: 20, borderStyle: "solid", borderWidth: 2, display: "flex", justifyContent: "center", alignItems: "center"}}>
-										<Icon name="vote" size={16}/>
-									</div>
-								) : (
-									undefined
-								)
-							}
-						</div>,
-						value: index as 0 | 1 | 2,
-						allowed: props.actionExecution?.policyPositionPredicate !== undefined && props.actionExecution!.policyPositionPredicate({name: policy.name, position: index as 0 | 1 | 2})
-					}))} value={props.gameState.policies[policy.name].state} onChange={index => onClickPolicyPosition({name: policy.name, position: index})}/>
-				</div>)
+				POLICIES.map(policy => <PolicyPanel playerClassName={props.playerClassName} gameState={props.gameState} setGameState={props.setGameState} actionExecution={props.actionExecution} policy={policy}/>)
 			}</div>},
 			{name: "Political Pressure", content: <div style={{display: "flex", flexDirection: "column", gap: 10, backgroundColor: getShade(1)}}>
 				{

@@ -131,7 +131,7 @@ export function App(props: Props) {
 						} else if (selectedTab.current === "My Class") {
 							return <PlayerClassPanel playerClass={getPlayerClass(observingAsPlayerClassName.current)} gameState={gameState.current} zoomed={true}/>
 						} else if (selectedTab.current === "Politics") {
-							return <PoliticsPanel gameState={gameState.current} actionExecution={actionExecution.current}/>
+							return <PoliticsPanel playerClassName={observingAsPlayerClassName.current} setGameState={setGameState} gameState={gameState.current} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "Marketplace") {
 							return <MarketplacePanel gameState={gameState.current}/>
 						} else if (selectedTab.current === "Actions") {

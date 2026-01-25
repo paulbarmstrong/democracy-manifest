@@ -141,13 +141,25 @@ export type ExportDeals = Array<{
 export type GameState = {
 	turnIndex: number,
 	mainActionCompleted: boolean,
-	freeActionCompleted: boolean
+	freeActionCompleted: boolean,
+	vote?: PolicyName,
 	policies: {
 		[K in PolicyName]: {
 			state: 0 | 1 | 2,
 			proposal?: {
 				playerClassName: PlayerClassName,
-				proposedState: 0 | 1 | 2
+				proposedState: 0 | 1 | 2,
+			},
+			vote?: {
+				positions: {
+					[K in PlayerClassName]?: boolean
+				},
+				influence: {
+					[K in PlayerClassName]?: number
+				},
+				pressure: {
+					[K in Exclude<PlayerClassName, "State">]?: number
+				}
 			}
 		}
 	},

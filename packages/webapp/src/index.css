@@ -32,3 +32,47 @@ tr:nth-child(even) {
 	background-color: rgba(0, 0, 0, 0.06);
 	background-blend-mode: multiply;
 }
+
+a:link, a:visited {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+input[type=number] {
+	-moz-appearance: textfield;
+}
+
+input:focus {
+  outline: none;
+}
+
+.slider {
+	-webkit-appearance: none;
+	width: 100%;
+	height: 3pt;
+	margin: 0;
+	outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 10pt;
+	height: 10pt;
+	border-radius: 50%;
+	background: white;
+}
+  
+.slider::-moz-range-thumb {
+	width: 10pt;
+	height: 10pt;
+	border-radius: 50%;
+	background: white;
+}
