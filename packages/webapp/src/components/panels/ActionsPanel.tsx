@@ -16,8 +16,6 @@ export function ActionsPanel(props: {
 
 	const playerDrawnActions = playerState.drawnActions.map(x => DRAWN_ACTIONS[x])
 
-	console.log(JSON.stringify(getTurn(props.gameState)))
-
 	const actionsGroups = [
 		{
 			name: "Main actions",
@@ -34,7 +32,7 @@ export function ActionsPanel(props: {
 		<Details details={actionsGroups.map(group => ({name: group.name, content: <Highlight active={group.active} padding={10}><div style={{display: "flex", flexDirection: "column", gap: 10, maxWidth: ACTION_SIZE_PX}}>
 			{
 				group.actions.filter(action => action.playerClasses.includes(props.playerClass.name)).map(action => {
-					const isPossible = action.isPossible === undefined || action.isPossible(props.gameState, props.playerClass)
+					const isPossible = action.isPossible === undefined || action.isPossible({gameState: props.gameState, playerClass: props.playerClass, classState: playerState})
 					const isClickable = isPossible && group.active ? "clickable" : undefined
 					return <div className={isClickable ? "clickable" : undefined} onClick={isClickable ? () => props.onClickAction(action) : undefined} style={{padding: 10, borderRadius: 4, backgroundColor: getShade(2), display: "flex", flexDirection: "column", gap: 10, opacity: isPossible ? undefined : 0.5}}>
 						<span style={{fontSize: "large", fontWeight: "bold", display: "flex", gap: 3, alignItems: "center"}}>{action.type === "drawn" ? <Icon name="drawn"/> : undefined}{action.type === "drawn" ? "\"" : ""}{action.name}{action.type === "drawn" ? "\"" : ""}</span>

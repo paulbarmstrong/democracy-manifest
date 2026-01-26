@@ -37,6 +37,7 @@ export function PlayerClassPanel(props: Props) {
 		<div style={{padding: 10, fontSize: "xx-large"}}>{props.playerClass.name}</div>
 		<Details details={[
 			{name: "Cash", content: `$${classState.cash}`},
+			{name: "Loans", content: classState.loans > 0 ? classState.loans : undefined},
 			{name: "Number of workers", content: numberOfWorkers},
 			{name: "Population Level", content: populationLevel},
 			{name: "Stored goods", content: INDUSTRIES.filter(industry => getMaxStorage(classState, industry) > 0).length > 0 ? (

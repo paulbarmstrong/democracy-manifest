@@ -66,6 +66,7 @@ type CommonClassState = {
 	className: PlayerClassName,
 	playerName?: string,
 	cash: number,
+	loans: number,
 	storedGoods: {
 		Food: {quantity: number, price: number},
 		Luxury: {quantity: number, price: number},
@@ -184,10 +185,15 @@ export type Action = {
 		name: PolicyName,
 		states: Array<0 | 1 | 2>
 	},
-	isPossible?: (gameState: GameState, playerClass: PlayerClass) => boolean,
+	isPossible?: (args: {
+		gameState: GameState,
+		playerClass: PlayerClass,
+		classState: ClassState
+	}) => boolean,
 	execute?: (args: {
 		gameState: ImmutableRefObject<GameState>,
 		playerClass: PlayerClass,
+		classState: ClassState,
 		setText: (text: string) => void,
 		selectPolicyPosition: (predicate: (policyPosition: PolicyPosition) => boolean) => Promise<PolicyPosition>
 	}) => Promise<void>

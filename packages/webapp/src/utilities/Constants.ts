@@ -1,6 +1,6 @@
-import { identity, take } from "lodash"
-import { Action, CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass, Policy, StateClassState } from "./Types"
-import { getClassState, getImportPrice, getIndustry } from "./Game"
+import { take } from "lodash"
+import { Action, CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass, PlayerClassName, Policy, StateClassState } from "./Types"
+import { changeCredibility, changeMoney, getClassState, getImportPrice, getIndustry } from "./Game"
 import { isAre, s } from "./Misc"
 
 export const COMPANY_SIZE_PX = 220
@@ -257,7 +257,7 @@ export const BASIC_ACTIONS: Array<Action> = [
 		type: "basic",
 		playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"],
 		description: "Select a policy and a position adjacent to its existing position. The vote will take place in the election phase, or may triggered immediately vote using 1 <Influence>.",
-		isPossible: (gameState: GameState, _) => Object.values(gameState.policies).filter(x => x.proposal !== undefined).length < 3,
+		isPossible: ({gameState}) => Object.values(gameState.policies).filter(x => x.proposal !== undefined).length < 3,
 		execute: async ({gameState, playerClass, setText, selectPolicyPosition}) => {
 			setText("Select a policy position adjacent to that policy's existing position.")
 			const policyPosition = await selectPolicyPosition(policyPosition => Math.abs(gameState.current.policies[policyPosition.name].state - policyPosition.position) === 1 && gameState.current.policies[policyPosition.name].proposal === undefined)
@@ -266,14 +266,29 @@ export const BASIC_ACTIONS: Array<Action> = [
 	},
 	{name: "Address event", type: "basic", playerClasses: ["State"], description: "Address one of the State events."},
 	{name: "Show support", type: "basic", playerClasses: ["State"], description: "Give 2 of your <Influence> to another class for +1 <credibility> with that class."},
-	{name: "Collect extra tax", type: "basic", playerClasses: ["State"], description: "Get $10 from each class and -1 <credibility> from the 2 classes with the lowest <credibility>."},
+	{name: "Collect extra tax",
+		type: "basic",
+		playerClasses: ["State"],
+		description: "Get $10 from each class and -1 <credibility> from the 2 classes with the lowest <credibility>.",
+		execute: async ({gameState, classState}) => {
+			gameState.current.classes.filter(otherClassState => otherClassState.className !== "State").forEach(otherClassState => {
+				changeMoney(otherClassState, -10)
+				changeMoney(classState, 10)
+			})
+			const stateClassState = classState as StateClassState
+			const highestCredibilityPlayerClassName = Object.entries(stateClassState.credibility).sort((a, b) => b[1] - a[1])[0][0]
+			PLAYER_CLASSES.filter(x => !["State", highestCredibilityPlayerClassName].includes(x.name)).forEach(playerClass => {
+				changeCredibility(gameState.current, playerClass.name as Exclude<PlayerClassName, "State">, -1)
+			})
+		}
+	},
 	{name: "Campaign", type: "basic", playerClasses: ["State"], description: "Convert up to 3 stored <Influence> to consumable <Influence>."},
 	{name: "Assign workers", type: "basic", playerClasses: ["Working Class", "Middle Class"], description: "Choose up to 3 of your Workers on the board and place them on the corresponding slots of available Companies."},
 	{name: "Purchase company", type: "basic", playerClasses: ["Middle Class", "Capitalist Class"], description: "Purchase a company from your company market for its listed price."},
 	{name: "Sell company", type: "basic", playerClasses: ["Middle Class", "Capitalist Class"], description: "Remove one of your companies and gain its listed price."},
 	{name: "Make export deals", type: "basic", playerClasses: ["Middle Class", "Capitalist Class", "State"], description: "Complete any number of export deals a maximum of 1 time."},
 	{name: "Make import deal", type: "basic", playerClasses: ["Capitalist Class"], description: "Perform an import deal once."},
-	{name: "Lobby", type: "basic", playerClasses: ["Capitalist Class"], description: "Spend $30 from capital to gain 3 Influence"},
+	{name: "Lobby", type: "basic", playerClasses: ["Capitalist Class"], description: "Spend $30 from capital to gain 3 <Influence>"},
 	{name: "Buy goods", type: "basic", playerClasses: ["Working Class", "Middle Class"], description: "Buy a single type of good from up to two sellers. The number of goods must be less than or equal to your population."},
 	{name: "Work extra shift", type: "basic", playerClasses: ["Middle Class"], description: "Choose one of your companies with non-committed Middle Class workers. Pay wages and produce."},
 	{name: "Strike", type: "basic", playerClasses: ["Working Class"], description: "Choose 2 companies where your workers work, with no committed workers, and without the maximum wage level. Those companies will not not function if they have not increased to thew maximum wage level by the production phase."},
@@ -283,13 +298,13 @@ export const BASIC_ACTIONS: Array<Action> = [
 		type: "basic",
 		playerClasses: ["Working Class", "Middle Class", "Capitalist Class"],
 		description: "Add 3 political pressure.",
+		isPossible: ({gameState, playerClass}) => {
+			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
+			return gameState.politicalPressure[playerClassName] < 25
+		},
 		execute: async ({gameState, playerClass}) => {
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
 			gameState.current.politicalPressure[playerClassName] = Math.min(gameState.current.politicalPressure[playerClassName] + 3, 25)
-		},
-		isPossible: (gameState, playerClass) => {
-			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
-			return gameState.politicalPressure[playerClassName] < 25
 		}
 	}
 ]
@@ -308,21 +323,28 @@ export const FREE_ACTIONS: Array<Action> = [
 		type: "free",
 		playerClasses: ["Working Class", "Middle Class", "Capitalist Class"],
 		description: "Claim whatever is in the State benefits section for your class. +1 <vp> to the State.",
-		isPossible: (gameState, playerClass) => {
+		isPossible: ({gameState, playerClass}) => {
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
 			return (getClassState(gameState, "State") as StateClassState).stateBenefits[playerClassName] > 0
 		},
-		execute: async ({gameState, playerClass, setText, selectPolicyPosition}) => {
+		execute: async ({gameState, playerClass, classState}) => {
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
 			const stateClassState: StateClassState = getClassState(gameState.current, "State") as StateClassState
-			getClassState(gameState.current, playerClassName).cash += stateClassState.stateBenefits[playerClassName]
+			classState.cash += stateClassState.stateBenefits[playerClassName]
 			stateClassState.stateBenefits[playerClassName] = 0
 		}
 	},
 	{
 		name: "Pay off loan",
 		type: "free", playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"],
-		description: "Spend $50 to remove a loan."
+		description: "Spend $50 to remove a loan.",
+		isPossible: ({classState}) => {
+			return classState.loans > 0 && classState.cash >= 50
+		},
+		execute: async ({classState}) => {
+			changeMoney(classState, -50)
+			classState.loans -= 1
+		}
 	},
 	{
 		name: "Pass",
@@ -330,12 +352,12 @@ export const FREE_ACTIONS: Array<Action> = [
 		playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"],
 		description: "Do nothing.",
 		isPossible: () => true,
-		execute: identity
+		execute: async () => {}
 	}
 ]
 
 export const GAME_STATE: GameState = {
-	turnIndex: 8,
+	turnIndex: 19,
 	mainActionCompleted: false,
 	freeActionCompleted: false,
 	policies: {
@@ -375,8 +397,9 @@ export const GAME_STATE: GameState = {
 	classes: [
 		{
 			className: "Working Class",
-			playerName: "paul",
-			cash: 20,
+			playerName: "Andrew",
+			cash: 90,
+			loans: 1,
 			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Working Class")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
 				Food: {quantity: 0, price: 0},
@@ -400,8 +423,9 @@ export const GAME_STATE: GameState = {
 		},
 		{
 			className: "Middle Class",
-			playerName: "alex",
+			playerName: "Albert",
 			cash: 40,
+			loans: 0,
 			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Middle Class")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
 				Food: {quantity: 2, price: 12},
@@ -432,7 +456,9 @@ export const GAME_STATE: GameState = {
 		},
 		{
 			className: "Capitalist Class",
+			playerName: "Alex",
 			cash: 60,
+			loans: 1,
 			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Capitalist Class")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
 				Food: {quantity: 2, price: 12},
@@ -474,7 +500,9 @@ export const GAME_STATE: GameState = {
 		},
 		{
 			className: "State",
+			playerName: "Paul",
 			cash: 50,
+			loans: 0,
 			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("State")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
 				Food: {quantity: 0, price: 12},

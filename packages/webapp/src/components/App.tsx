@@ -4,7 +4,7 @@ import { DynamicWebappConfig } from "common"
 import { useRefState } from "../hooks/useRefState"
 import { Action, ActionExecution, PlayerClassName, PolicyPosition, TabName } from "../utilities/Types"
 import { playerClassNameZod, tabNameZod } from "../utilities/Zod"
-import { getPlayerClass } from "../utilities/Game"
+import { getClassState, getPlayerClass } from "../utilities/Game"
 import { getPlayerColor, getShade } from "../utilities/Color"
 import { PlayerClassPanel } from "./panels/PlayerClassPanel"
 import { AllPlayerClassesPanel } from "./panels/AllPlayerClassesPanel"
@@ -80,6 +80,7 @@ export function App(props: Props) {
 		if (action.execute !== undefined) await action.execute({
 			gameState,
 			playerClass: observingAsPlayerClass,
+			classState: getClassState(gameState.current, observingAsPlayerClass.name),
 			setText: text => actionExecution.current = {...actionExecution.current!, text}, selectPolicyPosition
 		})
 		if (action.type === "free") {
