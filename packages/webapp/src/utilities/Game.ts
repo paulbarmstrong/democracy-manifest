@@ -1,6 +1,5 @@
-import { matchRoutes } from "react-router-dom"
 import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, INDUSTRIES, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
-import { CapitalistClassState, ClassState, GameState, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, WorkerClass } from "./Types"
+import { CapitalistClassState, ClassState, GameState, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName } from "./Types"
 
 export function getIndustry(industryName: IndustryName): Industry {
 	return INDUSTRIES.find(industry => industry.name === industryName)!

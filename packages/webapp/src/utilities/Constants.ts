@@ -1,4 +1,4 @@
-import { take } from "lodash"
+import { range, take } from "lodash"
 import { Action, CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass, PlayerClassName, Policy, StateClassState } from "./Types"
 import { changeCredibility, changeMoney, getClassState, getImportPrice, getIndustry } from "./Game"
 import { isAre, s } from "./Misc"
@@ -31,7 +31,8 @@ export const PLAYER_CLASS_CREDIBILITY_ICON_CLASS_MAPPINGS = {
 }
 
 export const MAX_CREDIBILITY_PER_CLASS = 10
-export const TOTAL_NUM_VOTING_CUBES_PER_CLASS = 25
+export const MAX_POLITICAL_PRESSURE_PER_CLASS = 25
+export const NUM_POLITICAL_PRESSURE_PER_VOTE = 5
 
 export const BASE_FOOD_IMPORT_PRICE = 10
 export const BASE_LUXURY_IMPORT_PRICE = 6
@@ -256,7 +257,7 @@ export const BASIC_ACTIONS: Array<Action> = [
 	{name: "Propose bill",
 		type: "basic",
 		playerClasses: ["Working Class", "Middle Class", "Capitalist Class", "State"],
-		description: "Select a policy and a position adjacent to its existing position. The vote will take place in the election phase, or may triggered immediately vote using 1 <Influence>.",
+		description: "Select a policy and a position adjacent to its existing position. The vote will take place at the end of the round, or may triggered immediately vote using 1 <Influence>.",
 		isPossible: ({gameState}) => Object.values(gameState.policies).filter(x => x.proposal !== undefined).length < 3,
 		execute: async ({gameState, playerClass, setText, selectPolicyPosition}) => {
 			setText("Select a policy position adjacent to that policy's existing position.")
@@ -297,14 +298,12 @@ export const BASIC_ACTIONS: Array<Action> = [
 		name: "Apply political pressure",
 		type: "basic",
 		playerClasses: ["Working Class", "Middle Class", "Capitalist Class"],
-		description: "Add 3 political pressure.",
-		isPossible: ({gameState, playerClass}) => {
-			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
-			return gameState.politicalPressure[playerClassName] < 25
-		},
+		description: "Add 3 political pressure (up to a maximum of 25).",
 		execute: async ({gameState, playerClass}) => {
 			const playerClassName = playerClass.name as "Working Class" | "Middle Class" | "Capitalist Class"
-			gameState.current.politicalPressure[playerClassName] = Math.min(gameState.current.politicalPressure[playerClassName] + 3, 25)
+			const currentClassPoliticalPressure = gameState.current.politicalPressure.filter(x => x === playerClassName).length
+			const numAddedPoliticalPressure = Math.min(25 - currentClassPoliticalPressure, 3)
+			gameState.current.politicalPressure.push(...range(0, numAddedPoliticalPressure).map(_ => playerClassName))
 		}
 	}
 ]
@@ -387,11 +386,11 @@ export const GAME_STATE: GameState = {
 			state: 2
 		}
 	},
-	politicalPressure: {
-		"Working Class": 7,
-		"Middle Class": 8,
-		"Capitalist Class": 3
-	},
+	politicalPressure: [
+		...range(0, 7).map(_ => "Working Class"),
+		...range(0, 8).map(_ => "Middle Class"),
+		...range(0, 3).map(_ => "Capitalist Class")
+	] as Array<Exclude<PlayerClassName, "State">>,
 	importDeals: [0, 1],
 	exportDeals: 0,
 	classes: [

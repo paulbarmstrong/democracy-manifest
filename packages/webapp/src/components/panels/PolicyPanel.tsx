@@ -1,6 +1,5 @@
-import { clone, range } from "lodash"
+import { range } from "lodash"
 import { getColor, getPlayerColor } from "../../utilities/Color"
-import { INDUSTRIES } from "../../utilities/Constants"
 import { getClassState, getIndustry, getPlayerClass } from "../../utilities/Game"
 import { ActionExecution, GameState, PlayerClassName, Policy, PolicyPosition } from "../../utilities/Types"
 import { Highlight } from "../Highlight"
@@ -8,20 +7,27 @@ import { Icon } from "../Icon"
 import { IconedText } from "../IconedText"
 import { RadioSelector } from "../RadioSelector"
 import { useRefState } from "../../hooks/useRefState"
+import { useEffect } from "react"
 
 export function PolicyPanel(props: {
 	playerClassName: PlayerClassName,
 	gameState: GameState,
-	setGameState: (newGameState: GameState) => void,
+	updateGameState: () => void,
 	actionExecution: ActionExecution | undefined,
 	policy: Policy
 }) {
 	const influenceSelection = useRefState<number>(0)
 
+	useEffect(() => {
+		influenceSelection.current = 0
+	}, [props.playerClassName])
+
 	const policyState = props.gameState.policies[props.policy.name]
 	const classState = getClassState(props.gameState, props.playerClassName)
 
-	const isPendingClassPositionSelection = policyState.vote?.positions[props.playerClassName] === undefined
+	const hasCurrentVoting = props.gameState.vote?.policyName === props.policy.name
+
+	const isPendingClassPositionSelection = hasCurrentVoting && props.gameState.vote?.positions[props.playerClassName] === undefined
 
 	function onClickPolicyPosition(policyPosition: PolicyPosition) {
 		if (props.actionExecution?.policyPositionPredicate !== undefined && props.actionExecution!.policyPositionPredicate(policyPosition)) {
@@ -31,15 +37,21 @@ export function PolicyPanel(props: {
 
 	function onSubmitInfluenceSelection() {
 		getClassState(props.gameState, props.playerClassName).consumableGoods.Influence -= influenceSelection.current
-		policyState.vote!.influence[props.playerClassName] = influenceSelection.current
-		props.setGameState(clone(props.gameState))
+		props.gameState.vote!.influence[props.playerClassName] = influenceSelection.current
+		props.updateGameState()
 	}
 
 	function onClickVotingPosition(positionValue: boolean) {
 		if (isPendingClassPositionSelection) {
-			policyState.vote!.positions[props.playerClassName] = positionValue
-			props.setGameState(clone(props.gameState))
+			props.gameState.vote!.positions[props.playerClassName] = positionValue
+			props.updateGameState()
 		}
+	}
+
+	function onClickContinue() {
+		props.gameState.vote = undefined
+		policyState.proposal = undefined
+		props.updateGameState()
 	}
 
 	return <div style={{backgroundColor: getColor(props.policy.hue, 0), borderRadius: 4, padding: 10, display: "flex", flexDirection: "column", gap: 10}}>
@@ -63,7 +75,7 @@ export function PolicyPanel(props: {
 			allowed: props.actionExecution?.policyPositionPredicate !== undefined && props.actionExecution!.policyPositionPredicate({name: props.policy.name, position: index as 0 | 1 | 2})
 		}))} value={policyState.state} onChange={index => onClickPolicyPosition({name: props.policy.name, position: index})}/>
 		{
-			policyState.vote !== undefined ? (
+			hasCurrentVoting ? (
 				<div style={{display: "flex", flexDirection: "column", gap: 10}}>
 					<span>Class Positions:</span>
 					<div style={{display: "flex", justifyContent: "space-between", gap: 10}}>
@@ -73,7 +85,7 @@ export function PolicyPanel(props: {
 								onClick={() => onClickVotingPosition(true)}
 								>
 								{
-									Object.entries(policyState.vote.positions).filter(position => position[1]).map(position => {
+									Object.entries(props.gameState.vote!.positions).filter(position => position[1]).map(position => {
 										return <span className="material-symbols-outlined" style={{padding: 15, backgroundColor: getColor(getPlayerClass(position[0] as PlayerClassName).hue, 0), borderRadius: 4}}>check</span>
 									})
 								}
@@ -85,7 +97,7 @@ export function PolicyPanel(props: {
 								onClick={() => onClickVotingPosition(false)}
 								>
 								{
-									Object.entries(policyState.vote.positions).filter(position => !position[1]).map(position => {
+									Object.entries(props.gameState.vote!.positions).filter(position => !position[1]).map(position => {
 										return <span className="material-symbols-outlined" style={{padding: 15, backgroundColor: getColor(getPlayerClass(position[0] as PlayerClassName).hue, 0), borderRadius: 4}}>close</span>
 									})
 								}
@@ -93,7 +105,7 @@ export function PolicyPanel(props: {
 						</Highlight>
 					</div>
 					{
-						policyState.vote.influence[props.playerClassName] !== undefined ? (
+						props.gameState.vote!.influence[props.playerClassName] !== undefined ? (
 							<div style={{display: "flex", flexDirection: "column", gap: 10}}>
 								<span>Votes:</span>
 								<div style={{display: "flex", justifyContent: "space-between", gap: 10}}>
@@ -102,18 +114,19 @@ export function PolicyPanel(props: {
 											<div style={{flex: 1, borderRadius: 4, backgroundColor: getColor(props.policy.hue, 1), display: "flex", gap: 5, padding: 5, flexWrap: "wrap"}}>
 												{
 													[
-														...Object.entries(policyState.vote!.positions)
+														...(props.gameState.vote!.politicalPressure ?? [])
+															.filter(playerClassName => props.gameState.vote!.positions[playerClassName] === positionValue)
+															.map(playerClassName => <div
+																style={{width: 24, height: 24, padding: 5,
+																	backgroundColor: getColor(getPlayerClass(playerClassName).hue, 0),
+																	borderRadius: 4
+																}}
+															/>),
+														...Object.entries(props.gameState.vote!.positions)
 															.filter(position => position[1] === positionValue)
 															.flatMap(position => {
-																return range(0, policyState.vote!.influence[position[0] as PlayerClassName] ?? 0).map(() => 
-																	<div style={{width: 24, height: 24, padding: 5, backgroundColor: getColor(INDUSTRIES.find(x => x.name === "Influence")?.hue, 0), borderRadius: 4}}/>
-																)
-															}),
-														...Object.entries(policyState.vote!.positions)
-															.filter(position => position[1] === positionValue)
-															.flatMap(position => {
-																return range(0, policyState.vote!.pressure[position[0] as Exclude<PlayerClassName, "State">] ?? 0).map(() => 
-																	<div style={{width: 24, height: 24, padding: 5, backgroundColor: getColor(getPlayerClass(position[0] as PlayerClassName).hue, 0), borderRadius: 4}}/>
+																return range(0, props.gameState.vote!.influence[position[0] as PlayerClassName] ?? 0).map(() => 
+																	<div style={{width: 24, height: 24, padding: 5, backgroundColor: getColor(getIndustry("Influence").hue, 0), borderRadius: 4}}/>
 																)
 															})
 													]
@@ -124,20 +137,33 @@ export function PolicyPanel(props: {
 								</div>
 							</div>
 						) : (
-							Object.keys(policyState.vote!.positions).length === 4 ? (
+							hasCurrentVoting && Object.keys(props.gameState.vote!.positions).length === 4 ? (
 								<div style={{display: "flex", flexDirection: "column", gap: 10}}>
 									<div>Your influence to spend:</div>
 									<div style={{display: "flex", justifyContent: "space-between", alignItems: "stretch", flexDirection: "column", gap: 5, borderRadius: 4, backgroundColor: getColor(getIndustry("Influence").hue, 0), padding: 10, textAlign: "center"}}>
 										<span>{influenceSelection.current}/{classState.consumableGoods.Influence}</span>
-										<div style={{paddingTop: 10, paddingBottom: 10}}>
-											<input className="clickable slider" style={{width: "100%", boxSizing: "border-box"}} type="range" step={1} min={0} max={classState.consumableGoods.Influence} value={influenceSelection.current} onChange={e => influenceSelection.current = parseInt(e.target.value)}/>
-										</div>
+										{
+											classState.consumableGoods.Influence > 0 ? (
+												<div style={{paddingTop: 10, paddingBottom: 10}}>
+													<input className="clickable slider" style={{width: "100%", boxSizing: "border-box"}} type="range" step={1} min={0} max={classState.consumableGoods.Influence} value={influenceSelection.current} onChange={e => influenceSelection.current = parseInt(e.target.value)}/>
+												</div>
+											) : (
+												undefined
+											)
+										}
 										<span className="clickable" style={{borderRadius: 4, borderStyle: "solid", borderColor: "white", borderWidth: 2, padding: 10}} onClick={onSubmitInfluenceSelection}>SUBMIT</span>
 									</div>
 								</div>
 							) : (
 								undefined
 							)
+						)
+					}
+					{
+						hasCurrentVoting && props.gameState.vote!.politicalPressure !== undefined ? (
+							<span className="clickable" style={{borderRadius: 4, borderStyle: "solid", borderColor: "white", borderWidth: 2, padding: 10}} onClick={onClickContinue}>CONTINUE</span>
+						) : (
+							undefined
 						)
 					}
 				</div>

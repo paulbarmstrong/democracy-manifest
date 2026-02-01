@@ -143,32 +143,26 @@ export type GameState = {
 	turnIndex: number,
 	mainActionCompleted: boolean,
 	freeActionCompleted: boolean,
-	vote?: PolicyName,
+	vote?: {
+		policyName: PolicyName,
+		positions: {
+			[K in PlayerClassName]?: boolean
+		},
+		influence: {
+			[K in PlayerClassName]?: number
+		},
+		politicalPressure?: Array<Exclude<PlayerClassName, "State">>
+	},
 	policies: {
 		[K in PolicyName]: {
 			state: 0 | 1 | 2,
 			proposal?: {
 				playerClassName: PlayerClassName,
 				proposedState: 0 | 1 | 2,
-			},
-			vote?: {
-				positions: {
-					[K in PlayerClassName]?: boolean
-				},
-				influence: {
-					[K in PlayerClassName]?: number
-				},
-				pressure: {
-					[K in Exclude<PlayerClassName, "State">]?: number
-				}
 			}
 		}
 	},
-	politicalPressure: {
-		"Working Class": number,
-		"Middle Class": number,
-		"Capitalist Class": number
-	},
+	politicalPressure: Array<Exclude<PlayerClassName, "State">>,
 	importDeals: Array<number>,
 	exportDeals: number,
 	classes: [WorkingClassState, MiddleClassState, CapitalistClassState, StateClassState],
