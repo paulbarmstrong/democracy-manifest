@@ -72,7 +72,7 @@ export function App(props: Props) {
 	const observingAsPlayerClassName = useRefState<PlayerClassName>(playerClassNameZod.options[0])
 	const observingAsPlayerClass = getPlayerClass(observingAsPlayerClassName.current)
 	const selectedTab = useRefState<TabName>(tabNameZod.options[0])
-	const actionExecution = useRefState<ActionExecution | undefined>(undefined, {sideEffect: console.log})
+	const actionExecution = useRefState<ActionExecution | undefined>(undefined)
 	const [gameState, updateGameState] = useGameState(GAME_STATE)
 	
 	async function onClickAction(action: Action) {
