@@ -1,2 +1,5 @@
-export * from "./utilities/Zod"
+export {
+	dynamicWebappConfigZod,
+	zodValidate
+} from "./utilities/Zod"
 export * from "./utilities/Types"

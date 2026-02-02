@@ -4,7 +4,7 @@ import { DynamicWebappConfig } from "common"
 import { useRefState } from "../hooks/useRefState"
 import { Action, ActionExecution, PlayerClassName, PolicyPosition, TabName } from "../utilities/Types"
 import { playerClassNameZod, tabNameZod } from "../utilities/Zod"
-import { getPlayerClass } from "../utilities/Game"
+import { getClassState, getPlayerClass } from "../utilities/Game"
 import { getPlayerColor, getShade } from "../utilities/Color"
 import { PlayerClassPanel } from "./panels/PlayerClassPanel"
 import { AllPlayerClassesPanel } from "./panels/AllPlayerClassesPanel"
@@ -24,14 +24,15 @@ export function App(props: Props) {
 	const observingAsPlayerClassName = useRefState<PlayerClassName>(playerClassNameZod.options[0])
 	const observingAsPlayerClass = getPlayerClass(observingAsPlayerClassName.current)
 	const selectedTab = useRefState<TabName>(tabNameZod.options[0])
-	const [gameState, setGameState] = useGameState(GAME_STATE)
 	const actionExecution = useRefState<ActionExecution | undefined>(undefined)
+	const [gameState, updateGameState] = useGameState(GAME_STATE)
 	
 	async function onClickAction(action: Action) {
 		actionExecution.current = {action}
 		if (action.execute !== undefined) await action.execute({
 			gameState,
 			playerClass: observingAsPlayerClass,
+			classState: getClassState(gameState.current, observingAsPlayerClass.name),
 			setText: text => actionExecution.current = {...actionExecution.current!, text}, selectPolicyPosition
 		})
 		if (action.type === "free") {
@@ -39,12 +40,7 @@ export function App(props: Props) {
 		} else {
 			gameState.current.mainActionCompleted = true
 		}
-		if (gameState.current.freeActionCompleted && gameState.current.mainActionCompleted) {
-			gameState.current.turnIndex += 1
-			gameState.current.mainActionCompleted = false
-			gameState.current.freeActionCompleted = false
-		}
-		setGameState(gameState.current)
+		updateGameState()
 		actionExecution.current = undefined
 	}
 
@@ -56,7 +52,7 @@ export function App(props: Props) {
 	}
 
 	return (
-		<div style={{display: "flex", userSelect: "none"}}>
+		<div style={{display: "flex"}}>
 			<div style={{ width: "100%" }}>
 				<div style={{display: "flex", alignItems: "center", gap: 10, padding: 5, fontSize: 16}}>
 					<div>Observing as:</div>
@@ -82,7 +78,7 @@ export function App(props: Props) {
 						} else if (selectedTab.current === "My Class") {
 							return <PlayerClassPanel playerClass={getPlayerClass(observingAsPlayerClassName.current)} gameState={gameState.current} zoomed={true}/>
 						} else if (selectedTab.current === "Politics") {
-							return <PoliticsPanel gameState={gameState.current} actionExecution={actionExecution.current}/>
+							return <PoliticsPanel playerClassName={observingAsPlayerClassName.current} updateGameState={updateGameState} gameState={gameState.current} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "Marketplace") {
 							return <MarketplacePanel gameState={gameState.current}/>
 						} else if (selectedTab.current === "Actions") {

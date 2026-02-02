@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
+		"module": "esnext",
 		"esModuleInterop": true,
 		"target": "ES2022",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"sourceMap": true,
 		"outDir": "dist",
 		"declaration": true,
