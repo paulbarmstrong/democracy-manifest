@@ -66,6 +66,7 @@ type CommonClassState = {
 	className: PlayerClassName,
 	playerName?: string,
 	cash: number,
+	loans: number,
 	storedGoods: {
 		Food: {quantity: number, price: number},
 		Luxury: {quantity: number, price: number},
@@ -141,21 +142,27 @@ export type ExportDeals = Array<{
 export type GameState = {
 	turnIndex: number,
 	mainActionCompleted: boolean,
-	freeActionCompleted: boolean
+	freeActionCompleted: boolean,
+	vote?: {
+		policyName: PolicyName,
+		positions: {
+			[K in PlayerClassName]?: boolean
+		},
+		influence: {
+			[K in PlayerClassName]?: number
+		},
+		politicalPressure?: Array<Exclude<PlayerClassName, "State">>
+	},
 	policies: {
 		[K in PolicyName]: {
 			state: 0 | 1 | 2,
 			proposal?: {
 				playerClassName: PlayerClassName,
-				proposedState: 0 | 1 | 2
+				proposedState: 0 | 1 | 2,
 			}
 		}
 	},
-	politicalPressure: {
-		"Working Class": number,
-		"Middle Class": number,
-		"Capitalist Class": number
-	},
+	politicalPressure: Array<Exclude<PlayerClassName, "State">>,
 	importDeals: Array<number>,
 	exportDeals: number,
 	classes: [WorkingClassState, MiddleClassState, CapitalistClassState, StateClassState],
@@ -172,10 +179,15 @@ export type Action = {
 		name: PolicyName,
 		states: Array<0 | 1 | 2>
 	},
-	isPossible?: (gameState: GameState, playerClass: PlayerClass) => boolean,
+	isPossible?: (args: {
+		gameState: GameState,
+		playerClass: PlayerClass,
+		classState: ClassState
+	}) => boolean,
 	execute?: (args: {
 		gameState: ImmutableRefObject<GameState>,
 		playerClass: PlayerClass,
+		classState: ClassState,
 		setText: (text: string) => void,
 		selectPolicyPosition: (predicate: (policyPosition: PolicyPosition) => boolean) => Promise<PolicyPosition>
 	}) => Promise<void>
