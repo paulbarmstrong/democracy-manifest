@@ -89,7 +89,7 @@ export function PlayerClassPanel(props: Props) {
 			{name: "Unemployed workers", content: unemployedWorkers.length > 0 ? (
 				<div style={{display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10}}>
 					{
-						unemployedWorkers.map(worker => <div style={{width: WORKER_SIZE_PX, height: WORKER_SIZE_PX, display: "flex", justifyContent: "center", alignItems: "center"}}><WorkerView key={JSON.stringify(worker)} worker={worker}/></div>)
+						unemployedWorkers.map(worker => <div style={{width: WORKER_SIZE_PX, height: WORKER_SIZE_PX, display: "flex", justifyContent: "center", alignItems: "center"}}><WorkerView worker={worker}/></div>)
 					}
 				</div>
 			) : (
