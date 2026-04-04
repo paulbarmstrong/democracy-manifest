@@ -6,14 +6,14 @@
 		"cdk": "bin/cdk.js"
 	},
 	"scripts": {
-		"start": "cdk deploy",
-		"cdk": "cdk"
+		"start": "npx cdk deploy",
+		"cdk": "npx cdk"
 	},
 	"devDependencies": {
 		"@types/jest": "^29.4.2",
 		"@types/lodash": "^4.14.194",
 		"@types/node": "^22",
-		"aws-cdk": "^2.1100.1",
+		"aws-cdk": "^2.1117.0",
 		"aws-lambda": "^1.0.7",
 		"esbuild": "^0.17.19",
 		"jest": "^29.5.0",
