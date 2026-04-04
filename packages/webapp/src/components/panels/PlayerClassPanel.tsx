@@ -39,7 +39,7 @@ export function PlayerClassPanel(props: Props) {
 			{name: "Cash", content: `$${classState.cash}`},
 			{name: "Loans", content: classState.loans > 0 ? classState.loans : undefined},
 			{name: "Number of workers", content: numberOfWorkers},
-			{name: "Population Level", content: populationLevel},
+			{name: "Population level", content: populationLevel},
 			{name: "Stored goods", content: INDUSTRIES.filter(industry => getMaxStorage(classState, industry) > 0).length > 0 ? (
 				<div style={{display: "flex", gap: 5, borderColor: "white", borderWidth: 2, borderRadius: 4}}>
 					{
@@ -71,7 +71,7 @@ export function PlayerClassPanel(props: Props) {
 			) : (
 				undefined
 			)},
-			{name: "Labor Unions", content: unionLeaderWorkers !== undefined ? (
+			{name: "Labor unions", content: unionLeaderWorkers !== undefined ? (
 				<div style={{display: "flex", gap: 5}}>
 					{
 						INDUSTRIES.map(industry => <div style={{display: "flex", flexDirection: "column", alignItems: "center", backgroundColor: getColor(industry.hue, 0), borderRadius: 4, gap: 10, padding: 10}}>
@@ -116,7 +116,7 @@ export function PlayerClassPanel(props: Props) {
 			) : (
 				undefined
 			)},
-			{name: "Spare Machines", content: (classState as CapitalistClassState).numSpareMachines > 0? (
+			{name: "Spare machines", content: (classState as CapitalistClassState).numSpareMachines > 0? (
 				<div style={{display: "flex", gap: 10}}>
 					{
 						range(0, (classState as CapitalistClassState).numSpareMachines).map(_ => <span className="material-symbols-outlined" style={{fontSize: 60, color: "white"}}>settings</span>)
@@ -138,7 +138,7 @@ export function PlayerClassPanel(props: Props) {
 			) : (
 				undefined
 			)},
-			{name: "State Benefits", content: (classState as StateClassState).stateBenefits !== undefined ? (
+			{name: "State benefits", content: (classState as StateClassState).stateBenefits !== undefined ? (
 				<div style={{display: "flex", gap: 5}}>
 					{
 						Object.entries((classState as StateClassState).stateBenefits).map(benefitsEntry => <div style={{display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center", gap: 20, padding: 10, backgroundColor: getPlayerColor(benefitsEntry[0] as PlayerClassName, 1), borderRadius: 4}}>
