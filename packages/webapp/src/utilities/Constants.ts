@@ -469,6 +469,10 @@ export const GAME_STATE: GameState = {
 				Education: {quantity: 0, price: 8},
 				Influence: {quantity: 0, price: 0}
 			},
+			exportOnlyGoods: {
+				Food: 0,
+				Luxury: 2,
+			},
 			consumableGoods: {
 				Food: 0,
 				Luxury: 0,

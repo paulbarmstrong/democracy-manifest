@@ -106,7 +106,11 @@ export type CapitalistClassState = CommonClassState & {
 	capital: number,
 	numSpareMachines: number,
 	peakWealthTier: number,
-	warehouses: Array<Exclude<IndustryName, "Influence">>
+	warehouses: Array<Exclude<IndustryName, "Influence">>,
+	exportOnlyGoods: {
+		Food: number,
+		Luxury: number
+	}
 }
 
 export type ClassState = WorkingClassState | MiddleClassState | CapitalistClassState | StateClassState
