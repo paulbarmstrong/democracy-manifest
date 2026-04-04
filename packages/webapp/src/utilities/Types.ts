@@ -82,7 +82,8 @@ type CommonClassState = {
 		Influence: number
 	}
 	companies: Array<Company>,
-	drawnActions: Array<number>
+	drawnActions: Array<number>,
+	vp: number
 }
 
 export type WorkingClassState = CommonClassState & {

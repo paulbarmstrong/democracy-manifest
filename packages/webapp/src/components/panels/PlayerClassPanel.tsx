@@ -36,6 +36,7 @@ export function PlayerClassPanel(props: Props) {
 	return <div style={{backgroundColor: getColor(props.playerClass.hue, 0)}}><Highlight active={!props.zoomed && getTurn(props.gameState).turnPlayerClassName === props.playerClass.name}><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", padding: 10, gap: 10}}>
 		<div style={{padding: 10, fontSize: "xx-large"}}>{props.playerClass.name}</div>
 		<Details details={[
+			{name: "VP", content: <span style={{fontSize: "xxx-large", display: "flex", alignItems: "center"}}>{classState.vp+10}<Icon name="vp"/></span>},
 			{name: "Cash", content: `$${classState.cash}`},
 			{name: "Loans", content: classState.loans > 0 ? classState.loans : undefined},
 			{name: "Number of workers", content: numberOfWorkers},
