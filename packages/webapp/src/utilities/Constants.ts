@@ -415,6 +415,7 @@ export const GAME_STATE: GameState = {
 				Influence: 0
 			},
 			companies: [],
+			vp: 0,
 			prosperity: 0,
 			unionLeaders: {
 				Food: {class: "Working Class", skill: "Food", committed: false}
@@ -441,6 +442,7 @@ export const GAME_STATE: GameState = {
 				Influence: 0
 			},
 			warehouses: [],
+			vp: 0,
 			companies: [
 				{
 					name: "Convenience Store",
@@ -474,6 +476,7 @@ export const GAME_STATE: GameState = {
 				Influence: 5
 			},
 			warehouses: ["Luxury", "Luxury"],
+			vp: 0,
 			companies: [
 				{
 					name: "Clinic",
@@ -517,6 +520,7 @@ export const GAME_STATE: GameState = {
 				Education: 0,
 				Influence: 0
 			},
+			vp: 0,
 			companies: [
 				{
 					name: "University",
