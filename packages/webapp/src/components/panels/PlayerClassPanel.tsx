@@ -1,7 +1,7 @@
 import { range } from "lodash"
 import { getColor, getPlayerColor } from "../../utilities/Color"
 import { CapitalistClassState, GameState, PlayerClass, PlayerClassName, StateClassState, Worker, WorkingClassState } from "../../utilities/Types"
-import { COMPANY_SIZE_PX, INDUSTRIES, MAX_CREDIBILITY_PER_CLASS, WEALTH_TIER_THRESHOLDS } from "../../utilities/Constants"
+import { COMPANY_SIZE_PX, INDUSTRIES, MAX_CREDIBILITY_PER_CLASS, WEALTH_TIER_THRESHOLDS, WORKER_SIZE_PX } from "../../utilities/Constants"
 import { CompanyCard } from "../CompanyCard"
 import { capitalToWealthTier, getMaxStorage, getTurn } from "../../utilities/Game"
 import { RadioSelector } from "../RadioSelector"
@@ -72,6 +72,15 @@ export function PlayerClassPanel(props: Props) {
 			) : (
 				undefined
 			)},
+			{name: "Unemployed workers", content: unemployedWorkers.length > 0 ? (
+				<div style={{display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 10}}>
+					{
+						unemployedWorkers.map(worker => <div style={{width: WORKER_SIZE_PX, height: WORKER_SIZE_PX, display: "flex", justifyContent: "center", alignItems: "center"}}><WorkerView key={JSON.stringify(worker)} worker={worker}/></div>)
+					}
+				</div>
+			) : (
+				undefined
+			)},
 			{name: "Labor unions", content: unionLeaderWorkers !== undefined ? (
 				<div style={{display: "flex", gap: 5}}>
 					{
@@ -117,7 +126,7 @@ export function PlayerClassPanel(props: Props) {
 			) : (
 				undefined
 			)},
-			{name: "Spare machines", content: (classState as CapitalistClassState).numSpareMachines > 0? (
+			{name: "Spare machines", content: (classState as CapitalistClassState).numSpareMachines > 0 ? (
 				<div style={{display: "flex", gap: 10}}>
 					{
 						range(0, (classState as CapitalistClassState).numSpareMachines).map(_ => <span className="material-symbols-outlined" style={{fontSize: 60, color: "white"}}>settings</span>)

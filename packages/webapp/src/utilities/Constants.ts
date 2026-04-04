@@ -4,6 +4,7 @@ import { changeCredibility, changeMoney, getClassState, getImportPrice, getIndus
 import { isAre, s } from "./Misc"
 
 export const COMPANY_SIZE_PX = 220
+export const WORKER_SIZE_PX = 30
 export const ACTION_SIZE_PX = 500
 export const SIDEBAR_WIDTH_PX = 250
 export const MENU_WIDTH: string = "max(35vw, min(500px, 100%))"
