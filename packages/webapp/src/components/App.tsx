@@ -1,8 +1,8 @@
-import { GAME_STATE, PLAYER_CLASSES, SIDEBAR_WIDTH_PX } from "../utilities/Constants"
+import { GAME_STATE, IMPORT_DEALS, PLAYER_CLASSES, SIDEBAR_WIDTH_PX } from "../utilities/Constants"
 import { useWindowSize } from "../hooks/useWindowSize"
 import { DynamicWebappConfig } from "common"
 import { useRefState } from "../hooks/useRefState"
-import { Action, ActionExecution, PlayerClassName, PolicyPosition, TabName } from "../utilities/Types"
+import { Action, ActionExecution, ImportDeal, PlayerClassName, PolicyPosition, PreferredImportDealDestination, TabName } from "../utilities/Types"
 import { playerClassNameZod, tabNameZod } from "../utilities/Zod"
 import { getClassState, getPlayerClass } from "../utilities/Game"
 import { getPlayerColor, getShade } from "../utilities/Color"
@@ -78,10 +78,13 @@ export function App(props: Props) {
 	async function onClickAction(action: Action) {
 		actionExecution.current = {action}
 		if (action.execute !== undefined) await action.execute({
-			gameState,
+			gameState: gameState.current,
 			playerClass: observingAsPlayerClass,
 			classState: getClassState(gameState.current, observingAsPlayerClass.name),
-			setText: text => actionExecution.current = {...actionExecution.current!, text}, selectPolicyPosition
+			setText: text => actionExecution.current = {...actionExecution.current!, text},
+			selectPolicyPosition,
+			selectImportDeal,
+			selectPreferredImportDealDestination
 		})
 		if (action.type === "free") {
 			gameState.current.freeActionCompleted = true
@@ -96,6 +99,20 @@ export function App(props: Props) {
 		selectedTab.current = "Politics"
 		return new Promise<PolicyPosition>((resolve, _) => {
 			actionExecution.current = {...actionExecution.current!, policyPositionPredicate: predicate, policyPositionCallback: resolve}
+		})
+	}
+
+	async function selectImportDeal(predicate: (importDeal: ImportDeal) => boolean): Promise<ImportDeal> {
+		selectedTab.current = "Marketplace"
+		return new Promise<ImportDeal>((resolve, _) => {
+			actionExecution.current = {...actionExecution.current!, importDealPredicate: predicate, importDealCallback: resolve}
+		})
+	}
+
+	async function selectPreferredImportDealDestination(): Promise<PreferredImportDealDestination> {
+		selectedTab.current = "My Class"
+		return new Promise<PreferredImportDealDestination>((resolve, _) => {
+			actionExecution.current = {...actionExecution.current!, preferredImportDealDestinationCallback: resolve}
 		})
 	}
 
@@ -125,11 +142,11 @@ export function App(props: Props) {
 						if (selectedTab.current === "All Classes") {
 							return <AllPlayerClassesPanel gameState={gameState.current}/>
 						} else if (selectedTab.current === "My Class") {
-							return <PlayerClassPanel playerClass={getPlayerClass(observingAsPlayerClassName.current)} gameState={gameState.current} zoomed={true}/>
+							return <PlayerClassPanel playerClass={getPlayerClass(observingAsPlayerClassName.current)} gameState={gameState.current} zoomed={true} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "Politics") {
 							return <PoliticsPanel playerClassName={observingAsPlayerClassName.current} updateGameState={updateGameState} gameState={gameState.current} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "Marketplace") {
-							return <MarketplacePanel gameState={gameState.current}/>
+							return <MarketplacePanel gameState={gameState.current} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "Actions") {
 							return <ActionsPanel gameState={gameState.current} playerClass={observingAsPlayerClass} onClickAction={onClickAction}/>
 						}
