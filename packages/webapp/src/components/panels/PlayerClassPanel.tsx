@@ -1,7 +1,7 @@
 import { range } from "lodash"
 import { getColor, getPlayerColor } from "../../utilities/Color"
 import { CapitalistClassState, GameState, IndustryName, PlayerClass, PlayerClassName, StateClassState, Worker, WorkingClassState } from "../../utilities/Types"
-import { COMPANY_SIZE_PX, INDUSTRIES, MAX_CREDIBILITY_PER_CLASS, WEALTH_TIER_THRESHOLDS, WORKER_SIZE_PX } from "../../utilities/Constants"
+import { COMPANY_SIZE_PX, INDUSTRIES, MAX_CREDIBILITY_PER_CLASS, MAX_EXPORT_ONLY_GOODS, WEALTH_TIER_THRESHOLDS, WORKER_SIZE_PX } from "../../utilities/Constants"
 import { CompanyCard } from "../CompanyCard"
 import { capitalToWealthTier, getIndustry, getMaxStorage, getTurn } from "../../utilities/Game"
 import { RadioSelector } from "../RadioSelector"
@@ -60,14 +60,13 @@ export function PlayerClassPanel(props: Props) {
 			) : (
 				undefined
 			)},
-			{name: "Export-only goods", content: (classState as CapitalistClassState).exportOnlyGoods !== undefined && Object.values((classState as CapitalistClassState).exportOnlyGoods).some(q => q > 0) ? (
+			{name: "Export-only goods", content: (classState as CapitalistClassState).exportOnlyGoods !== undefined ? (
 				<div style={{display: "flex", gap: 5, borderColor: "white", borderWidth: 2, borderRadius: 4}}>
 					{
 						(Object.entries((classState as CapitalistClassState).exportOnlyGoods) as Array<[IndustryName, number]>)
-							.filter(([_, quantity]) => quantity > 0)
-							.map(([industryName, quantity]) => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(getIndustry(industryName).hue, 0), padding: 10, gap: 10, borderRadius: 4}}>
+							.map(([industryName, quantity]) => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(getIndustry(industryName).hue, 0), padding: 10, gap: 10, borderRadius: 4, width: 40}}>
 								<Icon name={industryName as any}/>
-								<span>{quantity}</span>
+								<span>{quantity}/{MAX_EXPORT_ONLY_GOODS[industryName as keyof CapitalistClassState["exportOnlyGoods"]]}</span>
 							</div>)
 					}
 				</div>
