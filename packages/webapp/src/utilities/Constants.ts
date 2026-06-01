@@ -37,6 +37,10 @@ export const NUM_POLITICAL_PRESSURE_PER_VOTE = 5
 
 export const BASE_FOOD_IMPORT_PRICE = 10
 export const BASE_LUXURY_IMPORT_PRICE = 6
+export const MAX_EXPORT_ONLY_GOODS = {
+	"Food": 8,
+	"Luxury": 12
+}
 
 export const INDUSTRIES: Array<Industry> = [
 	{name: "Food", hue: 120},
@@ -460,7 +464,7 @@ export const GAME_STATE: GameState = {
 			drawnActions: take(DRAWN_ACTIONS.filter(x => x.playerClasses.includes("Capitalist Class")), 4).map(x => DRAWN_ACTIONS.indexOf(x)),
 			storedGoods: {
 				Food: {quantity: 2, price: 12},
-				Luxury: {quantity: 25, price: 8},
+				Luxury: {quantity: 33, price: 8},
 				Healthcare: {quantity: 0, price: 8},
 				Education: {quantity: 0, price: 8},
 				Influence: {quantity: 0, price: 0}

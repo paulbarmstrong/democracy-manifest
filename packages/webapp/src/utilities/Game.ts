@@ -1,5 +1,5 @@
 import _, { sum } from "lodash"
-import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, COMPANY_TYPES, INDUSTRIES, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
+import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, COMPANY_TYPES, INDUSTRIES, MAX_EXPORT_ONLY_GOODS, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
 import { CapitalistClassState, ClassState, Company, CompanyType, GameState, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, WorkerClass } from "./Types"
 
 export function getIndustry(industryName: IndustryName): Industry {
@@ -90,10 +90,18 @@ export function changeCredibility(gameState: GameState, playerClassName: Exclude
 }
 
 export function changeStoredGoods(classState: ClassState, industryName: IndustryName, delta: number) {
-	classState.storedGoods[industryName].quantity =
-		Math.min(classState.storedGoods[industryName].quantity + delta, getMaxStorage(classState, industryName))
+	const newQuantityUnbounded: number = classState.storedGoods[industryName].quantity + delta
+	const maxStorage: number = getMaxStorage(classState, industryName)
+	classState.storedGoods[industryName].quantity = Math.min(newQuantityUnbounded, maxStorage)
 	if (classState.storedGoods[industryName].quantity < 0)
 		throw new Error(`${classState.className}'s ${industryName} has gone to ${classState.storedGoods[industryName].quantity}`)
+
+	const exportOnlyGoods = (classState as CapitalistClassState).exportOnlyGoods
+	if (newQuantityUnbounded > maxStorage && exportOnlyGoods !== undefined && industryName in exportOnlyGoods) {
+		const maxExportOnlyGoods: number = MAX_EXPORT_ONLY_GOODS[industryName as keyof CapitalistClassState["exportOnlyGoods"]]
+		exportOnlyGoods[industryName as keyof CapitalistClassState["exportOnlyGoods"]] =
+			Math.min(exportOnlyGoods[industryName as keyof CapitalistClassState["exportOnlyGoods"]] + newQuantityUnbounded - maxStorage, maxExportOnlyGoods)
+	}
 }
 
 export function produceForCompany(gameState: GameState, classState: ClassState, company: Company) {
