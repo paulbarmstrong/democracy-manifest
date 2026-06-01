@@ -369,10 +369,6 @@ export const GAME_STATE: GameState = {
 		},
 		"Taxation": {
 			state: 1,
-			proposal: {
-				playerClassName: "Working Class",
-				proposedState: 2
-			}
 		},
 		"Healthcare": {
 			state: 2

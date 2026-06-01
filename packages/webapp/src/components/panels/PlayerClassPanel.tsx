@@ -41,12 +41,12 @@ export function PlayerClassPanel(props: Props) {
 			{name: "Loans", content: classState.loans > 0 ? classState.loans : undefined},
 			{name: "Number of workers", content: numberOfWorkers},
 			{name: "Population level", content: populationLevel},
-			{name: "Stored goods", content: INDUSTRIES.filter(industry => getMaxStorage(classState, industry) > 0).length > 0 ? (
+			{name: "Stored goods", content: INDUSTRIES.filter(industry => getMaxStorage(classState, industry.name) > 0).length > 0 ? (
 				<div style={{display: "flex", gap: 5, borderColor: "white", borderWidth: 2, borderRadius: 4}}>
 					{
-						INDUSTRIES.filter(industry => getMaxStorage(classState, industry) > 0).map(industry => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(industry.hue, 0), padding: 10, gap: 10, borderRadius: 4}}>
+						INDUSTRIES.filter(industry => getMaxStorage(classState, industry.name) > 0).map(industry => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(industry.hue, 0), padding: 10, gap: 10, borderRadius: 4}}>
 							<Icon name={industry.name}/>
-							<span>{classState.storedGoods[industry.name].quantity}/{getMaxStorage(classState, industry)}</span>
+							<span>{classState.storedGoods[industry.name].quantity}/{getMaxStorage(classState, industry.name)}</span>
 							<RadioSelector
 								choices={props.playerClass.storagePriceOptions[industry.name].map(price => ({value: price, content: `$${price}`})).reverse()}
 								onChange={() => undefined}

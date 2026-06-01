@@ -2,7 +2,7 @@ import { clone, shuffle, sum } from "lodash"
 import { ImmutableRefObject } from "../classes/ImmutableRefObject"
 import { GameState, PolicyName } from "../utilities/Types"
 import { useRefState } from "./useRefState"
-import { getTurn } from "../utilities/Game"
+import { getTurn, isCompanyOperational, produceForCompany } from "../utilities/Game"
 import { NUM_POLITICAL_PRESSURE_PER_VOTE, PLAYER_CLASSES } from "../utilities/Constants"
 
 // The internals will be replaced with complicated network state management stuff later
@@ -52,6 +52,17 @@ export function useGameState(originalGameState: GameState, options?: {sideEffect
 
 				// Check for ending the round
 				if (Object.entries(gameState.current.policies).find(policy => policy[1].proposal !== undefined) === undefined) {
+
+					// Production
+					gameState.current.classes.forEach(classState => {
+						classState.companies.forEach(company => {
+							if (isCompanyOperational(company)) {
+								produceForCompany(gameState.current, classState, company)
+							}
+							company.workers.forEach(worker => worker.committed = false)
+						})
+					})
+
 					gameState.current.turnIndex += 1
 					gameState.current.mainActionCompleted = false
 					gameState.current.freeActionCompleted = false
