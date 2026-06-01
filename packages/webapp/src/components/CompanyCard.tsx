@@ -1,17 +1,18 @@
 import { sum } from "lodash"
 import { getColor } from "../utilities/Color"
-import { COMPANY_SIZE_PX, COMPANY_TYPES, INDUSTRIES } from "../utilities/Constants"
+import { COMPANY_SIZE_PX, INDUSTRIES } from "../utilities/Constants"
 import { Company, WorkerClass } from "../utilities/Types"
 import { RadioSelector } from "./RadioSelector"
 import { WorkerView } from "./WorkerView"
 import { Icon } from "./Icon"
+import { getCompanyType } from "../utilities/Game"
 
 interface Props {
 	company: Company
 }
 
 export function CompanyCard(props: Props) {
-	const companyType = COMPANY_TYPES.find(companyType => companyType.name === props.company.name)!
+	const companyType = getCompanyType(props.company)
 	const industry = INDUSTRIES.find(industry => industry.name === companyType.industry)!
 	const mainWorkerSlots = companyType.workerSlots.filter(workerSlot => workerSlot.productionBonus === undefined)
 	const bonusWorkerSlots = companyType.workerSlots.filter(workerSlot => workerSlot.productionBonus !== undefined)
