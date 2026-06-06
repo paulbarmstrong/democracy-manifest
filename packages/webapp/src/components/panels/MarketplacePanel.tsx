@@ -1,14 +1,22 @@
 import { groupBy } from "lodash"
 import { getColor, getShade } from "../../utilities/Color"
 import { EXPORT_DEALS, IMPORT_DEALS, INDUSTRIES } from "../../utilities/Constants"
-import { getImportPrice, getIndustry, getPlayerClass } from "../../utilities/Game"
-import { GameState, IndustryName } from "../../utilities/Types"
+import { getImportDealPrice, getImportDealTariff, getImportPrice, getIndustry, getPlayerClass } from "../../utilities/Game"
+import { ActionExecution, GameState, ImportDeal, IndustryName } from "../../utilities/Types"
 import { Details } from "../Details"
+import { Highlight } from "../Highlight"
 import { Icon } from "../Icon"
 
 export function MarketplacePanel(props: {
-	gameState: GameState
+	gameState: GameState,
+	actionExecution: ActionExecution | undefined
 }) {
+	function onClickImportDeal(importDeal: ImportDeal) {
+		if (props.actionExecution?.importDealPredicate !== undefined && props.actionExecution.importDealPredicate(importDeal)) {
+			props.actionExecution.importDealCallback!(importDeal)
+		}
+	}
+
 	return <div style={{backgroundColor: getShade(1), padding: 10}}>
 		<Details details={[
 			...INDUSTRIES.map(industry => ({
@@ -61,9 +69,14 @@ export function MarketplacePanel(props: {
 			{name: "Import deals", content:
 				<div style={{display: "flex", flexDirection: "column", gap: 10}}>
 					{
-						props.gameState.importDeals.map(i => IMPORT_DEALS[i]).map(importDeal => <span style={{display: "flex", alignItems: "center", gap: 3}}>
-							Capitalist may purchase <span style={{display: "flex", alignItems: "center", backgroundColor: getColor(getIndustry("Food").hue, 0), borderRadius: 4, padding: 10}}>{importDeal.foodQuantity} <Icon name="Food" gap={3}/></span> + <span style={{display: "flex", alignItems: "center", backgroundColor: getColor(getIndustry("Luxury").hue, 0), borderRadius: 4, padding: 10}}>{importDeal.luxuryQuantity} <Icon name="Luxury" gap={3}/></span> for ${importDeal.cost[props.gameState.policies["Foreign Trade"].state]}
-						</span>)
+						props.gameState.importDeals.map(i => IMPORT_DEALS[i]).map(importDeal => {
+							const selectable = props.actionExecution?.importDealPredicate !== undefined && props.actionExecution.importDealPredicate(importDeal)
+							return <Highlight active={selectable}>
+								<span className={selectable ? "clickable" : undefined} onClick={selectable ? () => onClickImportDeal(importDeal) : undefined} style={{display: "flex", alignItems: "center", gap: 3}}>
+									Capitalist may purchase <span style={{display: "flex", alignItems: "center", backgroundColor: getColor(getIndustry("Food").hue, 0), borderRadius: 4, padding: 10}}>{importDeal.foodQuantity} <Icon name="Food" gap={3}/></span> + <span style={{display: "flex", alignItems: "center", backgroundColor: getColor(getIndustry("Luxury").hue, 0), borderRadius: 4, padding: 10}}>{importDeal.luxuryQuantity} <Icon name="Luxury" gap={3}/></span> for ${getImportDealPrice(props.gameState, importDeal)} (includes ${getImportDealTariff(props.gameState, importDeal)} in tariffs)
+								</span>
+							</Highlight>
+						})
 					}
 				</div>
 			},

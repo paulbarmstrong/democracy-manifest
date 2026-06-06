@@ -1,6 +1,5 @@
 import { z } from "zod"
 import { playerClassNameZod, tabNameZod } from "./Zod"
-import { ImmutableRefObject } from "../classes/ImmutableRefObject"
 
 export type PlayerClassName = z.infer<typeof playerClassNameZod>
 
@@ -131,11 +130,8 @@ export type StateClassState = CommonClassState & {
 export type ImportDeal = {
 	foodQuantity: number,
 	luxuryQuantity: number,
-	cost: {
-		0: number,
-		1: number,
-		2: number
-	}
+	baseCost: number,
+	tariffPerForeignTradePosition: number
 }
 
 export type ExportDeals = Array<{
@@ -190,11 +186,13 @@ export type Action = {
 		classState: ClassState
 	}) => boolean,
 	execute?: (args: {
-		gameState: ImmutableRefObject<GameState>,
+		gameState: GameState,
 		playerClass: PlayerClass,
 		classState: ClassState,
 		setText: (text: string) => void,
-		selectPolicyPosition: (predicate: (policyPosition: PolicyPosition) => boolean) => Promise<PolicyPosition>
+		selectPolicyPosition: (predicate: (policyPosition: PolicyPosition) => boolean) => Promise<PolicyPosition>,
+		selectImportDeal: (predicate: (importDeal: ImportDeal) => boolean) => Promise<ImportDeal>
+		selectPreferredImportDealDestination: () => Promise<PreferredImportDealDestination>
 	}) => Promise<void>
 }
 
@@ -202,6 +200,9 @@ export type ActionExecution = {
 	action: Action,
 	policyPositionPredicate?: (policyPosition: PolicyPosition) => boolean,
 	policyPositionCallback?: (policyPosition: PolicyPosition) => void,
+	importDealPredicate?: (importDeal: ImportDeal) => boolean,
+	importDealCallback?: (preference: ImportDeal) => void,
+	preferredImportDealDestinationCallback?: (preference: PreferredImportDealDestination) => void,
 	text?: string
 }
 
@@ -215,3 +216,5 @@ export type PolicyPosition = {
 	name: PolicyName,
 	position: 0 | 1 | 2
 }
+
+export type PreferredImportDealDestination = "regularStorage" | "exportOnlyStorage"

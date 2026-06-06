@@ -1,6 +1,6 @@
 import _, { sum } from "lodash"
 import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, COMPANY_TYPES, INDUSTRIES, MAX_EXPORT_ONLY_GOODS, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
-import { CapitalistClassState, ClassState, Company, CompanyType, GameState, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, WorkerClass } from "./Types"
+import { CapitalistClassState, ClassState, Company, CompanyType, GameState, ImportDeal, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, WorkerClass } from "./Types"
 
 export function getIndustry(industryName: IndustryName): Industry {
 	return INDUSTRIES.find(industry => industry.name === industryName)!
@@ -42,6 +42,15 @@ export function getImportPrice(industryName: "Food" | "Luxury", level: number): 
 	const basePrice = industryName === "Food" ? BASE_FOOD_IMPORT_PRICE : BASE_LUXURY_IMPORT_PRICE
 	return basePrice + getImportTariff(industryName, level)
 }
+
+export function getImportDealTariff(gameState: GameState, importDeal: ImportDeal): number {
+	return importDeal.tariffPerForeignTradePosition * (2 - gameState.policies["Foreign Trade"].state)
+}
+
+export function getImportDealPrice(gameState: GameState, importDeal: ImportDeal): number {
+	return importDeal.baseCost + getImportDealTariff(gameState, importDeal)
+}
+
 
 export function isCompanyOperational(company: Company) {
 	const companyType = getCompanyType(company)
@@ -89,18 +98,28 @@ export function changeCredibility(gameState: GameState, playerClassName: Exclude
 	gameState.classes[3].credibility[playerClassName] = Math.max(1, gameState.classes[3].credibility[playerClassName] + delta)
 }
 
-export function changeStoredGoods(classState: ClassState, industryName: IndustryName, delta: number) {
-	const newQuantityUnbounded: number = classState.storedGoods[industryName].quantity + delta
+export function changeStoredGoods(classState: ClassState, industryName: IndustryName, delta: number, preferExportOnlyGoods: boolean) {
+	const exportOnlyGoods = (classState as CapitalistClassState).exportOnlyGoods
+	const hasExportOnlyGoods = exportOnlyGoods !== undefined && industryName in exportOnlyGoods
+	const exportOnlyGoodsKey = industryName as keyof CapitalistClassState["exportOnlyGoods"]
 	const maxStorage: number = getMaxStorage(classState, industryName)
+
+	if (preferExportOnlyGoods && hasExportOnlyGoods && delta > 0) {
+		const maxExportOnlyGoods: number = MAX_EXPORT_ONLY_GOODS[exportOnlyGoodsKey]
+		const addedToExportOnlyGoods = Math.min(delta, maxExportOnlyGoods - exportOnlyGoods[exportOnlyGoodsKey])
+		exportOnlyGoods[exportOnlyGoodsKey] += addedToExportOnlyGoods
+		delta -= addedToExportOnlyGoods
+	}
+
+	const newQuantityUnbounded: number = classState.storedGoods[industryName].quantity + delta
 	classState.storedGoods[industryName].quantity = Math.min(newQuantityUnbounded, maxStorage)
 	if (classState.storedGoods[industryName].quantity < 0)
 		throw new Error(`${classState.className}'s ${industryName} has gone to ${classState.storedGoods[industryName].quantity}`)
 
-	const exportOnlyGoods = (classState as CapitalistClassState).exportOnlyGoods
-	if (newQuantityUnbounded > maxStorage && exportOnlyGoods !== undefined && industryName in exportOnlyGoods) {
-		const maxExportOnlyGoods: number = MAX_EXPORT_ONLY_GOODS[industryName as keyof CapitalistClassState["exportOnlyGoods"]]
-		exportOnlyGoods[industryName as keyof CapitalistClassState["exportOnlyGoods"]] =
-			Math.min(exportOnlyGoods[industryName as keyof CapitalistClassState["exportOnlyGoods"]] + newQuantityUnbounded - maxStorage, maxExportOnlyGoods)
+	if (newQuantityUnbounded > maxStorage && hasExportOnlyGoods) {
+		const maxExportOnlyGoods: number = MAX_EXPORT_ONLY_GOODS[exportOnlyGoodsKey]
+		exportOnlyGoods[exportOnlyGoodsKey] =
+			Math.min(exportOnlyGoods[exportOnlyGoodsKey] + newQuantityUnbounded - maxStorage, maxExportOnlyGoods)
 	}
 }
 
@@ -113,7 +132,7 @@ export function produceForCompany(gameState: GameState, classState: ClassState, 
 	if (classState.className === "Working Class") {
 		classState.consumableGoods[companyType.industry] += production
 	} else {
-		changeStoredGoods(classState, companyType.industry, production)
+		changeStoredGoods(classState, companyType.industry, production, false)
 	}
 
 	const workerSlotsWithWorker = companyType.workerSlots.map((workerSlot, index) => {
