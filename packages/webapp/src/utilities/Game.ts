@@ -85,11 +85,22 @@ export function changeMoney(classState: ClassState, delta: number) {
 
 		while (remainingDue > 0) {
 			classState.loans += 1
-			classState.cash += 50
 
-			const loanPaid = Math.min(50, remainingDue)
-			classState.cash -= loanPaid
-			remainingDue -= loanPaid
+			if (classState.className === "Capitalist Class") {
+				const capitalistState = classState as CapitalistClassState
+
+				capitalistState.capital += 50
+
+				const loanPaid = Math.min(50, remainingDue)
+				capitalistState.capital -= loanPaid
+				remainingDue -= loanPaid
+			} else {
+				classState.cash += 50
+
+				const loanPaid = Math.min(50, remainingDue)
+				classState.cash -= loanPaid
+				remainingDue -= loanPaid
+			}
 		}
 	}
 }
