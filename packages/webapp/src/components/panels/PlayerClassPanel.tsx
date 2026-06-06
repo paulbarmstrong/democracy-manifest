@@ -1,6 +1,6 @@
 import { range } from "lodash"
 import { getColor, getPlayerColor } from "../../utilities/Color"
-import { CapitalistClassState, GameState, IndustryName, PlayerClass, PlayerClassName, StateClassState, Worker, WorkingClassState } from "../../utilities/Types"
+import { ActionExecution, CapitalistClassState, GameState, IndustryName, PlayerClass, PlayerClassName, PreferredImportDealDestination, StateClassState, Worker, WorkingClassState } from "../../utilities/Types"
 import { COMPANY_SIZE_PX, INDUSTRIES, MAX_CREDIBILITY_PER_CLASS, MAX_EXPORT_ONLY_GOODS, WEALTH_TIER_THRESHOLDS, WORKER_SIZE_PX } from "../../utilities/Constants"
 import { CompanyCard } from "../CompanyCard"
 import { capitalToWealthTier, getIndustry, getMaxStorage, getTurn } from "../../utilities/Game"
@@ -13,11 +13,20 @@ import { Highlight } from "../Highlight"
 interface Props {
 	playerClass: PlayerClass,
 	gameState: GameState,
-	zoomed: boolean
+	zoomed: boolean,
+	actionExecution?: ActionExecution
 }
 
 export function PlayerClassPanel(props: Props) {
 	const classState = props.gameState.classes.find(clazz => clazz.className === props.playerClass.name)!
+
+	const selectingImportDealDestination = props.actionExecution?.preferredImportDealDestinationCallback !== undefined
+
+	function onClickImportDealDestination(destination: PreferredImportDealDestination) {
+		if (props.actionExecution?.preferredImportDealDestinationCallback !== undefined) {
+			props.actionExecution.preferredImportDealDestinationCallback(destination)
+		}
+	}
 	const unionLeaderWorkers: Array<Worker> | undefined = (classState as WorkingClassState).unionLeaders !== undefined ? (
 		Object.values((classState as WorkingClassState).unionLeaders)
 	) : (
@@ -42,34 +51,38 @@ export function PlayerClassPanel(props: Props) {
 			{name: "Number of workers", content: numberOfWorkers},
 			{name: "Population level", content: populationLevel},
 			{name: "Stored goods", content: INDUSTRIES.filter(industry => getMaxStorage(classState, industry.name) > 0).length > 0 ? (
-				<div style={{display: "flex", gap: 5, borderColor: "white", borderWidth: 2, borderRadius: 4}}>
-					{
-						INDUSTRIES.filter(industry => getMaxStorage(classState, industry.name) > 0).map(industry => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(industry.hue, 0), padding: 10, gap: 10, borderRadius: 4}}>
-							<Icon name={industry.name}/>
-							<span>{classState.storedGoods[industry.name].quantity}/{getMaxStorage(classState, industry.name)}</span>
-							<RadioSelector
-								choices={props.playerClass.storagePriceOptions[industry.name].map(price => ({value: price, content: `$${price}`})).reverse()}
-								onChange={() => undefined}
-								value={classState.storedGoods[industry.name].price}
-								radioButtonSize={16}
-								fontSize="small"
-							/>
-						</div>)
-					}
-				</div>
+				<Highlight active={selectingImportDealDestination}>
+					<div className={selectingImportDealDestination ? "clickable" : undefined} onClick={selectingImportDealDestination ? () => onClickImportDealDestination("regularStorage") : undefined} style={{display: "flex", gap: 5, borderColor: "white", borderWidth: 2, borderRadius: 4}}>
+						{
+							INDUSTRIES.filter(industry => getMaxStorage(classState, industry.name) > 0).map(industry => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(industry.hue, 0), padding: 10, gap: 10, borderRadius: 4}}>
+								<Icon name={industry.name}/>
+								<span>{classState.storedGoods[industry.name].quantity}/{getMaxStorage(classState, industry.name)}</span>
+								<RadioSelector
+									choices={props.playerClass.storagePriceOptions[industry.name].map(price => ({value: price, content: `$${price}`})).reverse()}
+									onChange={() => undefined}
+									value={classState.storedGoods[industry.name].price}
+									radioButtonSize={16}
+									fontSize="small"
+								/>
+							</div>)
+						}
+					</div>
+				</Highlight>
 			) : (
 				undefined
 			)},
 			{name: "Export-only goods", content: (classState as CapitalistClassState).exportOnlyGoods !== undefined ? (
-				<div style={{display: "flex", gap: 5, borderColor: "white", borderWidth: 2, borderRadius: 4}}>
-					{
-						(Object.entries((classState as CapitalistClassState).exportOnlyGoods) as Array<[IndustryName, number]>)
-							.map(([industryName, quantity]) => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(getIndustry(industryName).hue, 0), padding: 10, gap: 10, borderRadius: 4, width: 40}}>
-								<Icon name={industryName as any}/>
-								<span>{quantity}/{MAX_EXPORT_ONLY_GOODS[industryName as keyof CapitalistClassState["exportOnlyGoods"]]}</span>
-							</div>)
-					}
-				</div>
+				<Highlight active={selectingImportDealDestination}>
+					<div className={selectingImportDealDestination ? "clickable" : undefined} onClick={selectingImportDealDestination ? () => onClickImportDealDestination("exportOnlyStorage") : undefined}  style={{display: "flex", gap: 5, borderColor: "white", borderWidth: 2, borderRadius: 4}}>
+						{
+							(Object.entries((classState as CapitalistClassState).exportOnlyGoods) as Array<[IndustryName, number]>)
+								.map(([industryName, quantity]) => <div style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "center", backgroundColor: getColor(getIndustry(industryName).hue, 0), padding: 10, gap: 10, borderRadius: 4, width: 40}}>
+									<Icon name={industryName as any}/>
+									<span>{quantity}/{MAX_EXPORT_ONLY_GOODS[industryName as keyof CapitalistClassState["exportOnlyGoods"]]}</span>
+								</div>)
+						}
+					</div>
+				</Highlight>
 			) : (
 				undefined
 			)},
