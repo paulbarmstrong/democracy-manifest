@@ -200,6 +200,17 @@ describe("changeMoney", () => {
 		expect(classState.capital).toBe(80)
 		expect(classState.loans).toBe(0)
 	})
+	
+	test("a capitalist taking a loan adds the loan money to capital, not cash", () => {
+		const classState = makeCapitalistClassState({cash: 10, capital: 20})
+		// Owes 100. Pays 10 from cash and 20 from capital, then borrows 2 loans
+		// ($50 each) to cover the remaining 70. The $30 of unspent loan money lands
+		// in capital, and cash stays at 0.
+		changeMoney(classState, -100)
+		expect(classState.loans).toBe(2)
+		expect(classState.cash).toBe(0)
+		expect(classState.capital).toBe(30)
+	})
 })
 
 describe("changeCredibility", () => {
