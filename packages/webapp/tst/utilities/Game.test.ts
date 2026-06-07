@@ -9,7 +9,7 @@ import { describe, expect, test } from "vitest"
 import {
 	capitalToWealthTier, changeCredibility, changeMoney, changeStoredGoods, getClassState, getCompanyType,
 	getImportDealPrice, getImportDealTariff, getImportPrice, getImportTariff, getIndustry, getMaxStorage,
-	getPlayerClass, getTurn, isCompanyOperational, produceForCompany
+	getPlayerClass, getTurn, isCompanyOperational, isStrikeTarget, produceForCompany
 } from "../../src/utilities/Game"
 import { WEALTH_TIER_THRESHOLDS } from "../../src/utilities/Constants"
 import { Company, ImportDeal, StateClassState } from "../../src/utilities/Types"
@@ -23,7 +23,7 @@ describe("getIndustry", () => {
 
 describe("getCompanyType", () => {
 	test("returns the company type matching the company's name", () => {
-		const companyType = getCompanyType({name: "Clinic", wageLevel: 0, workers: []})
+		const companyType = getCompanyType({name: "Clinic", wageLevel: 0, workers: [], onStrike: false})
 		expect(companyType.name).toBe("Clinic")
 		expect(companyType.industry).toBe("Healthcare")
 		expect(companyType.production).toBe(6)
@@ -127,7 +127,8 @@ describe("isCompanyOperational", () => {
 		const company: Company = {
 			name: "Clinic",
 			wageLevel: 0,
-			workers: [{class: "Working Class", committed: true}, {class: "Working Class", committed: true}]
+			workers: [{class: "Working Class", committed: true}, {class: "Working Class", committed: true}],
+			onStrike: false
 		}
 		expect(isCompanyOperational(company)).toBe(true)
 	})
@@ -136,7 +137,8 @@ describe("isCompanyOperational", () => {
 		const company: Company = {
 			name: "Clinic",
 			wageLevel: 0,
-			workers: [{class: "Working Class", committed: true}]
+			workers: [{class: "Working Class", committed: true}],
+			onStrike: false
 		}
 		expect(isCompanyOperational(company)).toBe(false)
 	})
@@ -276,7 +278,8 @@ describe("produceForCompany", () => {
 		capitalist.companies = [{
 			name: "Clinic", // Healthcare, production 6, wageLevels [10, 20, 30]
 			wageLevel: 0,
-			workers: [{class: "Working Class", committed: true}, {class: "Working Class", committed: true}]
+			workers: [{class: "Working Class", committed: true}, {class: "Working Class", committed: true}],
+			onStrike: false
 		}]
 		const gameState = makeGameState({
 			classes: [workingClass, makeMiddleClassState(), capitalist, makeStateClassState()]
@@ -294,7 +297,7 @@ describe("produceForCompany", () => {
 		const workingClass = makeWorkingClassState()
 		// No workers in the wage-bearing slots, so production happens with no wages
 		// to pay, isolating the consumable-goods branch.
-		workingClass.companies = [{name: "Clinic", wageLevel: 0, workers: []}]
+		workingClass.companies = [{name: "Clinic", wageLevel: 0, workers: [], onStrike: false}]
 		const gameState = makeGameState({
 			classes: [workingClass, makeMiddleClassState(), makeCapitalistClassState(), makeStateClassState()]
 		})
@@ -302,5 +305,39 @@ describe("produceForCompany", () => {
 		produceForCompany(gameState, workingClass, workingClass.companies[0])
 
 		expect(workingClass.consumableGoods.Healthcare).toBe(6)
+	})
+})
+
+describe("isStrikeTarget", () => {
+	// "Shopping Mall" has a Working-Class worker slot and wage levels [15, 20, 25],
+	// so its maximum wage level is 2.
+	function shoppingMall(overrides: Partial<Company> = {}): Company {
+		return {
+			name: "Shopping Mall",
+			wageLevel: 0,
+			workers: [{class: "Working Class", committed: false}],
+			onStrike: false,
+			...overrides
+		}
+	}
+
+	test("is a target when the Working Class has uncommitted workers and wages are below max", () => {
+		expect(isStrikeTarget(shoppingMall())).toBe(true)
+	})
+
+	test("is not a target when already at the maximum wage level", () => {
+		expect(isStrikeTarget(shoppingMall({wageLevel: 2}))).toBe(false)
+	})
+
+	test("is not a target when any worker is committed", () => {
+		expect(isStrikeTarget(shoppingMall({workers: [{class: "Working Class", committed: true}]}))).toBe(false)
+	})
+
+	test("is not a target without a Working Class worker", () => {
+		expect(isStrikeTarget(shoppingMall({workers: [{class: "Middle Class", committed: false}]}))).toBe(false)
+	})
+
+	test("is not a target when already on strike", () => {
+		expect(isStrikeTarget(shoppingMall({onStrike: true}))).toBe(false)
 	})
 })

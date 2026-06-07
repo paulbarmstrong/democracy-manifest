@@ -1,6 +1,6 @@
 import { range, take } from "lodash"
 import { Action, CapitalistClassState, CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass, PlayerClassName, Policy, StateClassState } from "./Types"
-import { changeCredibility, changeMoney, changeStoredGoods, getClassState, getImportDealPrice, getImportDealTariff, getImportPrice, getIndustry } from "./Game"
+import { changeCredibility, changeMoney, changeStoredGoods, getClassState, getImportDealPrice, getImportDealTariff, getImportPrice, getIndustry, getStrikeTargets, isStrikeTarget } from "./Game"
 import { isAre, s } from "./Misc"
 
 export const COMPANY_SIZE_PX = 220
@@ -13,6 +13,7 @@ export const BACKGROUND_SHADE_T0 = "#374247"
 export const BACKGROUND_SHADE_T1 = "#2b3438"
 export const ACCENT_COLOR_SATURATION = 25
 export const ACCENT_COLOR_LIGHTNESS = 45
+export const STRIKE_COLOR = "#b91c1c"
 
 export const MATERIAL_ICON_NAME_MAPPINGS = {
 	"tax-multiplier": "receipt_long",
@@ -315,7 +316,22 @@ export const BASIC_ACTIONS: Array<Action> = [
 	{name: "Lobby", type: "basic", playerClasses: ["Capitalist Class"], description: "Spend $30 from capital to gain 3 <Influence>"},
 	{name: "Buy goods", type: "basic", playerClasses: ["Working Class", "Middle Class"], description: "Buy a single type of good from up to two sellers. The number of goods must be less than or equal to your population."},
 	{name: "Work extra shift", type: "basic", playerClasses: ["Middle Class"], description: "Choose one of your companies with non-committed Middle Class workers. Pay wages and produce."},
-	{name: "Strike", type: "basic", playerClasses: ["Working Class"], description: "Choose 2 companies where your workers work, with no committed workers, and without the maximum wage level. Those companies will not not function if they have not increased to thew maximum wage level by the production phase."},
+	{
+		name: "Strike",
+		type: "basic",
+		playerClasses: ["Working Class"],
+		description: "Choose 2 companies where your workers work, with no committed workers, and without the maximum wage level. Those companies will not not function if they have not increased to thew maximum wage level by the production phase.",
+		isPossible: ({gameState}) => getStrikeTargets(gameState).length > 0,
+		execute: async ({gameState, setText, selectCompany}) => {
+			for (let placed = 0; placed < 2; placed++) {
+				if (getStrikeTargets(gameState).length === 0) break
+				setText(placed === 0 ? "Select a company to strike." : "Select another company to strike, or click Done.")
+				const company = await selectCompany(isStrikeTarget)
+				if (company === undefined) break
+				company.onStrike = true
+			}
+		}
+	},
 	{name: "Demonstrate", type: "basic", playerClasses: ["Working Class"], description: "When played then if the following remains true till the production phase then gain 1 <Influence> and other players lose VP: The number of your unemployed workers is at least 2 more than the number of unoccupied worker slots."},
 	{
 		name: "Apply political pressure",
@@ -379,7 +395,7 @@ export const FREE_ACTIONS: Array<Action> = [
 ]
 
 export const GAME_STATE: GameState = {
-	turnIndex: 18,
+	turnIndex: 16,
 	mainActionCompleted: false,
 	freeActionCompleted: false,
 	policies: {
@@ -466,6 +482,7 @@ export const GAME_STATE: GameState = {
 				{
 					name: "Convenience Store",
 					wageLevel: 0,
+					onStrike: false,
 					workers: [
 						{class: "Middle Class", skill: "Food", committed: false},
 						{class: "Working Class", committed: false}
@@ -504,6 +521,7 @@ export const GAME_STATE: GameState = {
 				{
 					name: "Clinic",
 					wageLevel: 1,
+					onStrike: false,
 					workers: [
 						{class: "Middle Class", committed: true},
 						{class: "Middle Class", skill: "Influence", committed: true}
@@ -512,6 +530,7 @@ export const GAME_STATE: GameState = {
 				{
 					name: "Shopping Mall",
 					wageLevel: 1,
+					onStrike: false,
 					workers: [
 						{class: "Working Class", skill: "Luxury", committed: false},
 						{class: "Working Class", skill: "Healthcare", committed: false},
@@ -548,6 +567,7 @@ export const GAME_STATE: GameState = {
 				{
 					name: "University",
 					wageLevel: 1,
+					onStrike: false,
 					workers: [
 						{class: "Middle Class", skill: "Education", committed: false},
 						{class: "Middle Class", committed: false},
@@ -557,6 +577,7 @@ export const GAME_STATE: GameState = {
 				{
 					name: "NPR",
 					wageLevel: 0,
+					onStrike: false,
 					workers: []
 				}
 			],

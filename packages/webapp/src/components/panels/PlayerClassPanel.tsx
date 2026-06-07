@@ -27,6 +27,8 @@ export function PlayerClassPanel(props: Props) {
 			props.actionExecution.preferredImportDealDestinationCallback(destination)
 		}
 	}
+
+	const selectingCompany = props.actionExecution?.companyCallback !== undefined
 	const unionLeaderWorkers: Array<Worker> | undefined = (classState as WorkingClassState).unionLeaders !== undefined ? (
 		Object.values((classState as WorkingClassState).unionLeaders)
 	) : (
@@ -191,7 +193,14 @@ export function PlayerClassPanel(props: Props) {
 					{
 						range(0, props.playerClass.maxCompanies).map(companyIndex => {
 							if (companyIndex < classState.companies.length) {
-								return <CompanyCard key={companyIndex} company={classState.companies[companyIndex]}/>
+								const company = classState.companies[companyIndex]
+								const selectable = selectingCompany && (props.actionExecution?.companyPredicate?.(company) ?? false)
+								return <CompanyCard
+									key={companyIndex}
+									company={company}
+									selectable={selectable}
+									onSelect={selectable ? () => props.actionExecution!.companyCallback!(company) : undefined}
+								/>
 							} else {
 								return <div style={{width: COMPANY_SIZE_PX, height: COMPANY_SIZE_PX, backgroundColor: getColor(props.playerClass.hue, 1), borderRadius: 4}}/>
 							}
