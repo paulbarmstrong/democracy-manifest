@@ -27,7 +27,7 @@ export function getMaxStorage(classState: ClassState, industryName: IndustryName
 }
 
 export function capitalToWealthTier(capital: number): number {
-	for (let i = WEALTH_TIER_THRESHOLDS.length-1; i--; i >= 0) {
+	for (let i = WEALTH_TIER_THRESHOLDS.length-1; i >= 0; i--) {
 		if (capital > WEALTH_TIER_THRESHOLDS[i]) return i
 	}
 	return 0
