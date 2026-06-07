@@ -1,6 +1,6 @@
 import { sum } from "lodash"
 import { getColor } from "../utilities/Color"
-import { COMPANY_SIZE_PX, INDUSTRIES } from "../utilities/Constants"
+import { COMPANY_SIZE_PX, INDUSTRIES, STRIKE_COLOR } from "../utilities/Constants"
 import { Company, WorkerClass } from "../utilities/Types"
 import { RadioSelector } from "./RadioSelector"
 import { WorkerView } from "./WorkerView"
@@ -8,7 +8,9 @@ import { Icon } from "./Icon"
 import { getCompanyType } from "../utilities/Game"
 
 interface Props {
-	company: Company
+	company: Company,
+	selectable?: boolean,
+	onSelect?: () => void
 }
 
 export function CompanyCard(props: Props) {
@@ -16,8 +18,21 @@ export function CompanyCard(props: Props) {
 	const industry = INDUSTRIES.find(industry => industry.name === companyType.industry)!
 	const mainWorkerSlots = companyType.workerSlots.filter(workerSlot => workerSlot.productionBonus === undefined)
 	const bonusWorkerSlots = companyType.workerSlots.filter(workerSlot => workerSlot.productionBonus !== undefined)
-	return <div style={{position: "relative", width: COMPANY_SIZE_PX, height: COMPANY_SIZE_PX, backgroundColor: getColor(industry.hue, 0), boxSizing: "border-box", borderRadius: 4}}>
+	return <div
+		className={props.selectable ? "clickable" : undefined}
+		onClick={props.selectable ? props.onSelect : undefined}
+		style={{position: "relative", width: COMPANY_SIZE_PX, height: COMPANY_SIZE_PX, backgroundColor: getColor(industry.hue, 0), boxSizing: "border-box", borderRadius: 4, outline: props.selectable ? "2px solid white" : undefined, outlineOffset: 2}}
+	>
 		<div style={{position: "absolute", top: 0, right: 0, borderRadius: 4, backgroundColor: getColor(industry.hue, 1), padding: 4, fontSize: "small"}}>${companyType.price}</div>
+		{
+			props.company.onStrike ? (
+				<div style={{position: "absolute", top: 4, left: 4, display: "flex", alignItems: "center", gap: 3, backgroundColor: STRIKE_COLOR, color: "white", padding: 4, borderRadius: 4}}>
+					<span className="material-symbols-outlined" style={{fontSize: 16, fontVariationSettings: "'FILL' 1"}}>front_hand</span>
+				</div>
+			) : (
+				undefined
+			)
+		}
 		<div style={{width: "100%", height: "100%", backgroundColor: getColor(industry.hue, 0), display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center", borderRadius: 4, padding: 10, boxSizing: "border-box"}}>
 			<span>{props.company.name}</span>
 			<div style={{display: "flex", justifyContent: "center", alignItems: "flex-start", gap: 5}}>

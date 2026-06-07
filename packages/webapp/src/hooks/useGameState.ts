@@ -2,7 +2,7 @@ import { clone, shuffle, sum } from "lodash"
 import { ImmutableRefObject } from "../classes/ImmutableRefObject"
 import { GameState, PolicyName } from "../utilities/Types"
 import { useRefState } from "./useRefState"
-import { getTurn, isCompanyOperational, produceForCompany } from "../utilities/Game"
+import { getClassState, getCompanyType, getTurn, isCompanyOperational, produceForCompany } from "../utilities/Game"
 import { NUM_POLITICAL_PRESSURE_PER_VOTE, PLAYER_CLASSES } from "../utilities/Constants"
 
 // The internals will be replaced with complicated network state management stuff later
@@ -56,9 +56,16 @@ export function useGameState(originalGameState: GameState, options?: {sideEffect
 					// Production
 					gameState.current.classes.forEach(classState => {
 						classState.companies.forEach(company => {
+							const maxWageLevel = getCompanyType(company).wageLevels.length - 1
+							const struck = company.onStrike && company.wageLevel < maxWageLevel
 							if (isCompanyOperational(company)) {
-								produceForCompany(gameState.current, classState, company)
+								if (struck) {
+									getClassState(gameState.current, "Working Class").consumableGoods.Influence += 1
+								} else {
+									produceForCompany(gameState.current, classState, company)
+								}
 							}
+							company.onStrike = false
 							company.workers.forEach(worker => worker.committed = false)
 						})
 					})

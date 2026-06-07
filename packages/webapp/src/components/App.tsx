@@ -2,7 +2,7 @@ import { GAME_STATE, IMPORT_DEALS, PLAYER_CLASSES, SIDEBAR_WIDTH_PX } from "../u
 import { useWindowSize } from "../hooks/useWindowSize"
 import { DynamicWebappConfig } from "common"
 import { useRefState } from "../hooks/useRefState"
-import { Action, ActionExecution, ImportDeal, PlayerClassName, PolicyPosition, PreferredImportDealDestination, TabName } from "../utilities/Types"
+import { Action, ActionExecution, Company, ImportDeal, PlayerClassName, PolicyPosition, PreferredImportDealDestination, TabName } from "../utilities/Types"
 import { playerClassNameZod, tabNameZod } from "../utilities/Zod"
 import { getClassState, getPlayerClass } from "../utilities/Game"
 import { getPlayerColor, getShade } from "../utilities/Color"
@@ -84,7 +84,8 @@ export function App(props: Props) {
 			setText: text => actionExecution.current = {...actionExecution.current!, text},
 			selectPolicyPosition,
 			selectImportDeal,
-			selectPreferredImportDealDestination
+			selectPreferredImportDealDestination,
+			selectCompany
 		})
 		if (action.type === "free") {
 			gameState.current.freeActionCompleted = true
@@ -116,6 +117,13 @@ export function App(props: Props) {
 		})
 	}
 
+	async function selectCompany(predicate: (company: Company) => boolean): Promise<Company | undefined> {
+		selectedTab.current = "All Classes"
+		return new Promise<Company | undefined>((resolve, _) => {
+			actionExecution.current = {...actionExecution.current!, companyPredicate: predicate, companyCallback: resolve}
+		})
+	}
+
 	return (
 		<div style={{display: "flex", userSelect: "none"}}>
 			<Sidebar />
@@ -140,7 +148,7 @@ export function App(props: Props) {
 				{
 					(() => {
 						if (selectedTab.current === "All Classes") {
-							return <AllPlayerClassesPanel gameState={gameState.current}/>
+							return <AllPlayerClassesPanel gameState={gameState.current} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "My Class") {
 							return <PlayerClassPanel playerClass={getPlayerClass(observingAsPlayerClassName.current)} gameState={gameState.current} zoomed={true} actionExecution={actionExecution.current}/>
 						} else if (selectedTab.current === "Politics") {
@@ -157,6 +165,13 @@ export function App(props: Props) {
 						<div style={{position: "fixed", bottom: 0, left: SIDEBAR_WIDTH_PX, right: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 20, padding: 20, backgroundColor: getShade(2)}}>
 							<span style={{fontSize: "x-large", fontWeight: "bold"}}>{actionExecution.current.action.name}</span>
 							{actionExecution.current.text}
+							{
+								actionExecution.current.companyCallback !== undefined ? (
+									<div className="clickable" onClick={() => actionExecution.current!.companyCallback!(undefined)} style={{padding: 10, borderRadius: 4, backgroundColor: getShade(1), fontWeight: "bold"}}>Done</div>
+								) : (
+									undefined
+								)
+							}
 						</div>
 					) : (
 						undefined

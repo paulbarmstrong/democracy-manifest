@@ -57,6 +57,18 @@ export function isCompanyOperational(company: Company) {
 	return company.workers.length >= companyType.workerSlots.filter(slot => slot.productionBonus === undefined).length
 }
 
+export function isStrikeTarget(company: Company): boolean {
+	const maxWageLevel = getCompanyType(company).wageLevels.length - 1
+	return !company.onStrike
+		&& company.workers.some(worker => worker.class === "Working Class")
+		&& !company.workers.some(worker => worker.committed)
+		&& company.wageLevel < maxWageLevel
+}
+
+export function getStrikeTargets(gameState: GameState): Array<Company> {
+	return gameState.classes.flatMap(classState => classState.companies).filter(isStrikeTarget)
+}
+
 export function getTurn(gameState: GameState) {
 	return {
 		roundNumber: Math.floor(gameState.turnIndex / (4 * 5)) + 1,

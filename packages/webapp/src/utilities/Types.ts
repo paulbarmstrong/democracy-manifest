@@ -58,7 +58,8 @@ export type Worker = {
 export type Company = {
 	name: string,
 	wageLevel: number,
-	workers: Array<Worker>
+	workers: Array<Worker>,
+	onStrike: boolean
 }
 
 type CommonClassState = {
@@ -192,7 +193,8 @@ export type Action = {
 		setText: (text: string) => void,
 		selectPolicyPosition: (predicate: (policyPosition: PolicyPosition) => boolean) => Promise<PolicyPosition>,
 		selectImportDeal: (predicate: (importDeal: ImportDeal) => boolean) => Promise<ImportDeal>
-		selectPreferredImportDealDestination: () => Promise<PreferredImportDealDestination>
+		selectPreferredImportDealDestination: () => Promise<PreferredImportDealDestination>,
+		selectCompany: (predicate: (company: Company) => boolean) => Promise<Company | undefined>
 	}) => Promise<void>
 }
 
@@ -203,6 +205,8 @@ export type ActionExecution = {
 	importDealPredicate?: (importDeal: ImportDeal) => boolean,
 	importDealCallback?: (preference: ImportDeal) => void,
 	preferredImportDealDestinationCallback?: (preference: PreferredImportDealDestination) => void,
+	companyPredicate?: (company: Company) => boolean,
+	companyCallback?: (company: Company | undefined) => void,
 	text?: string
 }
 
