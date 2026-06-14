@@ -80,6 +80,7 @@ export function makeStateClassState(overrides: Partial<StateClassState> = {}): S
 		drawnActions: [],
 		vp: 0,
 		credibility: {"Working Class": 1, "Middle Class": 1, "Capitalist Class": 1},
+		credibilityBadges: {"Working Class": 0, "Middle Class": 0, "Capitalist Class": 0},
 		stateBenefits: {"Working Class": 0, "Middle Class": 0, "Capitalist Class": 0},
 		...overrides
 	}

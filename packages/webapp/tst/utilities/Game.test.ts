@@ -523,6 +523,25 @@ describe("doEndOfRoundScoringChanges", () => {
 			expect(state.credibility).toEqual({"Working Class": 2, "Middle Class": 1, "Capitalist Class": 3})
 		})
 
+		test("adds credibility badges back after halving credibility", () => {
+			// Credibility is halved first (ceil), then the badge counts are added on top:
+			// Working Class ceil(4/2) + 1 = 3, Middle Class ceil(2/2) + 0 = 1, Capitalist ceil(6/2) + 2 = 5.
+			const state = makeStateClassState({
+				vp: 0,
+				credibility: {"Working Class": 4, "Middle Class": 2, "Capitalist Class": 6},
+				credibilityBadges: {"Working Class": 1, "Middle Class": 0, "Capitalist Class": 2}
+			})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), makeMiddleClassState(), makeCapitalistClassState(), state]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			// VP still scores from the lowest credibility before halving (2).
+			expect(state.vp).toBe(2)
+			expect(state.credibility).toEqual({"Working Class": 3, "Middle Class": 1, "Capitalist Class": 5})
+		})
+
 		test("finds the numerically lowest credibility even across multi-digit values", () => {
 			// A lexicographic sort would pick "10" as the lowest; the numeric minimum is 3.
 			const state = makeStateClassState({
