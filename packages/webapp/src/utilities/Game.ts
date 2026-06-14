@@ -1,6 +1,6 @@
-import _, { sum } from "lodash"
+import _, { keyBy, sum } from "lodash"
 import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, COMPANY_TYPES, INDUSTRIES, MAX_EXPORT_ONLY_GOODS, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
-import { CapitalistClassState, ClassState, Company, CompanyType, GameState, ImportDeal, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, WorkerClass } from "./Types"
+import { CapitalistClassState, ClassState, Company, CompanyType, GameState, ImportDeal, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, StateClassState, WorkerClass, WorkingClassState } from "./Types"
 
 export function getIndustry(industryName: IndustryName): Industry {
 	return INDUSTRIES.find(industry => industry.name === industryName)!
@@ -17,6 +17,11 @@ export function getPlayerClass(playerClassName: PlayerClassName): PlayerClass {
 export function getClassState(gameState: GameState, playerClassName: PlayerClassName): ClassState {
 	return gameState.classes.find(x => x.className === playerClassName)!
 }
+
+export const getWorkingClassState = (gameState: GameState) => getClassState(gameState, "Working Class") as WorkingClassState
+export const getMiddleClassState = (gameState: GameState) => getClassState(gameState, "Middle Class") as MiddleClassState
+export const getCapitalistClassState = (gameState: GameState) => getClassState(gameState, "Capitalist Class") as CapitalistClassState
+export const getStateClassState = (gameState: GameState) => getClassState(gameState, "State") as StateClassState
 
 export function getMaxStorage(classState: ClassState, industryName: IndustryName): number {
 	const playerClass: PlayerClass = getPlayerClass(classState.className)
@@ -55,6 +60,11 @@ export function getImportDealPrice(gameState: GameState, importDeal: ImportDeal)
 export function isCompanyOperational(company: Company) {
 	const companyType = getCompanyType(company)
 	return company.workers.length >= companyType.workerSlots.filter(slot => slot.productionBonus === undefined).length
+}
+
+export function isCompanyFullyOperational(company: Company) {
+	const companyType = getCompanyType(company)
+	return company.workers.length === companyType.workerSlots.length
 }
 
 export function isStrikeTarget(company: Company): boolean {
@@ -146,6 +156,11 @@ export function changeStoredGoods(classState: ClassState, industryName: Industry
 	}
 }
 
+export function increaseProsperity(classState: WorkingClassState | MiddleClassState) {
+	classState.prosperity += 1
+	classState.vp += classState.prosperity
+}
+
 export function produceForCompany(gameState: GameState, classState: ClassState, company: Company) {
 	const companyType = getCompanyType(company)
 	const production = sum([
@@ -176,4 +191,29 @@ export function produceForCompany(gameState: GameState, classState: ClassState, 
 			changeMoney(getClassState(gameState, workerSlotsGroup[0].worker!.class as PlayerClassName), wageAmount)
 		}
 	})
+}
+
+export function doEndOfRoundScoringChanges(gameState: GameState) {
+	const workingClassState: WorkingClassState = getWorkingClassState(gameState)
+	const numUnionLeaders: number = Object.values(workingClassState.unionLeaders).filter(worker => worker !== undefined).length
+	workingClassState.vp += 2 * numUnionLeaders
+
+	const middleClassState: MiddleClassState = getMiddleClassState(gameState)
+	const numFullyOperationalCompanies: number = middleClassState.companies.filter(isCompanyFullyOperational).length
+	if (middleClassState.prosperity < numFullyOperationalCompanies) increaseProsperity(middleClassState)
+
+	const capitalistClassState: CapitalistClassState = getCapitalistClassState(gameState)
+	capitalistClassState.capital += capitalistClassState.cash
+	capitalistClassState.cash = 0
+	const oldPeakWealthTier: number = capitalistClassState.peakWealthTier
+	const currentWealthTier: number = capitalToWealthTier(capitalistClassState.capital)
+	const newPeakWealthTier: number = Math.max(oldPeakWealthTier, currentWealthTier)
+	capitalistClassState.vp += currentWealthTier + 1
+	capitalistClassState.vp += 3 * (newPeakWealthTier - oldPeakWealthTier)
+	capitalistClassState.peakWealthTier = newPeakWealthTier
+
+	const stateClassState: StateClassState = getStateClassState(gameState)
+	stateClassState.vp += sum(Object.values(stateClassState.credibility).sort((a, b) => a - b).slice(0, 1))
+	stateClassState.credibility = Object.fromEntries(Object.entries(stateClassState.credibility)
+		.map(([k, v]) => [k, Math.ceil(v / 2)])) as any
 }

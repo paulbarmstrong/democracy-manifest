@@ -2,7 +2,7 @@ import { clone, shuffle, sum } from "lodash"
 import { ImmutableRefObject } from "../classes/ImmutableRefObject"
 import { GameState, PolicyName } from "../utilities/Types"
 import { useRefState } from "./useRefState"
-import { getClassState, getCompanyType, getTurn, isCompanyOperational, produceForCompany } from "../utilities/Game"
+import { doEndOfRoundScoringChanges, getClassState, getCompanyType, getTurn, isCompanyOperational, produceForCompany } from "../utilities/Game"
 import { NUM_POLITICAL_PRESSURE_PER_VOTE, PLAYER_CLASSES } from "../utilities/Constants"
 
 // The internals will be replaced with complicated network state management stuff later
@@ -69,6 +69,9 @@ export function useGameState(originalGameState: GameState, options?: {sideEffect
 							company.workers.forEach(worker => worker.committed = false)
 						})
 					})
+
+					// Scoring
+					doEndOfRoundScoringChanges(gameState.current)
 
 					gameState.current.turnIndex += 1
 					gameState.current.mainActionCompleted = false

@@ -7,9 +7,9 @@ import {
 
 import { describe, expect, test } from "vitest"
 import {
-	capitalToWealthTier, changeCredibility, changeMoney, changeStoredGoods, getClassState, getCompanyType,
-	getImportDealPrice, getImportDealTariff, getImportPrice, getImportTariff, getIndustry, getMaxStorage,
-	getPlayerClass, getTurn, isCompanyOperational, isStrikeTarget, produceForCompany
+	capitalToWealthTier, changeCredibility, changeMoney, changeStoredGoods, doEndOfRoundScoringChanges, getClassState,
+	getCompanyType, getImportDealPrice, getImportDealTariff, getImportPrice, getImportTariff, getIndustry,
+	getMaxStorage, getPlayerClass, getTurn, increaseProsperity, isCompanyOperational, isStrikeTarget, produceForCompany
 } from "../../src/utilities/Game"
 import { WEALTH_TIER_THRESHOLDS } from "../../src/utilities/Constants"
 import { Company, ImportDeal, StateClassState } from "../../src/utilities/Types"
@@ -339,5 +339,203 @@ describe("isStrikeTarget", () => {
 
 	test("is not a target when already on strike", () => {
 		expect(isStrikeTarget(shoppingMall({onStrike: true}))).toBe(false)
+	})
+})
+
+describe("increaseProsperity", () => {
+	test("raises prosperity by 1 and grants VP equal to the new prosperity value", () => {
+		const workingClass = makeWorkingClassState({prosperity: 2, vp: 5})
+		increaseProsperity(workingClass)
+		expect(workingClass.prosperity).toBe(3)
+		expect(workingClass.vp).toBe(5 + 3)
+	})
+
+	test("grants 1 VP when rising from the first prosperity space", () => {
+		const middleClass = makeMiddleClassState({prosperity: 0, vp: 0})
+		increaseProsperity(middleClass)
+		expect(middleClass.prosperity).toBe(1)
+		expect(middleClass.vp).toBe(1)
+	})
+})
+
+describe("doEndOfRoundScoringChanges", () => {
+	// A Clinic has 3 worker slots, so it is fully operational with 3 workers.
+	function fullyOperationalClinic(): Company {
+		return {
+			name: "Clinic",
+			wageLevel: 0,
+			workers: [
+				{class: "Working Class", committed: false},
+				{class: "Working Class", committed: false},
+				{class: "Machine", committed: false}
+			],
+			onStrike: false
+		}
+	}
+
+	describe("Working Class", () => {
+		test("gains 2 VP per trade union (union leader)", () => {
+			const workingClass = makeWorkingClassState({
+				vp: 5,
+				unionLeaders: {
+					Food: {class: "Working Class", committed: false},
+					Luxury: {class: "Working Class", committed: false}
+				}
+			})
+			const gameState = makeGameState({
+				classes: [workingClass, makeMiddleClassState(), makeCapitalistClassState(), makeStateClassState()]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(workingClass.vp).toBe(5 + 2 * 2)
+		})
+
+		test("gains no VP with no trade unions", () => {
+			const workingClass = makeWorkingClassState({vp: 5})
+			const gameState = makeGameState({
+				classes: [workingClass, makeMiddleClassState(), makeCapitalistClassState(), makeStateClassState()]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(workingClass.vp).toBe(5)
+		})
+	})
+
+	describe("Middle Class", () => {
+		test("gains 1 prosperity and VP equal to the new prosperity when below the company count", () => {
+			const middleClass = makeMiddleClassState({prosperity: 0, vp: 0, companies: [fullyOperationalClinic()]})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), middleClass, makeCapitalistClassState(), makeStateClassState()]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(middleClass.prosperity).toBe(1)
+			expect(middleClass.vp).toBe(1)
+		})
+
+		test("the VP gained equals the new prosperity value, not a flat 1", () => {
+			// Prosperity rises from 2 to 3 (3 fully operational companies), so 3 VP are gained.
+			const middleClass = makeMiddleClassState({
+				prosperity: 2,
+				vp: 0,
+				companies: [fullyOperationalClinic(), fullyOperationalClinic(), fullyOperationalClinic()]
+			})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), middleClass, makeCapitalistClassState(), makeStateClassState()]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(middleClass.prosperity).toBe(3)
+			expect(middleClass.vp).toBe(3)
+		})
+
+		test("does not gain prosperity or VP when it already meets the fully operational company count", () => {
+			const middleClass = makeMiddleClassState({prosperity: 1, vp: 0, companies: [fullyOperationalClinic()]})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), middleClass, makeCapitalistClassState(), makeStateClassState()]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(middleClass.prosperity).toBe(1)
+			expect(middleClass.vp).toBe(0)
+		})
+
+		test("ignores companies that are not fully operational", () => {
+			// A Clinic with only 2 of its 3 worker slots filled is not fully operational.
+			const partialClinic: Company = {
+				name: "Clinic",
+				wageLevel: 0,
+				workers: [{class: "Working Class", committed: false}, {class: "Working Class", committed: false}],
+				onStrike: false
+			}
+			const middleClass = makeMiddleClassState({prosperity: 0, companies: [partialClinic]})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), middleClass, makeCapitalistClassState(), makeStateClassState()]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(middleClass.prosperity).toBe(0)
+		})
+	})
+
+	describe("Capitalist Class", () => {
+		test("folds cash into capital", () => {
+			const capitalist = makeCapitalistClassState({cash: 60, capital: 0})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), makeMiddleClassState(), capitalist, makeStateClassState()]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(capitalist.capital).toBe(60)
+			expect(capitalist.cash).toBe(0)
+		})
+
+		test("scores wealth-tier VP plus a 3 VP per-space bonus for moving the peak", () => {
+			// 60 capital exceeds thresholds 10, 25, 50 -> tier index 2, scoring tier + 1 = 3 VP.
+			// (Matches the rulebook example where 57 capital scores 3 VP.) The peak moves from
+			// tier 0 to tier 2, awarding 3 VP for each of the 2 spaces moved (6 VP).
+			const capitalist = makeCapitalistClassState({cash: 60, capital: 0, peakWealthTier: 0, vp: 0})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), makeMiddleClassState(), capitalist, makeStateClassState()]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(capitalist.peakWealthTier).toBe(2)
+			expect(capitalist.vp).toBe(3 + 3 * 2)
+		})
+
+		test("scores from the current tier and keeps the peak when capital falls", () => {
+			// Capital only reaches tier 1 (25 < 30 < 50) this round, so base VP is 1 + 1 = 2.
+			// The peak stays at 3 and no move bonus is awarded.
+			const capitalist = makeCapitalistClassState({cash: 30, capital: 0, peakWealthTier: 3, vp: 0})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), makeMiddleClassState(), capitalist, makeStateClassState()]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(capitalist.peakWealthTier).toBe(3)
+			expect(capitalist.vp).toBe(2)
+		})
+	})
+
+	describe("State", () => {
+		test("gains VP equal to its lowest credibility and halves each credibility", () => {
+			const state = makeStateClassState({
+				vp: 0,
+				credibility: {"Working Class": 4, "Middle Class": 2, "Capitalist Class": 6}
+			})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), makeMiddleClassState(), makeCapitalistClassState(), state]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(state.vp).toBe(2)
+			expect(state.credibility).toEqual({"Working Class": 2, "Middle Class": 1, "Capitalist Class": 3})
+		})
+
+		test("finds the numerically lowest credibility even across multi-digit values", () => {
+			// A lexicographic sort would pick "10" as the lowest; the numeric minimum is 3.
+			const state = makeStateClassState({
+				vp: 0,
+				credibility: {"Working Class": 10, "Middle Class": 3, "Capitalist Class": 20}
+			})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), makeMiddleClassState(), makeCapitalistClassState(), state]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(state.vp).toBe(3)
+		})
 	})
 })
