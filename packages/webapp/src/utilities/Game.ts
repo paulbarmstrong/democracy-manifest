@@ -216,4 +216,6 @@ export function doEndOfRoundScoringChanges(gameState: GameState) {
 	stateClassState.vp += sum(Object.values(stateClassState.credibility).sort((a, b) => a - b).slice(0, 1))
 	stateClassState.credibility = Object.fromEntries(Object.entries(stateClassState.credibility)
 		.map(([k, v]) => [k, Math.ceil(v / 2)])) as any
+	Object.entries(stateClassState.credibilityBadges)
+		.forEach(([playerClassName, numBadges]) => stateClassState.credibility[playerClassName as Exclude<PlayerClassName, "State">] += numBadges)
 }

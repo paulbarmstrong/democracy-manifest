@@ -11,7 +11,7 @@ export const MENU_WIDTH: string = "max(35vw, min(500px, 100%))"
 
 export const BACKGROUND_SHADE_T0 = "#374247"
 export const BACKGROUND_SHADE_T1 = "#2b3438"
-export const ACCENT_COLOR_SATURATION = 25
+export const ACCENT_COLOR_SATURATION = 30
 export const ACCENT_COLOR_LIGHTNESS = 45
 export const STRIKE_COLOR = "#b91c1c"
 
@@ -584,6 +584,11 @@ export const GAME_STATE: GameState = {
 			credibility: {
 				"Working Class": 3,
 				"Middle Class": 2,
+				"Capitalist Class": 1
+			},
+			credibilityBadges: {
+				"Working Class": 2,
+				"Middle Class": 0,
 				"Capitalist Class": 1
 			},
 			stateBenefits: {

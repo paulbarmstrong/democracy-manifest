@@ -166,10 +166,17 @@ export function PlayerClassPanel(props: Props) {
 			{name: "Credibility", content: (classState as StateClassState).credibility !== undefined ? (
 				<div style={{display: "flex", flexDirection: "column", gap: 5}}>
 					{
-						Object.entries((classState as StateClassState).credibility).map(credEntry => <div style={{display: "flex", justifyContent: "space-between", gap: 100, backgroundColor: getPlayerColor(credEntry[0] as PlayerClassName, 1), borderRadius: 4, overflow: "hidden", position: "relative"}}>
-							<div style={{position: "absolute", top: 0, left: 0, height: "100%", width: `${100 * (credEntry[1]/MAX_CREDIBILITY_PER_CLASS)}%`, backgroundColor: getPlayerColor(credEntry[0] as PlayerClassName, 0)}}/>
-							<span style={{zIndex: 1, padding: 10}}>{credEntry[0]}:</span>
-							<span style={{zIndex: 1, padding: 10}}>{credEntry[1]}/{MAX_CREDIBILITY_PER_CLASS}</span>
+						Object.entries((classState as StateClassState).credibility).map(([playerClassName, credibility]) => <div style={{display: "flex", justifyContent: "flex-start", alignItems: "center", flexWrap: "wrap", gap: 3}}>
+							<div style={{display: "flex", justifyContent: "space-between", gap: 100, backgroundColor: getPlayerColor(playerClassName as PlayerClassName, 1), borderRadius: 4, overflow: "hidden", position: "relative", width: 300}}>
+								<div style={{position: "absolute", top: 0, left: 0, height: "100%", width: `${100 * (credibility/MAX_CREDIBILITY_PER_CLASS)}%`, backgroundColor: getPlayerColor(playerClassName as PlayerClassName, 0)}}/>
+								<span style={{zIndex: 1, padding: 10}}>{playerClassName}:</span>
+								<span style={{zIndex: 1, padding: 10}}>{credibility}/{MAX_CREDIBILITY_PER_CLASS}</span>
+							</div>
+								<div style={{display: "flex", justifyContent: "flex-start", alignItems: "center", flexWrap: "wrap"}}>
+									{range(0, (classState as StateClassState).credibilityBadges[playerClassName as Exclude<"State", PlayerClassName>]).map(_ => 
+										<span className="material-symbols-outlined" style={{fontSize: 40, color: getPlayerColor(playerClassName as PlayerClassName, 0), fontVariationSettings: "'FILL' 1", margin: -2}}>shield</span>
+									)}
+								</div>
 						</div>)
 					}
 				</div>

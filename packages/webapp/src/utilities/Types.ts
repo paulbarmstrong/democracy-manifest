@@ -113,20 +113,25 @@ export type CapitalistClassState = CommonClassState & {
 	}
 }
 
-export type ClassState = WorkingClassState | MiddleClassState | CapitalistClassState | StateClassState
-
 export type StateClassState = CommonClassState & {
 	credibility: {
 		"Working Class": number,
 		"Middle Class": number,
 		"Capitalist Class": number
 	},
+	credibilityBadges: {
+		"Working Class": number,
+		"Middle Class": number,
+		"Capitalist Class": number
+	}
 	stateBenefits: {
 		"Working Class": number,
 		"Middle Class": number,
 		"Capitalist Class": number
 	}
 }
+
+export type ClassState = WorkingClassState | MiddleClassState | CapitalistClassState | StateClassState
 
 export type ImportDeal = {
 	foodQuantity: number,
