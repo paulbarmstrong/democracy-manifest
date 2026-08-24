@@ -79,6 +79,10 @@ export function getStrikeTargets(gameState: GameState): Array<Company> {
 	return gameState.classes.flatMap(classState => classState.companies).filter(isStrikeTarget)
 }
 
+export function getPolicyStateLetter(state: 0 | 1 | 2): string {
+	return String.fromCharCode(65 + state)
+}
+
 export function getTurn(gameState: GameState) {
 	return {
 		roundNumber: Math.floor(gameState.turnIndex / (4 * 5)) + 1,

@@ -1,6 +1,6 @@
 import { range } from "lodash"
 import { getColor, getPlayerColor } from "../../utilities/Color"
-import { getClassState, getIndustry, getPlayerClass } from "../../utilities/Game"
+import { getClassState, getIndustry, getPlayerClass, getPolicyStateLetter } from "../../utilities/Game"
 import { ActionExecution, GameState, PlayerClassName, Policy, PolicyPosition } from "../../utilities/Types"
 import { Highlight } from "../Highlight"
 import { Icon } from "../Icon"
@@ -58,7 +58,7 @@ export function PolicyPanel(props: {
 		<div><b>{props.policy.name}:</b></div>
 		<RadioSelector choices={props.policy.content.map((text, index) => ({
 			content: <div style={{display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap"}}>
-				<span>{String.fromCharCode(65 + index)}</span>
+				<span>{getPolicyStateLetter(index as 0 | 1 | 2)}</span>
 				<span>|</span>
 				<IconedText text={text}/>
 				{

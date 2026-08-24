@@ -1,6 +1,6 @@
 import { getColor, getShade } from "../../utilities/Color"
 import { ACTION_SIZE_PX, BASIC_ACTIONS, DRAWN_ACTIONS, FREE_ACTIONS, POLICIES } from "../../utilities/Constants"
-import { getTurn } from "../../utilities/Game"
+import { getPolicyStateLetter, getTurn } from "../../utilities/Game"
 import { Action, GameState, PlayerClass } from "../../utilities/Types"
 import { Details } from "../Details"
 import { Highlight } from "../Highlight"
@@ -38,7 +38,7 @@ export function ActionsPanel(props: {
 						<span style={{fontSize: "large", fontWeight: "bold", display: "flex", gap: 3, alignItems: "center"}}>{action.type === "drawn" ? <Icon name="drawn"/> : undefined}{action.type === "drawn" ? "\"" : ""}{action.name}{action.type === "drawn" ? "\"" : ""}</span>
 						<span><IconedText text={action.description}/></span>
 						{action.requiredPolicy !== undefined ? (
-							<span>Requires <span style={{backgroundColor: getColor(POLICIES.find(policy => policy.name === action.requiredPolicy!.name)!.hue, 0), padding: 3, borderRadius: 4}}>{action.requiredPolicy.name} {action.requiredPolicy.states.map(state => String.fromCharCode(65 + state)).join(" or ")}</span>.</span>
+							<span>Requires <span style={{backgroundColor: getColor(POLICIES.find(policy => policy.name === action.requiredPolicy!.name)!.hue, 0), padding: 3, borderRadius: 4}}>{action.requiredPolicy.name} {action.requiredPolicy.states.map(state => getPolicyStateLetter(state)).join(" or ")}</span>.</span>
 						) : (
 							undefined
 						)}
