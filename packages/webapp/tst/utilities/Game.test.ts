@@ -12,7 +12,7 @@ import {
 	getMaxStorage, getPlayerClass, getTurn, increaseProsperity, isCompanyOperational, isStrikeTarget, produceForCompany
 } from "../../src/utilities/Game"
 import { WEALTH_TIER_THRESHOLDS } from "../../src/utilities/Constants"
-import { Company, ImportDeal, StateClassState } from "../../src/utilities/Types"
+import { Company, GameState, ImportDeal, StateClassState } from "../../src/utilities/Types"
 
 describe("getIndustry", () => {
 	test("returns the industry matching the name", () => {
@@ -373,6 +373,18 @@ describe("doEndOfRoundScoringChanges", () => {
 		}
 	}
 
+	// The default fixture policies are all at section A, which matches the Working Class's
+	// agenda (see the "Agenda" describe block below), so these tests move the policies off
+	// of section A to isolate the behavior under test from agenda scoring.
+	const NON_WORKING_CLASS_AGENDA_POLICIES: GameState["policies"] = {
+		...makeGameState().policies,
+		"Fiscal Policy": {state: 1},
+		"Labor Market": {state: 1},
+		"Taxation": {state: 1},
+		"Healthcare": {state: 1},
+		"Education": {state: 1}
+	}
+
 	describe("Working Class", () => {
 		test("gains 2 VP per trade union (union leader)", () => {
 			const workingClass = makeWorkingClassState({
@@ -383,7 +395,8 @@ describe("doEndOfRoundScoringChanges", () => {
 				}
 			})
 			const gameState = makeGameState({
-				classes: [workingClass, makeMiddleClassState(), makeCapitalistClassState(), makeStateClassState()]
+				classes: [workingClass, makeMiddleClassState(), makeCapitalistClassState(), makeStateClassState()],
+				policies: NON_WORKING_CLASS_AGENDA_POLICIES
 			})
 
 			doEndOfRoundScoringChanges(gameState)
@@ -394,12 +407,85 @@ describe("doEndOfRoundScoringChanges", () => {
 		test("gains no VP with no trade unions", () => {
 			const workingClass = makeWorkingClassState({vp: 5})
 			const gameState = makeGameState({
-				classes: [workingClass, makeMiddleClassState(), makeCapitalistClassState(), makeStateClassState()]
+				classes: [workingClass, makeMiddleClassState(), makeCapitalistClassState(), makeStateClassState()],
+				policies: NON_WORKING_CLASS_AGENDA_POLICIES
 			})
 
 			doEndOfRoundScoringChanges(gameState)
 
 			expect(workingClass.vp).toBe(5)
+		})
+	})
+
+	describe("Agenda", () => {
+		function agendaPolicies(favoredState: 0 | 1 | 2): GameState["policies"] {
+			return {
+				...makeGameState().policies,
+				"Fiscal Policy": {state: favoredState},
+				"Labor Market": {state: favoredState},
+				"Taxation": {state: favoredState},
+				"Healthcare": {state: favoredState},
+				"Education": {state: favoredState}
+			}
+		}
+
+		test("Working Class gains 1 VP per first-5 Policy at section A", () => {
+			const workingClass = makeWorkingClassState({vp: 0})
+			const gameState = makeGameState({
+				classes: [workingClass, makeMiddleClassState(), makeCapitalistClassState(), makeStateClassState()],
+				policies: agendaPolicies(0)
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(workingClass.vp).toBe(5)
+		})
+
+		test("Middle Class gains 1 VP per first-5 Policy at section B", () => {
+			const middleClass = makeMiddleClassState({vp: 0})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), middleClass, makeCapitalistClassState(), makeStateClassState()],
+				policies: agendaPolicies(1)
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(middleClass.vp).toBe(5)
+		})
+
+		test("Capitalist Class gains 1 VP per first-5 Policy at section C", () => {
+			const capitalistClass = makeCapitalistClassState({vp: 0})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), makeMiddleClassState(), capitalistClass, makeStateClassState()],
+				policies: agendaPolicies(2)
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			// +5 from the agenda match, plus the unconditional +1 wealth-tier VP (tier 0 + 1)
+			// that Capitalist Class scores every round regardless of agenda.
+			expect(capitalistClass.vp).toBe(5 + 1)
+		})
+
+		test("does not score Policies outside of the first 5", () => {
+			const workingClass = makeWorkingClassState({vp: 0})
+			const gameState = makeGameState({
+				classes: [workingClass, makeMiddleClassState(), makeCapitalistClassState(), makeStateClassState()],
+				policies: {
+					...makeGameState().policies,
+					"Fiscal Policy": {state: 1},
+					"Labor Market": {state: 1},
+					"Taxation": {state: 1},
+					"Healthcare": {state: 1},
+					"Education": {state: 1},
+					"Foreign Trade": {state: 0},
+					"Immigration": {state: 0}
+				}
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(workingClass.vp).toBe(0)
 		})
 	})
 
