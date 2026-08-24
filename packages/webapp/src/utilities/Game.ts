@@ -1,6 +1,6 @@
-import _, { keyBy, sum } from "lodash"
-import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, COMPANY_TYPES, INDUSTRIES, MAX_EXPORT_ONLY_GOODS, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
-import { CapitalistClassState, ClassState, Company, CompanyType, GameState, ImportDeal, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, StateClassState, WorkerClass, WorkingClassState } from "./Types"
+import _, { keyBy, sample, sum } from "lodash"
+import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, COMPANY_TYPES, INDUSTRIES, MAX_EXPORT_ONLY_GOODS, PLAYER_CLASSES, POLICIES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
+import { Agenda, CapitalistClassState, ClassState, Company, CompanyType, GameState, ImportDeal, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, StateClassState, WorkerClass, WorkingClassState } from "./Types"
 
 export function getIndustry(industryName: IndustryName): Industry {
 	return INDUSTRIES.find(industry => industry.name === industryName)!
@@ -81,6 +81,10 @@ export function getStrikeTargets(gameState: GameState): Array<Company> {
 
 export function getPolicyStateLetter(state: 0 | 1 | 2): string {
 	return String.fromCharCode(65 + state)
+}
+
+export function generateStateAgenda(): Agenda {
+	return POLICIES.slice(0, 5).map(policy => ({policyName: policy.name, state: sample([0, 1, 2] as Array<0 | 1 | 2>)!}))
 }
 
 export function getTurn(gameState: GameState) {
@@ -222,4 +226,8 @@ export function doEndOfRoundScoringChanges(gameState: GameState) {
 		.map(([k, v]) => [k, Math.ceil(v / 2)])) as any
 	Object.entries(stateClassState.credibilityBadges)
 		.forEach(([playerClassName, numBadges]) => stateClassState.credibility[playerClassName as Exclude<PlayerClassName, "State">] += numBadges)
+
+	stateClassState.vp += stateClassState.stateAgenda
+		.filter(target => gameState.policies[target.policyName].state === target.state).length
+	stateClassState.stateAgenda = generateStateAgenda()
 }

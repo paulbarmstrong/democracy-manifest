@@ -1,6 +1,6 @@
 import { range, take } from "lodash"
 import { Action, CapitalistClassState, CompanyType, ExportDeals, GameState, ImportDeal, Industry, PlayerClass, PlayerClassName, Policy, StateClassState } from "./Types"
-import { changeCredibility, changeMoney, changeStoredGoods, getClassState, getImportDealPrice, getImportDealTariff, getImportPrice, getIndustry, getStrikeTargets, isStrikeTarget } from "./Game"
+import { changeCredibility, changeMoney, changeStoredGoods, generateStateAgenda, getClassState, getImportDealPrice, getImportDealTariff, getImportPrice, getIndustry, getStrikeTargets, isStrikeTarget } from "./Game"
 import { isAre, s } from "./Misc"
 
 export const COMPANY_SIZE_PX = 220
@@ -595,7 +595,8 @@ export const GAME_STATE: GameState = {
 				"Working Class": 0,
 				"Middle Class": 10,
 				"Capitalist Class": 0
-			}
+			},
+			stateAgenda: generateStateAgenda()
 		}
 	],
 	unemployedWorkers: [

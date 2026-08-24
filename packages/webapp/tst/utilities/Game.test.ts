@@ -556,5 +556,42 @@ describe("doEndOfRoundScoringChanges", () => {
 
 			expect(state.vp).toBe(3)
 		})
+
+		test("gains 1 VP for each policy in its state agenda that matches the current policy states", () => {
+			const state = makeStateClassState({
+				vp: 0,
+				stateAgenda: [
+					{policyName: "Healthcare", state: 2},
+					{policyName: "Education", state: 1},
+					{policyName: "Taxation", state: 0}
+				]
+			})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), makeMiddleClassState(), makeCapitalistClassState(), state],
+				policies: {
+					...makeGameState().policies,
+					Healthcare: {state: 2},
+					Education: {state: 0},
+					Taxation: {state: 0}
+				}
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			// Healthcare and Taxation match (2 VP); Education does not. Plus 1 VP from the
+			// default fixture's lowest credibility (1), scored independently of the agenda.
+			expect(state.vp).toBe(3)
+		})
+
+		test("replaces its state agenda with a new one after scoring", () => {
+			const state = makeStateClassState({stateAgenda: []})
+			const gameState = makeGameState({
+				classes: [makeWorkingClassState(), makeMiddleClassState(), makeCapitalistClassState(), state]
+			})
+
+			doEndOfRoundScoringChanges(gameState)
+
+			expect(state.stateAgenda.length).toBeGreaterThan(0)
+		})
 	})
 })

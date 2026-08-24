@@ -1,9 +1,9 @@
 import { range } from "lodash"
 import { getColor, getPlayerColor } from "../../utilities/Color"
 import { ActionExecution, CapitalistClassState, GameState, IndustryName, PlayerClass, PlayerClassName, PreferredImportDealDestination, StateClassState, Worker, WorkingClassState } from "../../utilities/Types"
-import { COMPANY_SIZE_PX, INDUSTRIES, MAX_CREDIBILITY_PER_CLASS, MAX_EXPORT_ONLY_GOODS, WEALTH_TIER_THRESHOLDS, WORKER_SIZE_PX } from "../../utilities/Constants"
+import { COMPANY_SIZE_PX, INDUSTRIES, MAX_CREDIBILITY_PER_CLASS, MAX_EXPORT_ONLY_GOODS, POLICIES, WEALTH_TIER_THRESHOLDS, WORKER_SIZE_PX } from "../../utilities/Constants"
 import { CompanyCard } from "../CompanyCard"
-import { capitalToWealthTier, getIndustry, getMaxStorage, getTurn } from "../../utilities/Game"
+import { capitalToWealthTier, getIndustry, getMaxStorage, getPolicyStateLetter, getTurn } from "../../utilities/Game"
 import { RadioSelector } from "../RadioSelector"
 import { Details } from "../Details"
 import { WorkerView } from "../WorkerView"
@@ -190,6 +190,26 @@ export function PlayerClassPanel(props: Props) {
 							<span>{benefitsEntry[0]}</span>
 							<span style={{fontSize: "x-large"}}>${benefitsEntry[1]}</span>
 						</div>)
+					}
+				</div>
+			) : (
+				undefined
+			)},
+			{name: "Agenda", content: (classState as StateClassState).stateAgenda !== undefined ? (
+				<div style={{display: "flex", flexDirection: "column", gap: 5}}>
+					{
+						(classState as StateClassState).stateAgenda.map(target => {
+							const policy = POLICIES.find(policy => policy.name === target.policyName)!
+							const matches = props.gameState.policies[target.policyName].state === target.state
+							return <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, backgroundColor: getColor(policy.hue, matches ? 0 : 1), borderRadius: 4, padding: 10}}>
+								<span>{policy.name}</span>
+								<span style={{display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 10}}>
+									<b>{getPolicyStateLetter(target.state)}</b>
+									<span style={{borderLeft: "solid 2px white", height: 20}}/>
+									<span className="material-symbols-outlined" >{matches ? "check_box" : "check_box_outline_blank"}</span>
+								</span>
+							</div>
+						})
 					}
 				</div>
 			) : (
