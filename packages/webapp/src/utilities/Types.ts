@@ -129,7 +129,13 @@ export type StateClassState = CommonClassState & {
 		"Middle Class": number,
 		"Capitalist Class": number
 	}
+	stateAgenda: Agenda
 }
+
+export type Agenda = Array<{
+	policyName: PolicyName,
+	state: 0 | 1 | 2
+}>
 
 export type ClassState = WorkingClassState | MiddleClassState | CapitalistClassState | StateClassState
 

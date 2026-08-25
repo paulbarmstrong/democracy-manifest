@@ -1,6 +1,6 @@
-import _, { keyBy, sum } from "lodash"
-import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, COMPANY_TYPES, INDUSTRIES, MAX_EXPORT_ONLY_GOODS, PLAYER_CLASSES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
-import { CapitalistClassState, ClassState, Company, CompanyType, GameState, ImportDeal, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, StateClassState, WorkerClass, WorkingClassState } from "./Types"
+import _, { keyBy, sample, sum } from "lodash"
+import { BASE_FOOD_IMPORT_PRICE, BASE_LUXURY_IMPORT_PRICE, COMPANY_TYPES, INDUSTRIES, MAX_EXPORT_ONLY_GOODS, PLAYER_CLASSES, POLICIES, WAREHOUSE_CAPACITIES, WEALTH_TIER_THRESHOLDS } from "./Constants"
+import { Agenda, CapitalistClassState, ClassState, Company, CompanyType, GameState, ImportDeal, Industry, IndustryName, MiddleClassState, PlayerClass, PlayerClassName, StateClassState, WorkerClass, WorkingClassState } from "./Types"
 
 export function getIndustry(industryName: IndustryName): Industry {
 	return INDUSTRIES.find(industry => industry.name === industryName)!
@@ -77,6 +77,28 @@ export function isStrikeTarget(company: Company): boolean {
 
 export function getStrikeTargets(gameState: GameState): Array<Company> {
 	return gameState.classes.flatMap(classState => classState.companies).filter(isStrikeTarget)
+}
+
+export function getPolicyStateLetter(state: 0 | 1 | 2): string {
+	return String.fromCharCode(65 + state)
+}
+
+export function generateStateAgenda(): Agenda {
+	return POLICIES.slice(0, 5).map(policy => ({policyName: policy.name, state: sample([0, 1, 2] as Array<0 | 1 | 2>)!}))
+}
+
+const CLASS_AGENDA_STATES: {[K in "Working Class" | "Middle Class" | "Capitalist Class"]: 0 | 1 | 2} = {
+	"Working Class": 0,
+	"Middle Class": 1,
+	"Capitalist Class": 2
+}
+
+export function getClassAgenda(playerClassName: "Working Class" | "Middle Class" | "Capitalist Class"): Agenda {
+	return POLICIES.slice(0, 5).map(policy => ({policyName: policy.name, state: CLASS_AGENDA_STATES[playerClassName]}))
+}
+
+export function getAgendaScore(gameState: GameState, agenda: Agenda): number {
+	return agenda.filter(target => gameState.policies[target.policyName].state === target.state).length
 }
 
 export function getTurn(gameState: GameState) {
@@ -197,10 +219,12 @@ export function doEndOfRoundScoringChanges(gameState: GameState) {
 	const workingClassState: WorkingClassState = getWorkingClassState(gameState)
 	const numUnionLeaders: number = Object.values(workingClassState.unionLeaders).filter(worker => worker !== undefined).length
 	workingClassState.vp += 2 * numUnionLeaders
+	workingClassState.vp += getAgendaScore(gameState, getClassAgenda("Working Class"))
 
 	const middleClassState: MiddleClassState = getMiddleClassState(gameState)
 	const numFullyOperationalCompanies: number = middleClassState.companies.filter(isCompanyFullyOperational).length
 	if (middleClassState.prosperity < numFullyOperationalCompanies) increaseProsperity(middleClassState)
+	middleClassState.vp += getAgendaScore(gameState, getClassAgenda("Middle Class"))
 
 	const capitalistClassState: CapitalistClassState = getCapitalistClassState(gameState)
 	capitalistClassState.capital += capitalistClassState.cash
@@ -211,6 +235,7 @@ export function doEndOfRoundScoringChanges(gameState: GameState) {
 	capitalistClassState.vp += currentWealthTier + 1
 	capitalistClassState.vp += 3 * (newPeakWealthTier - oldPeakWealthTier)
 	capitalistClassState.peakWealthTier = newPeakWealthTier
+	capitalistClassState.vp += getAgendaScore(gameState, getClassAgenda("Capitalist Class"))
 
 	const stateClassState: StateClassState = getStateClassState(gameState)
 	stateClassState.vp += sum(Object.values(stateClassState.credibility).sort((a, b) => a - b).slice(0, 1))
@@ -218,4 +243,7 @@ export function doEndOfRoundScoringChanges(gameState: GameState) {
 		.map(([k, v]) => [k, Math.ceil(v / 2)])) as any
 	Object.entries(stateClassState.credibilityBadges)
 		.forEach(([playerClassName, numBadges]) => stateClassState.credibility[playerClassName as Exclude<PlayerClassName, "State">] += numBadges)
+
+	stateClassState.vp += getAgendaScore(gameState, stateClassState.stateAgenda)
+	stateClassState.stateAgenda = generateStateAgenda()
 }
